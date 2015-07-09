@@ -1,0 +1,16 @@
+{
+  "systemId": "${partnerName}",
+  "partnerConnectorClass": "${groupId}.recommender.${artifactId}PartnerConnector",
+  "queryGeneratorClass": "${groupId}.recommender.${artifactId}QueryGenerator",
+  "searchEndpoint": "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}",
+  "detailEndpoint": "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}",
+  "transformerClass": "${groupId}.datalayer.${artifactId}Transformer",
+  "isTransformedNative": "false",
+  "mappingListTransformationFile":"mapperResultList.xsl",
+  "mappingObjectTransformationFile":"mapperObject.xsl",
+  "partnerDataRequestsTrace":"true",
+  "enableEnriching":"true",
+  "makeCleanupBeforeTransformation":"false",
+  "partnerConnectorEndpoint": "http://127.0.0.1/eexcess-partner-${artifactId}-1.0-SNAPSHOT/partner/",
+  "federatedRecommenderURI":"http://127.0.0.1/eexcess-federated-recommender-web-service-1.0-SNAPSHOT/recommender/"
+}
