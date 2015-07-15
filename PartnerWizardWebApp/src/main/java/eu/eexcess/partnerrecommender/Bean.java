@@ -5,10 +5,19 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 @ManagedBean
 @SessionScoped
@@ -16,17 +25,86 @@ public class Bean implements Serializable {
 
     private static final long serialVersionUID = -2403138958014741653L;
 
-    private String groupId = "at.joanneum";
-    private String artifactId ="MyPartnerRecommender";
-    private String version = "1.0-SNAPSHOT"; 
-    private String packageStr = "at.joanneum";
-	private String partnerName = "Joanneum PartnerRecommender";
+    private String groupId = "";
+    private String artifactId ="";
+    private String version = ""; 
+    private String packageStr = "";
+	private String partnerName = "";
 	
 	private String buildCMD="";
 	
 	private String buildCMDHTML="";
 	
-	private String searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
+	private String searchEndpoint = "";
+	
+	private String eexcessFieldsXPathLoop = "";
+	private String apiResponse ="";
+	private String apiResponseHTML = "";
+	private ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
+	private int actMappingFieldId = -1; 
+	
+	public int getActMappingFieldId() {
+		return actMappingFieldId;
+	}
+
+	public void setActMappingFieldId(int actMappingFieldId) {
+		this.actMappingFieldId = actMappingFieldId;
+	}
+
+
+	private XMLTools xmlTools = new XMLTools();
+	
+	public void probeXPath()
+	{
+		if (this.actMappingFieldId != -1)
+		{
+			System.out.println("probeXPath called");
+			System.out.println("actMappingFieldId:" + this.actMappingFieldId);
+			System.out.println("actMappingField:xpath:" + this.getMappingFields().get(this.actMappingFieldId).getxPath());
+			String fieldXPath = this.getMappingFields().get(this.actMappingFieldId).getxPath();
+			if (fieldXPath == null || fieldXPath.trim().isEmpty()) return;
+			if (eexcessFieldsXPathLoop == null || eexcessFieldsXPathLoop.trim().isEmpty()) return;
+			String xpath = this.eexcessFieldsXPathLoop + fieldXPath;
+			
+			System.out.println("xpath:" + xpath);
+			
+			Document apiResponseDoc = this.xmlTools.convertStringToDocument(this.apiResponse);
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			NodeList nodes;
+			try {
+				nodes = (NodeList)xPath.evaluate(xpath,
+						apiResponseDoc.getDocumentElement(), XPathConstants.NODESET);
+			    System.out.println("found:" + nodes.toString());
+			    String values= "";
+				for (int i = 0; i < nodes.getLength();i++) {
+					values += nodes.item(i).getTextContent() + "\n";
+				    System.out.println("found:" + nodes.item(i).getTextContent());
+				}
+				this.getMappingFields().get(this.actMappingFieldId).setExampleValue(values);
+			} catch (XPathExpressionException e1) {
+				e1.printStackTrace();
+			}
+
+		}
+	}
+	
+	public String getEexcessFieldsXPathLoop() {
+		return eexcessFieldsXPathLoop;
+	}
+
+	public void setEexcessFieldsXPathLoop(String eexcessFieldsXPathLoop) {
+		this.eexcessFieldsXPathLoop = eexcessFieldsXPathLoop;
+	}
+	
+	public XMLTools getXmlTools() {
+		if (this.xmlTools == null)
+			this.xmlTools = new XMLTools();
+		return xmlTools;
+	}
+
+	public void setXmlTools(XMLTools xmlTools) {
+		this.xmlTools = xmlTools;
+	}
 
 	public String getSearchEndpoint() {
 		return searchEndpoint;
@@ -45,7 +123,6 @@ public class Bean implements Serializable {
 	}
 
 
-	private String apiResponse ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <response> <lst name=\"responseHeader\"> <int name=\"status\">0</int> <int name=\"QTime\">0</int> <lst name=\"params\"> <str name=\"q\">uuid:aa0b5559-6e86-46db-9785-0329ab800956</str> </lst> </lst> <result name=\"response\" numFound=\"1\" start=\"0\"> <doc> <str name=\"_participant_\">museum-pro-muttenz</str> <arr name=\"alte_inventarnummern\"> <str>30.0101</str> </arr> <str name=\"objekttyp\">Fotografie</str> <float name=\"anzahl\">1.0</float> <str name=\"beschreibung\">Mitte: das Schulhaus Hinterzweien mit der Turnhalle; rechts oben: die katholische Kirche.</str> <str name=\"datentraeger\">Farb-Positiv</str> <str name=\"copyright\">Museen Muttenz</str> <arr name=\"klassifikation_sachgruppe\"> <str>- Fotografie / Ortsbild / Quartier - Architektur / Öffentliche Bauten / Schulhaus, Kindergarten - Architektur / Öffentliche Bauten / Kirchliche Baute und Nebenbaute - Fotografie / Luftbild </str> <arr name=\"person_name_fotograf\"> <str>SP Luftbild AG Möhlin</str> <str name=\"inventarnummer\">Mz 000068</str> <arr name=\"_thumbs_mini_\"> <str>media/museum-pro-muttenz/resources/images/thumbs-mini/AA0B5559-6E86-46DB-9785-0329AB800956_001.jpg</str> <arr name=\"_thumbs_\"> <str>media/museum-pro-muttenz/resources/images/thumbs/AA0B5559-6E86-46DB-9785-0329AB800956_001.jpg</str> <str name=\"titel\">Quartier Hinterzweien </str> <str name=\"sammlung\">Museen Muttenz</str> <date name=\"_lastchange_\">2015-05-28T06:57:22Z</date> <int name=\"_imagecount_\">1</int> <str name=\"objektbezeichnung\">Fotografie</str> <str name=\"datierung_beschreibung\">1993</str> <str name=\"uuid\">aa0b5559-6e86-46db-9785-0329ab800956</str> <arr name=\"_previews_\"> <str>media/museum-pro-muttenz/resources/images/previews/AA0B5559-6E86-46DB-9785-0329AB800956_001.jpg</str> <str name=\"institution\">Museen Muttenz</str> <str name=\"_display_\">Fotografie, Quartier Hinterzweien </str> <long name=\"_version_\">1504134220904136704</long> <str name=\"lizenzbedingung_url\">https://creativecommons.org/licenses/by-nc-sa/4.0/</str> <str name=\"lizenzbedingung\">CC BY-NC-SA 4.0</str> <str name=\"sprache\">de</str> </doc> </result> </response>";
 
     public String getGroupId() {
 		return groupId;
@@ -59,6 +136,10 @@ public class Bean implements Serializable {
 		return apiResponse;
 	}
 
+	public String getApiResponseFormated() {
+		return this.getXmlTools().format(apiResponse);
+	}
+	
 	public void setApiResponse(String apiResponse) {
 		this.apiResponse = apiResponse;
 	}
@@ -97,9 +178,52 @@ public class Bean implements Serializable {
 
 
     public Bean() {
+    	initMappingFields();
+    	defaultTestValues();
     }
     
-    public void callPartnerAPI()
+    private void defaultTestValues()
+    {
+    	this.eexcessFieldsXPathLoop = "/response/result/doc";
+    	this.apiResponse ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <response> <lst name=\"responseHeader\"> <int name=\"status\">0</int> <int name=\"QTime\">0</int> <lst name=\"params\"> <str name=\"q\">uuid:aa0b5559-6e86-46db-9785-0329ab800956</str> </lst> </lst> <result name=\"response\" numFound=\"1\" start=\"0\"> <doc> <str name=\"_participant_\">museum-pro-muttenz</str> <arr name=\"alte_inventarnummern\"> <str>30.0101</str> </arr> <str name=\"objekttyp\">Fotografie</str> <float name=\"anzahl\">1.0</float> <str name=\"beschreibung\">Mitte: das Schulhaus Hinterzweien mit der Turnhalle; rechts oben: die katholische Kirche.</str> <str name=\"datentraeger\">Farb-Positiv</str> <str name=\"copyright\">Museen Muttenz</str> <arr name=\"klassifikation_sachgruppe\"> <str>- Fotografie / Ortsbild / Quartier - Architektur / Öffentliche Bauten / Schulhaus, Kindergarten - Architektur / Öffentliche Bauten / Kirchliche Baute und Nebenbaute - Fotografie / Luftbild </str></arr> <arr name=\"person_name_fotograf\"> <str>SP Luftbild AG Möhlin</str> </arr><str name=\"inventarnummer\">Mz 000068</str> </doc> </result> </response>";
+    	this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
+        this.groupId = "at.joanneum";
+        this.artifactId ="MyPartnerRecommender";
+        this.version = "1.0-SNAPSHOT"; 
+        this.packageStr = "at.joanneum";
+    	this.partnerName = "Joanneum PartnerRecommender";
+    	this.getMappingFields().get(1).setxPath("/str[@name='datentraeger']");
+
+    }
+
+	private void initMappingFields() {
+		this.mappingFields = new ArrayList<MappingField>();
+    	MappingField mappingField = new MappingField();
+    	mappingField.setName("ID");
+    	mappingField.setDescription("identifier");
+    	this.mappingFields.add(mappingField);
+    	mappingField = new MappingField();
+    	mappingField.setName("Title");
+    	mappingField.setDescription("title");
+    	this.mappingFields.add(mappingField);
+    	mappingField = new MappingField();
+    	mappingField.setName("Description");
+    	mappingField.setDescription("description of the item");
+    	this.mappingFields.add(mappingField);
+    	for (int i = 0; i < mappingFields.size(); i++) {
+    		this.mappingFields.get(i).setId(i);
+		}
+	}
+    
+    public ArrayList<MappingField> getMappingFields() {
+		return mappingFields;
+	}
+
+	public void setMappingFields(ArrayList<MappingField> mappingFields) {
+		this.mappingFields = mappingFields;
+	}
+
+	public void callPartnerAPI()
     {
     	
     }
