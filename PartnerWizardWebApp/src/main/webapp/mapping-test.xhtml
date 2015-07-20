@@ -3,7 +3,9 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:syn="http://richfaces.org/sandbox/syntaxhighlighter"
+	>
 
 <body>
 	<ui:composition template="/templates/template.xhtml">
@@ -77,9 +79,6 @@
 				action="#{bean.callPartnerAPI}" styleClass="btn btn-primary" />
 				
 			<div class="row">
-				<table>
-					<tr>
-						<td valign="top" style="padding:10px">
 							<div>
 								<h2>API Response</h2>
 								<!-- 
@@ -87,13 +86,18 @@
 								<h:outputText value="#{bean.apiResponse}" escape="false"></h:outputText>
 			-->
 			
+			<!-- 
 								<h:inputTextarea rows="50" cols="80" value="#{bean.apiResponseFormated}" readonly="true"/>
-			
+			-->
+								<syn:syntaxhighlighter id="syn2" theme="Eclipse" language="xml" 
+									highlight="2" tabsize="4" gutter="false" rendered="true" >
+										<h:outputText value="#{bean.apiResponseFormated}" />
+								</syn:syntaxhighlighter>
+							
 							</div>
-						</td>
-						<td valign="top" style="padding:10px">
 							<div>
 								<a4j:outputPanel id="mappingFieldsId">
+									<h2>Mapping to EEXCESS fields</h2>
 									<div class="control-group">
 										<label class="control-label" for="textinput">XPath for the loop:</label>
 										<div class="controls">
@@ -101,7 +105,7 @@
 											<p class="help-block">XPath for the loop</p>
 										</div>
 									</div>
-									<h2>EEXCESS Fields </h2>
+									<h3>EEXCESS Fields </h3>
 									<table class="eexcessMappingFieldsTable">
 										<tr>
 											<td>name
@@ -145,9 +149,6 @@
 									</table>
 								</a4j:outputPanel>
 							</div>
-						</td>
-					</tr>
-				</table>
 			</div>
 				
 			<a4j:commandButton value="Build" render="out" execute="@form"

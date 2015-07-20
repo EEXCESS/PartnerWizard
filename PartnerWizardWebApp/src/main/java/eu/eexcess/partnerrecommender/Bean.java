@@ -2,6 +2,7 @@ package eu.eexcess.partnerrecommender;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -18,6 +19,12 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import eu.eexcess.config.PartnerConfiguration;
+import eu.eexcess.dataformats.userprofile.SecureUserProfile;
+import eu.eexcess.partnerdata.reference.PartnerdataLogger;
+import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
+import eu.eexcess.partnerrecommender.api.PartnerConnectorApi;
 
 @ManagedBean
 @SessionScoped
@@ -225,7 +232,37 @@ public class Bean implements Serializable {
 
 	public void callPartnerAPI()
     {
-    	
+//    	String api = this.searchEndpoint;
+//    	api.replaceAll("${query}", "graz");
+		try {
+			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
+			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
+
+			partnerConfiguration.detailEndpoint = "";
+			partnerConfiguration.enableEnriching = false;
+			partnerConfiguration.isTransformedNative = false;
+			partnerConfiguration.makeCleanupBeforeTransformation = false;
+			partnerConfiguration.partnerConnectorClass = "";
+			partnerConfiguration.queryGeneratorClass = "";
+			partnerConfiguration.systemId = this.partnerName;
+			SecureUserProfile userProfile = null;
+			PartnerdataLogger logger = null;
+			Document response = partnerConnector.queryPartner(partnerConfiguration, userProfile, logger);
+			this.apiResponse = this.xmlTools.getStringFromDocument(response);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
     
     public void buildPR()

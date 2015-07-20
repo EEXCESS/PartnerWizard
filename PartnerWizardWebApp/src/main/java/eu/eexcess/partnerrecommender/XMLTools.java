@@ -1,6 +1,7 @@
 package eu.eexcess.partnerrecommender;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -8,6 +9,10 @@ import java.io.Writer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -16,11 +21,36 @@ import org.xml.sax.SAXException;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
-public class XMLTools {
-	    public XMLTools() {
+public class XMLTools implements Serializable {
+	    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6627374527169179744L;
+
+
+		public XMLTools() {
 	    }
 
-	    public String format(String unformattedXml) {
+		public String getStringFromDocument(Document doc)
+	    {
+	        try
+	        {
+	           DOMSource domSource = new DOMSource(doc);
+	           StringWriter writer = new StringWriter();
+	           StreamResult result = new StreamResult(writer);
+	           TransformerFactory tf = TransformerFactory.newInstance();
+	           javax.xml.transform.Transformer transformer = tf.newTransformer();
+	           transformer.transform(domSource, result);
+	           return writer.toString();
+	        }
+	        catch(TransformerException ex)
+	        {
+	           ex.printStackTrace();
+	           return null;
+	        }
+	    }
+
+		public String format(String unformattedXml) {
 	        try {
 	            final Document document = parseXmlFile(unformattedXml);
 

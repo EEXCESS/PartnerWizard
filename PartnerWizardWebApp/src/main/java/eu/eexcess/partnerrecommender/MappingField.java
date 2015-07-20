@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class MappingField implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -404101504030651302L;
 	private String name="";
 	private String description="";
 	private String xPath = "";
