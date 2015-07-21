@@ -16,11 +16,15 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import eu.eexcess.config.PartnerConfiguration;
+import eu.eexcess.dataformats.userprofile.ContextKeyword;
 import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 import eu.eexcess.partnerdata.reference.PartnerdataLogger;
 import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
@@ -43,7 +47,9 @@ public class Bean implements Serializable {
 	private String buildCMDHTML="";
 	
 	private String searchEndpoint = "";
+	private String searchEndpointSearchTerm = "";
 	
+
 	private String eexcessFieldsXPathLoop = "";
 	private String apiResponse ="";
 	private String apiResponseHTML = "";
@@ -56,6 +62,14 @@ public class Bean implements Serializable {
 
 	public void setActMappingFieldId(int actMappingFieldId) {
 		this.actMappingFieldId = actMappingFieldId;
+	}
+
+	public String getSearchEndpointSearchTerm() {
+		return searchEndpointSearchTerm;
+	}
+
+	public void setSearchEndpointSearchTerm(String searchEndpointSearchTerm) {
+		this.searchEndpointSearchTerm = searchEndpointSearchTerm;
 	}
 
 
@@ -199,7 +213,10 @@ public class Bean implements Serializable {
         this.version = "1.0-SNAPSHOT"; 
         this.packageStr = "at.joanneum";
     	this.partnerName = "Joanneum PartnerRecommender";
-    	this.getMappingFields().get(1).setxPath("/str[@name='datentraeger']");
+    	this.getMappingFields().get(0).setxPath("/str[@name='uuid']");
+    	this.getMappingFields().get(1).setxPath("/str[@name='_display_']");
+    	this.getMappingFields().get(2).setxPath("/str[@name='beschreibung']");
+    	
 
     }
 
@@ -242,10 +259,11 @@ public class Bean implements Serializable {
 			partnerConfiguration.enableEnriching = false;
 			partnerConfiguration.isTransformedNative = false;
 			partnerConfiguration.makeCleanupBeforeTransformation = false;
-			partnerConfiguration.partnerConnectorClass = "";
-			partnerConfiguration.queryGeneratorClass = "";
+//			partnerConfiguration.partnerConnectorClass = "";
+			//partnerConfiguration.queryGeneratorClass = "";
 			partnerConfiguration.systemId = this.partnerName;
-			SecureUserProfile userProfile = null;
+			partnerConfiguration.searchEndpoint = this.searchEndpoint;
+			SecureUserProfile userProfile = createUserProfile();
 			PartnerdataLogger logger = null;
 			Document response = partnerConnector.queryPartner(partnerConfiguration, userProfile, logger);
 			this.apiResponse = this.xmlTools.getStringFromDocument(response);
@@ -264,6 +282,27 @@ public class Bean implements Serializable {
 		}
 
     }
+	ArrayList<String> contextList = new ArrayList<String>();
+
+	
+	public SecureUserProfile createUserProfile() {
+		this.contextList = new ArrayList<String>();
+		this.contextList.add(this.searchEndpointSearchTerm);
+		SecureUserProfile profile = new SecureUserProfile();
+		profile.numResults = 40;
+		profile.contextKeywords = new ArrayList<ContextKeyword>();
+		
+		for (int i = 0; i < contextList.size(); i++) {
+			String actValue = contextList.get(i);
+			ContextKeyword contextKeyword = new ContextKeyword();
+			contextKeyword.text = actValue;
+			contextKeyword.weight = 0.1;
+			contextKeyword.reason = "manual";
+			profile.contextKeywords.add(contextKeyword);
+		}
+		return profile;
+	}
+
     
     public void buildPR()
     {
