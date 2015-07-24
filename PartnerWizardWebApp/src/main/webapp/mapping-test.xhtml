@@ -169,14 +169,17 @@
 					<a4j:commandButton value="Build" render="out" execute="@form"
 						action="#{bean.buildPR}" styleClass="btn btn-primary" />
 					
-					<p>
-						<b>mvn command:</b>
-						<br/>
 						<h:panelGroup id="out">
-							<h:outputText value="#{bean.buildCMDHTML}"
+							<h3>mvn command:</h3>
+							<p>
+								<h:outputText value="#{bean.buildCMDHTML}"
 								styleClass="outhello" />
+							</p>
+							<h3>Result:</h3>
+							<p>
+								<h:inputTextarea rows="40" cols="120" value="#{bean.buildOutput}" readonly="true"/>
+							</p>
 						</h:panelGroup>
-					</p>
 				</div>
 			</div>
 		</h:form>

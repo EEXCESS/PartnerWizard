@@ -34,7 +34,9 @@ import eu.eexcess.partnerrecommender.api.PartnerConnectorApi;
 @SessionScoped
 public class Bean implements Serializable {
 
-    private static final long serialVersionUID = -2403138958014741653L;
+    private static final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
+
+	private static final long serialVersionUID = -2403138958014741653L;
 
     private String groupId = "";
     private String artifactId ="";
@@ -44,6 +46,17 @@ public class Bean implements Serializable {
 	
 	private String buildCMD="";
 	
+	private String buildOutput="";
+	
+	public String getBuildOutput() {
+		return buildOutput;
+	}
+
+	public void setBuildOutput(String buildOutput) {
+		this.buildOutput = buildOutput;
+	}
+
+
 	private String buildCMDHTML="";
 	
 	private String searchEndpoint = "";
@@ -255,14 +268,14 @@ public class Bean implements Serializable {
 			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
 			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
 
-			partnerConfiguration.detailEndpoint = "";
-			partnerConfiguration.enableEnriching = false;
-			partnerConfiguration.isTransformedNative = false;
-			partnerConfiguration.makeCleanupBeforeTransformation = false;
+			partnerConfiguration.setDetailEndpoint("");
+			partnerConfiguration.setEnableEnriching(false);
+			partnerConfiguration.setTransformedNative(false);
+			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
 //			partnerConfiguration.partnerConnectorClass = "";
 			//partnerConfiguration.queryGeneratorClass = "";
-			partnerConfiguration.systemId = this.partnerName;
-			partnerConfiguration.searchEndpoint = this.searchEndpoint;
+			partnerConfiguration.setSystemId(this.partnerName);
+			partnerConfiguration.setSearchEndpoint(this.searchEndpoint);
 			SecureUserProfile userProfile = createUserProfile();
 			PartnerdataLogger logger = null;
 			Document response = partnerConnector.queryPartner(partnerConfiguration, userProfile, logger);
@@ -317,7 +330,7 @@ public class Bean implements Serializable {
     	//System.out.println(this.executeCommand(this.buildCMD));
     	String[] commands = new String[6];
     	commands[0] = "set PATH=%PATH%;C:\\java\\jdk1.8.0_25\\bin\\;C:\\java\\apache-maven-3.2.3\\bin";
-    	commands[1] = "cd C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\ ";
+    	commands[1] = "cd "+PATH_BUILD_SANDBOX;
     	commands[2] = this.buildCMD;
     	commands[3] = "cd " + this.artifactId;
     	commands[4] = "mvn clean install -DskipTests";
@@ -362,18 +375,19 @@ public class Bean implements Serializable {
 	}
 	
 	
-	public static void cmdExecute(String[] commands) {
+	public void cmdExecute(String[] commands) {
 	    Process shell = null;
 	    DataOutputStream out = null;
 	    BufferedReader in = null;
-
+        StringBuilder processOutput = new StringBuilder();
+        processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
 	    try {
 	        shell = Runtime.getRuntime().exec("cmd");//su if needed
 	        out = new DataOutputStream(shell.getOutputStream());
 
 	        in = new BufferedReader(new InputStreamReader(shell.getInputStream()));
 
-	        // Executing commands without root rights
+	        // Executing commands 
 	        for (String command : commands) {
 	        	System.out.println("executing:\n" + command);
 	            out.writeBytes(command + "\n");
@@ -383,10 +397,13 @@ public class Bean implements Serializable {
 	        out.writeBytes("exit\n");
 	        out.flush();
 	        String line;
-	        StringBuilder sb = new StringBuilder();
 	        while ((line = in.readLine()) != null) {
-	            sb.append(line).append("\n");
+	            processOutput.append(line).append("\n");
 	        }
+	        
+        	//System.out.println("result:\n" + processOutput);
+            processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
+	        this.buildOutput = processOutput.toString();
 	        shell.waitFor();
 
 	    } catch (Exception e) {
