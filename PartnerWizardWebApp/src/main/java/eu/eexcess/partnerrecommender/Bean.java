@@ -2,8 +2,11 @@ package eu.eexcess.partnerrecommender;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,16 +14,14 @@ import java.util.Calendar;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import eu.eexcess.config.PartnerConfiguration;
@@ -171,7 +172,9 @@ public class Bean implements Serializable {
 	}
 
 	public String getApiResponseFormated() {
-		return this.getXmlTools().format(apiResponse);
+		if ( this.apiResponse != null && !this.apiResponse.trim().isEmpty())
+			return this.getXmlTools().format(apiResponse);
+		return "";
 	}
 	
 	public void setApiResponse(String apiResponse) {
@@ -219,13 +222,15 @@ public class Bean implements Serializable {
     private void defaultTestValues()
     {
     	this.eexcessFieldsXPathLoop = "/response/result/doc";
-    	this.apiResponse ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <response> <lst name=\"responseHeader\"> <int name=\"status\">0</int> <int name=\"QTime\">0</int> <lst name=\"params\"> <str name=\"q\">uuid:aa0b5559-6e86-46db-9785-0329ab800956</str> </lst> </lst> <result name=\"response\" numFound=\"1\" start=\"0\"> <doc> <str name=\"_participant_\">museum-pro-muttenz</str> <arr name=\"alte_inventarnummern\"> <str>30.0101</str> </arr> <str name=\"objekttyp\">Fotografie</str> <float name=\"anzahl\">1.0</float> <str name=\"beschreibung\">Mitte: das Schulhaus Hinterzweien mit der Turnhalle; rechts oben: die katholische Kirche.</str> <str name=\"datentraeger\">Farb-Positiv</str> <str name=\"copyright\">Museen Muttenz</str> <arr name=\"klassifikation_sachgruppe\"> <str>- Fotografie / Ortsbild / Quartier - Architektur / Öffentliche Bauten / Schulhaus, Kindergarten - Architektur / Öffentliche Bauten / Kirchliche Baute und Nebenbaute - Fotografie / Luftbild </str></arr> <arr name=\"person_name_fotograf\"> <str>SP Luftbild AG Möhlin</str> </arr><str name=\"inventarnummer\">Mz 000068</str> </doc> </result> </response>";
+    	//this.apiResponse ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <response> <lst name=\"responseHeader\"> <int name=\"status\">0</int> <int name=\"QTime\">0</int> <lst name=\"params\"> <str name=\"q\">uuid:aa0b5559-6e86-46db-9785-0329ab800956</str> </lst> </lst> <result name=\"response\" numFound=\"1\" start=\"0\"> <doc> <str name=\"_participant_\">museum-pro-muttenz</str> <arr name=\"alte_inventarnummern\"> <str>30.0101</str> </arr> <str name=\"objekttyp\">Fotografie</str> <float name=\"anzahl\">1.0</float> <str name=\"beschreibung\">Mitte: das Schulhaus Hinterzweien mit der Turnhalle; rechts oben: die katholische Kirche.</str> <str name=\"datentraeger\">Farb-Positiv</str> <str name=\"copyright\">Museen Muttenz</str> <arr name=\"klassifikation_sachgruppe\"> <str>- Fotografie / Ortsbild / Quartier - Architektur / Öffentliche Bauten / Schulhaus, Kindergarten - Architektur / Öffentliche Bauten / Kirchliche Baute und Nebenbaute - Fotografie / Luftbild </str></arr> <arr name=\"person_name_fotograf\"> <str>SP Luftbild AG Möhlin</str> </arr><str name=\"inventarnummer\">Mz 000068</str> </doc> </result> </response>";
     	this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
         this.groupId = "at.joanneum";
         this.artifactId ="MyPartnerRecommender";
         this.version = "1.0-SNAPSHOT"; 
         this.packageStr = "at.joanneum";
     	this.partnerName = "Joanneum PartnerRecommender";
+    	
+    	this.searchEndpointSearchTerm="Basel";
     	this.getMappingFields().get(0).setxPath("/str[@name='uuid']");
     	this.getMappingFields().get(1).setxPath("/str[@name='_display_']");
     	this.getMappingFields().get(2).setxPath("/str[@name='beschreibung']");
@@ -421,4 +426,81 @@ public class Bean implements Serializable {
 	        }
 	    }
 	}
+	/*
+	 void fastChannelCopy(final ReadableByteChannel src, final WritableByteChannel dest) throws IOException {
+		    final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+		    while (src.read(buffer) != -1) {
+		      buffer.flip();
+		      dest.write(buffer);
+		      buffer.compact();
+		    }
+		    buffer.flip();
+		    while (buffer.hasRemaining()){
+		      dest.write(buffer);
+		    }
+		  }
+	 void writeOutContent(final HttpServletResponse res, final File content, final String theFilename) {
+		    if (content == null)
+		      return;
+		    try {
+		      res.setHeader("Pragma", "no-cache");
+		      res.setDateHeader("Expires", 0);
+		      res.setContentType("text/xml");
+		      res.setHeader("Content-disposition", "attachment; filename=" + theFilename);
+		      fastChannelCopy(Channels.newChannel(new FileInputStream(content)), Channels.newChannel(res.getOutputStream()));
+		    } catch (final IOException e) {
+		      // TODO produce a error message <span class="wp-smiley wp-emoji wp-emoji-smile" title=":)">:)</span>
+		    }
+		  }
+	
+	  public String downloadWAR() {
+		    final FacesContext facesContext = FacesContext.getCurrentInstance();
+		    String resultFile;
+			// XXX create temp. filecontent ... resultFile
+		    writeOutContent(facesContext.getExternalContext().getResponse(), new File(resultFile), "file.xml");
+		    facesContext.responseComplete();
+		    // dont use jsf-navigation-rules
+		    return null;
+		  }
+	  */
+	  public void downloadWAR() throws IOException {
+		  
+			InputStream input = null;
+			OutputStream output = null;
+//			try {
+			    String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
+
+			    String fileNameWithPath = this.PATH_BUILD_SANDBOX + this.artifactId + "\\" + "target\\"+fileName;
+				input = new FileInputStream(fileNameWithPath);
+				byte[] buf = new byte[1024];
+				int bytesRead;
+			
+			    FacesContext fc = FacesContext.getCurrentInstance();
+			    ExternalContext ec = fc.getExternalContext();
+	
+			    ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+			    String contentType = "application/zip";
+				ec.setResponseContentType(contentType); // Check http://www.iana.org/assignments/media-types for all types. Use if necessary ExternalContext#getMimeType() for auto-detection based on filename.
+	//		    int contentLength = 0;
+	//			ec.setResponseContentLength(input.); // Set it with the file size. This header is optional. It will work if it's omitted, but the download progress will be unknown.
+				ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+	
+			    output = ec.getResponseOutputStream();
+			    // Now you can write the InputStream of the file to the above OutputStream the usual way.
+			    // ...
+			    
+				while ((bytesRead = input.read(buf)) > 0) {
+					output.write(buf, 0, bytesRead);
+				}
+	
+			    fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+//			} 
+//			finally {
+//				input.close();
+//				output.close();
+//			}
+
+		}
+	  
+	  
 }
