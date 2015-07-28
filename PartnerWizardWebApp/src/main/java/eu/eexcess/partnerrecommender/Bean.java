@@ -278,7 +278,7 @@ public class Bean implements Serializable {
 			partnerConfiguration.setEnableEnriching(false);
 			partnerConfiguration.setTransformedNative(false);
 			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
-			//			partnerConfiguration.partnerConnectorClass = "";
+			//partnerConfiguration.partnerConnectorClass = "";
 			//partnerConfiguration.queryGeneratorClass = "";
 			partnerConfiguration.setSystemId(this.partnerName);
 			partnerConfiguration.setSearchEndpoint(this.searchEndpoint);
@@ -452,8 +452,6 @@ public class Bean implements Serializable {
 			ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
 
 			output = ec.getResponseOutputStream();
-			// Now you can write the InputStream of the file to the above OutputStream the usual way.
-			// ...
 
 			while ((bytesRead = input.read(buf)) > 0) {
 				output.write(buf, 0, bytesRead);
@@ -502,8 +500,6 @@ public class Bean implements Serializable {
 			ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
 
 			output = ec.getResponseOutputStream();
-			// Now you can write the InputStream of the file to the above OutputStream the usual way.
-			// ...
 
 			while ((bytesRead = input.read(buf)) > 0) {
 				output.write(buf, 0, bytesRead);
@@ -525,7 +521,7 @@ public class Bean implements Serializable {
 		Files.delete(fileToDeletePath);
 
 		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
-		System.out.println("Creating : " + zipFileName);
+		//System.out.println("Creating : " + zipFileName);
 		addDir(dirObj, out, dir.substring(0, dir.lastIndexOf('\\')+1));
 		out.close();
 	}
@@ -541,7 +537,7 @@ public class Bean implements Serializable {
 			}
 			FileInputStream in = new FileInputStream(files[i].getAbsolutePath());
 			String entryName = files[i].getAbsolutePath().substring(basePath.length());
-			System.out.println(" Adding: " + files[i].getAbsolutePath() + "\n  with entryName:"+ entryName);
+			//System.out.println(" Adding: " + files[i].getAbsolutePath() + "\n  with entryName:"+ entryName);
 			out.putNextEntry(new ZipEntry(entryName));
 			int len;
 			while ((len = in.read(tmpBuf)) > 0) {
