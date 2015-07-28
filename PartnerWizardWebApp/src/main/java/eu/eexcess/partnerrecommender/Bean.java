@@ -469,43 +469,6 @@ public class Bean implements Serializable {
 	    }
 	    return "";
 	}
-	/*
-	 void fastChannelCopy(final ReadableByteChannel src, final WritableByteChannel dest) throws IOException {
-		    final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
-		    while (src.read(buffer) != -1) {
-		      buffer.flip();
-		      dest.write(buffer);
-		      buffer.compact();
-		    }
-		    buffer.flip();
-		    while (buffer.hasRemaining()){
-		      dest.write(buffer);
-		    }
-		  }
-	 void writeOutContent(final HttpServletResponse res, final File content, final String theFilename) {
-		    if (content == null)
-		      return;
-		    try {
-		      res.setHeader("Pragma", "no-cache");
-		      res.setDateHeader("Expires", 0);
-		      res.setContentType("text/xml");
-		      res.setHeader("Content-disposition", "attachment; filename=" + theFilename);
-		      fastChannelCopy(Channels.newChannel(new FileInputStream(content)), Channels.newChannel(res.getOutputStream()));
-		    } catch (final IOException e) {
-		      // TODO produce a error message <span class="wp-smiley wp-emoji wp-emoji-smile" title=":)">:)</span>
-		    }
-		  }
-	
-	  public String downloadWAR() {
-		    final FacesContext facesContext = FacesContext.getCurrentInstance();
-		    String resultFile;
-			// XXX create temp. filecontent ... resultFile
-		    writeOutContent(facesContext.getExternalContext().getResponse(), new File(resultFile), "file.xml");
-		    facesContext.responseComplete();
-		    // dont use jsf-navigation-rules
-		    return null;
-		  }
-	  */
 	
 	  public void downloadWAR() throws IOException {
 		  	compilePR();
