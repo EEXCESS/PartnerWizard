@@ -167,7 +167,7 @@
 				<div>
 					<h2>Create PartnerRecommender/project </h2>
 					<a4j:commandButton value="Build" render="out" execute="@form"
-						action="#{bean.buildPR}" styleClass="btn btn-primary" />
+						action="#{bean.generatePR}" styleClass="btn btn-primary" />
 					
 					<h:panelGroup id="out">
 							<h3>mvn command:</h3>
@@ -180,9 +180,15 @@
 								<h:inputTextarea rows="40" cols="120" value="#{bean.buildOutput}" readonly="true"/>
 							</p>
 					</h:panelGroup>
-					
-					<h:commandLink action="#{bean.downloadWAR}" value="Download WAR"/>
-
+					<p>
+						<h:commandLink action="#{bean.downloadWAR}" value="Download WAR"/>
+					</p>
+					<p>
+						<h:commandLink action="#{bean.createSourceZIP}" value="create Source ZIP"/>
+					</p>
+					<p>
+						<h:commandLink action="#{bean.downloadSourceZIP}" value="Download Source ZIP"/>
+					</p>
 				</div>
 			</div>
 		</h:form>
