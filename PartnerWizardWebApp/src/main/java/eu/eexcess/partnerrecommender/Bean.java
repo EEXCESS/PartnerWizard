@@ -42,20 +42,20 @@ import eu.eexcess.partnerrecommender.api.PartnerConnectorApi;
 @SessionScoped
 public class Bean implements Serializable {
 
-    private static final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
+	private final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
 
 	private static final long serialVersionUID = -2403138958014741653L;
 
-    private String groupId = "";
-    private String artifactId ="";
-    private String version = ""; 
-    private String packageStr = "";
+	private String groupId = "";
+	private String artifactId ="";
+	private String version = ""; 
+	private String packageStr = "";
 	private String partnerName = "";
-	
+
 	private String buildCMD="";
-	
+
 	private String buildOutput="";
-	
+
 	public String getBuildOutput() {
 		return buildOutput;
 	}
@@ -66,17 +66,16 @@ public class Bean implements Serializable {
 
 
 	private String buildCMDHTML="";
-	
+
 	private String searchEndpoint = "";
 	private String searchEndpointSearchTerm = "";
-	
 
 	private String eexcessFieldsXPathLoop = "";
 	private String apiResponse ="";
-	private String apiResponseHTML = "";
+
 	private ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
 	private int actMappingFieldId = -1; 
-	
+
 	public int getActMappingFieldId() {
 		return actMappingFieldId;
 	}
@@ -95,7 +94,7 @@ public class Bean implements Serializable {
 
 
 	private XMLTools xmlTools = new XMLTools();
-	
+
 	public void probeXPath()
 	{
 		if (this.actMappingFieldId != -1)
@@ -107,20 +106,20 @@ public class Bean implements Serializable {
 			if (fieldXPath == null || fieldXPath.trim().isEmpty()) return;
 			if (eexcessFieldsXPathLoop == null || eexcessFieldsXPathLoop.trim().isEmpty()) return;
 			String xpath = this.eexcessFieldsXPathLoop + fieldXPath;
-			
+
 			System.out.println("xpath:" + xpath);
-			
+
 			Document apiResponseDoc = this.xmlTools.convertStringToDocument(this.apiResponse);
 			XPath xPath = XPathFactory.newInstance().newXPath();
 			NodeList nodes;
 			try {
 				nodes = (NodeList)xPath.evaluate(xpath,
 						apiResponseDoc.getDocumentElement(), XPathConstants.NODESET);
-			    System.out.println("found:" + nodes.toString());
-			    String values= "";
+				System.out.println("found:" + nodes.toString());
+				String values= "";
 				for (int i = 0; i < nodes.getLength();i++) {
 					values += nodes.item(i).getTextContent() + "\n";
-				    System.out.println("found:" + nodes.item(i).getTextContent());
+					System.out.println("found:" + nodes.item(i).getTextContent());
 				}
 				this.getMappingFields().get(this.actMappingFieldId).setExampleValue(values);
 			} catch (XPathExpressionException e1) {
@@ -129,7 +128,7 @@ public class Bean implements Serializable {
 
 		}
 	}
-	
+
 	public String getEexcessFieldsXPathLoop() {
 		return eexcessFieldsXPathLoop;
 	}
@@ -137,7 +136,7 @@ public class Bean implements Serializable {
 	public void setEexcessFieldsXPathLoop(String eexcessFieldsXPathLoop) {
 		this.eexcessFieldsXPathLoop = eexcessFieldsXPathLoop;
 	}
-	
+
 	public XMLTools getXmlTools() {
 		if (this.xmlTools == null)
 			this.xmlTools = new XMLTools();
@@ -166,7 +165,7 @@ public class Bean implements Serializable {
 
 
 
-    public String getGroupId() {
+	public String getGroupId() {
 		return groupId;
 	}
 
@@ -183,7 +182,7 @@ public class Bean implements Serializable {
 			return this.getXmlTools().format(apiResponse);
 		return "";
 	}
-	
+
 	public void setApiResponse(String apiResponse) {
 		this.apiResponse = apiResponse;
 	}
@@ -221,50 +220,47 @@ public class Bean implements Serializable {
 	}
 
 
-    public Bean() {
-    	initMappingFields();
-    	defaultTestValues();
-    }
-    
-    private void defaultTestValues()
-    {
-    	this.eexcessFieldsXPathLoop = "/response/result/doc";
-    	//this.apiResponse ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <response> <lst name=\"responseHeader\"> <int name=\"status\">0</int> <int name=\"QTime\">0</int> <lst name=\"params\"> <str name=\"q\">uuid:aa0b5559-6e86-46db-9785-0329ab800956</str> </lst> </lst> <result name=\"response\" numFound=\"1\" start=\"0\"> <doc> <str name=\"_participant_\">museum-pro-muttenz</str> <arr name=\"alte_inventarnummern\"> <str>30.0101</str> </arr> <str name=\"objekttyp\">Fotografie</str> <float name=\"anzahl\">1.0</float> <str name=\"beschreibung\">Mitte: das Schulhaus Hinterzweien mit der Turnhalle; rechts oben: die katholische Kirche.</str> <str name=\"datentraeger\">Farb-Positiv</str> <str name=\"copyright\">Museen Muttenz</str> <arr name=\"klassifikation_sachgruppe\"> <str>- Fotografie / Ortsbild / Quartier - Architektur / Öffentliche Bauten / Schulhaus, Kindergarten - Architektur / Öffentliche Bauten / Kirchliche Baute und Nebenbaute - Fotografie / Luftbild </str></arr> <arr name=\"person_name_fotograf\"> <str>SP Luftbild AG Möhlin</str> </arr><str name=\"inventarnummer\">Mz 000068</str> </doc> </result> </response>";
-    	this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
-        this.groupId = "at.joanneum";
-        this.artifactId ="MyPartnerRecommender";
-        this.version = "1.0-SNAPSHOT"; 
-        this.packageStr = "at.joanneum";
-    	this.partnerName = "Joanneum PartnerRecommender";
-    	
-    	this.searchEndpointSearchTerm="Basel";
-    	this.getMappingFields().get(0).setxPath("/str[@name='uuid']");
-    	this.getMappingFields().get(1).setxPath("/str[@name='_display_']");
-    	this.getMappingFields().get(2).setxPath("/str[@name='beschreibung']");
-    	
+	public Bean() {
+		initMappingFields();
+		defaultTestValues();
+	}
 
-    }
+	private void defaultTestValues()
+	{
+		this.eexcessFieldsXPathLoop = "/response/result/doc";
+		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
+		this.groupId = "at.joanneum";
+		this.artifactId ="MyPartnerRecommender";
+		this.version = "1.0-SNAPSHOT"; 
+		this.packageStr = "at.joanneum";
+		this.partnerName = "Joanneum PartnerRecommender";
+
+		this.searchEndpointSearchTerm="Basel";
+		this.getMappingFields().get(0).setxPath("/str[@name='uuid']");
+		this.getMappingFields().get(1).setxPath("/str[@name='_display_']");
+		this.getMappingFields().get(2).setxPath("/str[@name='beschreibung']");
+	}
 
 	private void initMappingFields() {
 		this.mappingFields = new ArrayList<MappingField>();
-    	MappingField mappingField = new MappingField();
-    	mappingField.setName("ID");
-    	mappingField.setDescription("identifier");
-    	this.mappingFields.add(mappingField);
-    	mappingField = new MappingField();
-    	mappingField.setName("Title");
-    	mappingField.setDescription("title");
-    	this.mappingFields.add(mappingField);
-    	mappingField = new MappingField();
-    	mappingField.setName("Description");
-    	mappingField.setDescription("description of the item");
-    	this.mappingFields.add(mappingField);
-    	for (int i = 0; i < mappingFields.size(); i++) {
-    		this.mappingFields.get(i).setId(i);
+		MappingField mappingField = new MappingField();
+		mappingField.setName("ID");
+		mappingField.setDescription("identifier");
+		this.mappingFields.add(mappingField);
+		mappingField = new MappingField();
+		mappingField.setName("Title");
+		mappingField.setDescription("title");
+		this.mappingFields.add(mappingField);
+		mappingField = new MappingField();
+		mappingField.setName("Description");
+		mappingField.setDescription("description of the item");
+		this.mappingFields.add(mappingField);
+		for (int i = 0; i < mappingFields.size(); i++) {
+			this.mappingFields.get(i).setId(i);
 		}
 	}
-    
-    public ArrayList<MappingField> getMappingFields() {
+
+	public ArrayList<MappingField> getMappingFields() {
 		return mappingFields;
 	}
 
@@ -273,9 +269,7 @@ public class Bean implements Serializable {
 	}
 
 	public void callPartnerAPI()
-    {
-//    	String api = this.searchEndpoint;
-//    	api.replaceAll("${query}", "graz");
+	{
 		try {
 			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
 			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
@@ -284,7 +278,7 @@ public class Bean implements Serializable {
 			partnerConfiguration.setEnableEnriching(false);
 			partnerConfiguration.setTransformedNative(false);
 			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
-//			partnerConfiguration.partnerConnectorClass = "";
+			//			partnerConfiguration.partnerConnectorClass = "";
 			//partnerConfiguration.queryGeneratorClass = "";
 			partnerConfiguration.setSystemId(this.partnerName);
 			partnerConfiguration.setSearchEndpoint(this.searchEndpoint);
@@ -293,30 +287,26 @@ public class Bean implements Serializable {
 			Document response = partnerConnector.queryPartner(partnerConfiguration, userProfile, logger);
 			this.apiResponse = this.xmlTools.getStringFromDocument(response);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-    }
+	}
 	ArrayList<String> contextList = new ArrayList<String>();
 
-	
+
 	public SecureUserProfile createUserProfile() {
 		this.contextList = new ArrayList<String>();
 		this.contextList.add(this.searchEndpointSearchTerm);
 		SecureUserProfile profile = new SecureUserProfile();
 		profile.numResults = 40;
 		profile.contextKeywords = new ArrayList<ContextKeyword>();
-		
+
 		for (int i = 0; i < contextList.size(); i++) {
 			String actValue = contextList.get(i);
 			ContextKeyword contextKeyword = new ContextKeyword();
@@ -328,47 +318,42 @@ public class Bean implements Serializable {
 		return profile;
 	}
 
-    
-    public void generatePR()
-    {
-    	this.buildCMDHTML = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-    	this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DinteractiveMode=false " 
-    			+ "-DgroupId=" + this.groupId 
-    			+ " -DartifactId="+ this.artifactId 
-    			+ " -Dversion="+this.version 
-    			+ " -Dpackage="+ this.packageStr 
-    			+ " -DpartnerName=\""+ this.partnerName+"\"";
-    	
-    	//System.out.println(this.executeCommand(this.buildCMD));
-    	ArrayList<String> commands = new ArrayList<String>();
-    	commands.add(buildENVsetup());
-    	commands.add(buildENVgotoSandbox());
-    	commands.add(this.buildCMD);
-    	commands.add("cd " + this.artifactId);
-    	commands.add("mvn clean install -DskipTests");
-    	commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
-    	this.cmdExecute(commands);
-    	this.buildCMDHTML += "\n" + this.buildCMD + "\n" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 
-    	System.out.println("finished....");
-    }
+	public void generatePR()
+	{
+		this.buildCMDHTML = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DinteractiveMode=false " 
+				+ "-DgroupId=" + this.groupId 
+				+ " -DartifactId="+ this.artifactId 
+				+ " -Dversion="+this.version 
+				+ " -Dpackage="+ this.packageStr 
+				+ " -DpartnerName=\""+ this.partnerName+"\"";
 
-    public void compilePR()
-    {
-    	this.buildCMDHTML = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-    	
-    	//System.out.println(this.executeCommand(this.buildCMD));
-    	ArrayList<String> commands = new ArrayList<String>();
-    	commands.add(buildENVsetup());
-    	commands.add(buildENVgotoSandbox());
-    	commands.add("cd " + this.artifactId);
-    	commands.add("mvn clean install -DskipTests");
-    	commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
-    	this.cmdExecute(commands);
-    	this.buildCMDHTML += "\n" + this.buildCMD + "\n" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		ArrayList<String> commands = new ArrayList<String>();
+		commands.add(buildENVsetup());
+		commands.add(buildENVgotoSandbox());
+		commands.add(this.buildCMD);
+		commands.add("cd " + this.artifactId);
+		commands.add("mvn clean install -DskipTests");
+		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
+		this.cmdExecute(commands);
+		this.buildCMDHTML += "\n" + this.buildCMD + "\n" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+	}
 
-    	System.out.println("finished....");
-    }
+	public void compilePR()
+	{
+		this.buildCMDHTML = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+
+		ArrayList<String> commands = new ArrayList<String>();
+		commands.add(buildENVsetup());
+		commands.add(buildENVgotoSandbox());
+		commands.add("cd " + this.artifactId);
+		commands.add("mvn clean install -DskipTests");
+		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
+		this.cmdExecute(commands);
+		this.buildCMDHTML += "\n" + this.buildCMD + "\n" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+	}
+
 	private String buildENVgotoSandbox() {
 		return "cd "+PATH_BUILD_SANDBOX;
 	}
@@ -384,215 +369,187 @@ public class Bean implements Serializable {
 	public void setBuildCMD(String buildCMD) {
 		this.buildCMD = buildCMD;
 	}
-	
+
 	public String cleanupPR() {
-    	ArrayList<String> commands = new ArrayList<String>();
-    	commands.add(buildENVsetup());
-    	commands.add(buildENVgotoSandbox());
-    	commands.add(this.buildCMD);
-    	commands.add("cd " + this.artifactId);
-    	commands.add("mvn clean ");
-    	commands.add("mvn eclipse:clean ");
-    	return this.cmdExecute(commands);
+		ArrayList<String> commands = new ArrayList<String>();
+		commands.add(buildENVsetup());
+		commands.add(buildENVgotoSandbox());
+		commands.add(this.buildCMD);
+		commands.add("cd " + this.artifactId);
+		commands.add("mvn clean ");
+		commands.add("mvn eclipse:clean ");
+		return this.cmdExecute(commands);
 	}
 
-	
-	private String executeCommand(String command) {
-		 
-		StringBuffer output = new StringBuffer();
- 
-		Process p;
+	public String cmdExecute(ArrayList<String> commands) {
+		Process shell = null;
+		DataOutputStream out = null;
+		BufferedReader in = null;
+		StringBuilder processOutput = new StringBuilder();
+		processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
 		try {
-			p = Runtime.getRuntime().exec(command);
-			p.waitFor();
-			BufferedReader reader = 
-                            new BufferedReader(new InputStreamReader(p.getInputStream()));
- 
-                        String line = "";			
-			while ((line = reader.readLine())!= null) {
-				output.append(line + "\n");
+			shell = Runtime.getRuntime().exec("cmd");//su if needed
+			out = new DataOutputStream(shell.getOutputStream());
+
+			in = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+
+			// Executing commands 
+			for (String command : commands) {
+				System.out.println("executing:\n" + command);
+				out.writeBytes(command + "\n");
+				out.flush();
 			}
- 
+
+			out.writeBytes("exit\n");
+			out.flush();
+			String line;
+			while ((line = in.readLine()) != null) {
+				processOutput.append(line).append("\n");
+			}
+
+			//System.out.println("result:\n" + processOutput);
+			processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
+			String output = processOutput.toString();
+			shell.waitFor();
+			return output;
+		} catch (Exception e) {
+		} finally {
+			try {
+				if (out != null) {
+					out.close();
+				}
+				if(in != null){
+					in.close();
+				}
+				// shell.destroy();
+			} catch (Exception e) {
+				// hopeless
+			}
+		}
+		return "";
+	}
+
+	public void downloadWAR() throws IOException {
+		compilePR();
+		InputStream input = null;
+		OutputStream output = null;
+		try {
+			String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
+
+			String fileNameWithPath = this.PATH_BUILD_SANDBOX + this.artifactId + "\\" + "target\\"+fileName;
+			input = new FileInputStream(fileNameWithPath);
+			byte[] buf = new byte[1024];
+			int bytesRead;
+
+			FacesContext fc = FacesContext.getCurrentInstance();
+			ExternalContext ec = fc.getExternalContext();
+
+			ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+			String contentType = "application/zip";
+			ec.setResponseContentType(contentType); // Check http://www.iana.org/assignments/media-types for all types. Use if necessary ExternalContext#getMimeType() for auto-detection based on filename.
+			//		    int contentLength = 0;
+			//			ec.setResponseContentLength(input.); // Set it with the file size. This header is optional. It will work if it's omitted, but the download progress will be unknown.
+			ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+
+			output = ec.getResponseOutputStream();
+			// Now you can write the InputStream of the file to the above OutputStream the usual way.
+			// ...
+
+			while ((bytesRead = input.read(buf)) > 0) {
+				output.write(buf, 0, bytesRead);
+			}
+
+			fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+		} 
+		finally {
+			input.close();
+			output.close();
+		}
+
+	}
+
+	public void createSourceZIP() throws IOException {
+		System.out.println(this.cleanupPR());
+		String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
+
+		try {
+			zipDir(this.PATH_BUILD_SANDBOX+fileName+".zip", this.PATH_BUILD_SANDBOX+ this.artifactId );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
- 
-		return output.toString();
- 
 	}
-	
-	
-	public String cmdExecute(ArrayList<String> commands) {
-	    Process shell = null;
-	    DataOutputStream out = null;
-	    BufferedReader in = null;
-        StringBuilder processOutput = new StringBuilder();
-        processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
-	    try {
-	        shell = Runtime.getRuntime().exec("cmd");//su if needed
-	        out = new DataOutputStream(shell.getOutputStream());
 
-	        in = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+	public void downloadSourceZIP() throws IOException {
+		createSourceZIP();
+		InputStream input = null;
+		OutputStream output = null;
+		try {
+			String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war"+".zip";
 
-	        // Executing commands 
-	        for (String command : commands) {
-	        	System.out.println("executing:\n" + command);
-	            out.writeBytes(command + "\n");
-	            out.flush();
-	        }
+			String fileNameWithPath = this.PATH_BUILD_SANDBOX+fileName;
+			input = new FileInputStream(fileNameWithPath);
+			byte[] buf = new byte[1024];
+			int bytesRead;
 
-	        out.writeBytes("exit\n");
-	        out.flush();
-	        String line;
-	        while ((line = in.readLine()) != null) {
-	            processOutput.append(line).append("\n");
-	        }
-	        
-        	//System.out.println("result:\n" + processOutput);
-            processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
-	        String output = processOutput.toString();
-	        shell.waitFor();
-	        return output;
-	    } catch (Exception e) {
-	    } finally {
-	        try {
-	            if (out != null) {
-	                out.close();
-	            }
-	            if(in != null){
-	                in.close();
-	            }
-	            // shell.destroy();
-	        } catch (Exception e) {
-	            // hopeless
-	        }
-	    }
-	    return "";
-	}
-	
-	  public void downloadWAR() throws IOException {
-		  	compilePR();
-			InputStream input = null;
-			OutputStream output = null;
-			try {
-			    String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
+			FacesContext fc = FacesContext.getCurrentInstance();
+			ExternalContext ec = fc.getExternalContext();
 
-			    String fileNameWithPath = this.PATH_BUILD_SANDBOX + this.artifactId + "\\" + "target\\"+fileName;
-				input = new FileInputStream(fileNameWithPath);
-				byte[] buf = new byte[1024];
-				int bytesRead;
-			
-			    FacesContext fc = FacesContext.getCurrentInstance();
-			    ExternalContext ec = fc.getExternalContext();
-	
-			    ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
-			    String contentType = "application/zip";
-				ec.setResponseContentType(contentType); // Check http://www.iana.org/assignments/media-types for all types. Use if necessary ExternalContext#getMimeType() for auto-detection based on filename.
-	//		    int contentLength = 0;
-	//			ec.setResponseContentLength(input.); // Set it with the file size. This header is optional. It will work if it's omitted, but the download progress will be unknown.
-				ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
-	
-			    output = ec.getResponseOutputStream();
-			    // Now you can write the InputStream of the file to the above OutputStream the usual way.
-			    // ...
-			    
-				while ((bytesRead = input.read(buf)) > 0) {
-					output.write(buf, 0, bytesRead);
-				}
-	
-			    fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
-			} 
-			finally {
-				input.close();
-				output.close();
+			ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+			String contentType = "application/zip";
+			ec.setResponseContentType(contentType); // Check http://www.iana.org/assignments/media-types for all types. Use if necessary ExternalContext#getMimeType() for auto-detection based on filename.
+			//		    int contentLength = 0;
+			//			ec.setResponseContentLength(input.); // Set it with the file size. This header is optional. It will work if it's omitted, but the download progress will be unknown.
+			ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+
+			output = ec.getResponseOutputStream();
+			// Now you can write the InputStream of the file to the above OutputStream the usual way.
+			// ...
+
+			while ((bytesRead = input.read(buf)) > 0) {
+				output.write(buf, 0, bytesRead);
 			}
 
-		}
-	  
-	  public void createSourceZIP() throws IOException {
-		  	System.out.println(this.cleanupPR());
-		    String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
-
-		    String fileNameWithPath = this.PATH_BUILD_SANDBOX + this.artifactId + "\\" + "target\\"+fileName;
-		    try {
-				zipDir(this.PATH_BUILD_SANDBOX+fileName+".zip", this.PATH_BUILD_SANDBOX+ this.artifactId );
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	  }
-	  
-	  public void downloadSourceZIP() throws IOException {
-		  	createSourceZIP();
-			InputStream input = null;
-			OutputStream output = null;
-			try {
-			    String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war"+".zip";
-
-			    String fileNameWithPath = this.PATH_BUILD_SANDBOX+fileName;
-				input = new FileInputStream(fileNameWithPath);
-				byte[] buf = new byte[1024];
-				int bytesRead;
-			
-			    FacesContext fc = FacesContext.getCurrentInstance();
-			    ExternalContext ec = fc.getExternalContext();
-	
-			    ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
-			    String contentType = "application/zip";
-				ec.setResponseContentType(contentType); // Check http://www.iana.org/assignments/media-types for all types. Use if necessary ExternalContext#getMimeType() for auto-detection based on filename.
-	//		    int contentLength = 0;
-	//			ec.setResponseContentLength(input.); // Set it with the file size. This header is optional. It will work if it's omitted, but the download progress will be unknown.
-				ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
-	
-			    output = ec.getResponseOutputStream();
-			    // Now you can write the InputStream of the file to the above OutputStream the usual way.
-			    // ...
-			    
-				while ((bytesRead = input.read(buf)) > 0) {
-					output.write(buf, 0, bytesRead);
-				}
-	
-			    fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
-			} 
-			finally {
-				input.close();
-				output.close();
-			}
-
+			fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+		} 
+		finally {
+			input.close();
+			output.close();
 		}
 
-	  private void zipDir(String zipFileName, String dir) throws Exception {
-		    File dirObj = new File(dir);
-		    
-		    Path fileToDeletePath = Paths.get(zipFileName);
-		    Files.delete(fileToDeletePath);
-		    
-		    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
-		    System.out.println("Creating : " + zipFileName);
-		    addDir(dirObj, out, dir.substring(0, dir.lastIndexOf('\\')+1));
-		    out.close();
-		  }
+	}
 
-		  private void addDir(File dirObj, ZipOutputStream out, String basePath) throws IOException {
-		    File[] files = dirObj.listFiles();
-		    byte[] tmpBuf = new byte[1024];
+	private void zipDir(String zipFileName, String dir) throws Exception {
+		File dirObj = new File(dir);
 
-		    for (int i = 0; i < files.length; i++) {
-		      if (files[i].isDirectory()) {
-		        addDir(files[i], out, basePath);
-		        continue;
-		      }
-		      FileInputStream in = new FileInputStream(files[i].getAbsolutePath());
-		      String entryName = files[i].getAbsolutePath().substring(basePath.length());
-		      System.out.println(" Adding: " + files[i].getAbsolutePath() + "\n  with entryName:"+ entryName);
-		      out.putNextEntry(new ZipEntry(entryName));
-		      int len;
-		      while ((len = in.read(tmpBuf)) > 0) {
-		        out.write(tmpBuf, 0, len);
-		      }
-		      out.closeEntry();
-		      in.close();
-		    }
-		  }
-	  
+		Path fileToDeletePath = Paths.get(zipFileName);
+		Files.delete(fileToDeletePath);
+
+		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
+		System.out.println("Creating : " + zipFileName);
+		addDir(dirObj, out, dir.substring(0, dir.lastIndexOf('\\')+1));
+		out.close();
+	}
+
+	private void addDir(File dirObj, ZipOutputStream out, String basePath) throws IOException {
+		File[] files = dirObj.listFiles();
+		byte[] tmpBuf = new byte[1024];
+
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].isDirectory()) {
+				addDir(files[i], out, basePath);
+				continue;
+			}
+			FileInputStream in = new FileInputStream(files[i].getAbsolutePath());
+			String entryName = files[i].getAbsolutePath().substring(basePath.length());
+			System.out.println(" Adding: " + files[i].getAbsolutePath() + "\n  with entryName:"+ entryName);
+			out.putNextEntry(new ZipEntry(entryName));
+			int len;
+			while ((len = in.read(tmpBuf)) > 0) {
+				out.write(tmpBuf, 0, len);
+			}
+			out.closeEntry();
+			in.close();
+		}
+	}
+
 }
