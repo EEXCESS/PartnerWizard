@@ -6,11 +6,19 @@
 
 
     <requiredProperty key="partnerName"/>
-    <!--
-    <requiredProperty key="eexcessPartnerName" >
-       <defaultValue>myPartnerName</defaultValue>
+    <requiredProperty key="partnerURL"/>
+    <requiredProperty key="dataLicense"/>
+    <requiredProperty key="eexcessMappingFieldsLoopXPath"/>
+    <requiredProperty key="eexcessMappingFieldsXPathID">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
-  -->
+    <requiredProperty key="eexcessMappingFieldsXPathTitle">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="eexcessMappingFieldsXPathDescription">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIsearchTerm"/>
   </requiredProperties>
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
@@ -24,19 +32,13 @@
       <includes>
         <include>**/*.properties</include>
         <include>**/*.json</include>
+        <include>**/*.xsl</include>
       </includes>
     </fileSet>
     <fileSet filtered="true" encoding="UTF-8">
       <directory>src/main/webapp</directory>
       <includes>
         <include>**/*.xml</include>
-      </includes>
-    </fileSet>
-    <fileSet encoding="UTF-8">
-      <directory>src/main/resources</directory>
-      <includes>
-        <include>**/*.xsl</include>
-        <include>**/*.json</include>
       </includes>
     </fileSet>
     <fileSet filtered="true" encoding="UTF-8">

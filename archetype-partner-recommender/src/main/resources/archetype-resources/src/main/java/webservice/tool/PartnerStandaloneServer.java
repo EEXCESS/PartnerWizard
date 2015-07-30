@@ -31,7 +31,7 @@ public class PartnerStandaloneServer {
 		context.setContextPath("/${artifactId}-${version}");
 		Map<String,Object> initMap = new HashMap<String, Object>();
 	    initMap.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
-	    initMap.put("com.sun.jersey.config.property.packages", "${groupId}.partnerwebservice");	    
+	    initMap.put("com.sun.jersey.config.property.packages", "eu.eexcess.partnerwebservice");	    
 		context.addServlet(new ServletHolder(new ServletContainer(new PackagesResourceConfig(initMap))), "/*");
 		
 //		EnrichmentServer.configProvider = configProvider;

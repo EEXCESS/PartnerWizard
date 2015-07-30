@@ -52,19 +52,20 @@ public class ${artifactId}PartnerRecommenderTest {
     }
 	
 	@Test
-	public void singleQuerySp() {
+	public void singleQuery() {
 		ArrayList<String> keywords = new ArrayList<String>();
-		keywords.add("sp");
+		keywords.add("${partnerAPIsearchTerm}");
         ResultList resultList = PartnerRecommenderTestHelper.getRecommendations(DEPLOYMENT_CONTEXT,	
         		port, 
         		PartnerRecommenderTestHelper.createParamsForPartnerRecommender(20,keywords ));
 	    
         assertNotNull(resultList);
         assertTrue(resultList.results.size() > 0 );
-        assertEquals(20, resultList.results.size());
+        //assertEquals(20, resultList.results.size());
 
 	}
 	
+	/*
 	@Test
 	public void detailCall() {
         ArrayList<String> ids = new ArrayList<String>();
@@ -82,78 +83,20 @@ public class ${artifactId}PartnerRecommenderTest {
         assertEquals(2, documentDetails.documentBadges.size());
 
 	}
+*/
+	
 
 	@Test
-	public void detailCallForEnrichmentSingleObject() {
-        ArrayList<String> ids = new ArrayList<String>();
-		ArrayList<String> uris = new ArrayList<String>();
-        ids.add("Mz 000068");
-        uris.add("http://www.kim.bl.openinteractive.ch/sammlungen#aa0b5559-6e86-46db-9785-0329ab800956");
-        DocumentBadgeList documentDetails = PartnerRecommenderTestHelper.getDetails(DEPLOYMENT_CONTEXT,	
-        		port, 
-        		PartnerRecommenderTestHelper.createParamsForPartnerRecommenderDetailCall(ids, uris, DATAPROVIDER));
-	    
-        assertNotNull(documentDetails);
-        assertTrue(documentDetails.documentBadges.size() > 0 );
-        assertEquals(1, documentDetails.documentBadges.size());
-
-	}
-
-	@Test
-	public void detailCallForEnrichmentSingleObjectJSON() {
-        ArrayList<String> ids = new ArrayList<String>();
-		ArrayList<String> uris = new ArrayList<String>();
-        ids.add("Mz 000068");
-        uris.add("http://www.kim.bl.openinteractive.ch/sammlungen#aa0b5559-6e86-46db-9785-0329ab800956");
-        DocumentBadgeList documentDetails = PartnerRecommenderTestHelper.getDetailsJSON(DEPLOYMENT_CONTEXT,	
-        		port, 
-        		PartnerRecommenderTestHelper.createParamsForPartnerRecommenderDetailCall(ids, uris, DATAPROVIDER));
-	    
-        assertNotNull(documentDetails);
-        assertTrue(documentDetails.documentBadges.size() > 0 );
-        assertEquals(1, documentDetails.documentBadges.size());
-
-	}
-
-	@Test
-	public void singleQueryBierglasZiegelhofKalenderbildWithDetails() {
+	public void singleQueryKalenderbildWithDetails() {
 		ArrayList<String> keywords = new ArrayList<String>();
-		keywords.add("bierglas");
-		keywords.add("ziegelhof");
-		keywords.add("Kalenderbild");
+		keywords.add("${partnerAPIsearchTerm}");
         ResultList resultList = PartnerRecommenderTestHelper.getRecommendations(DEPLOYMENT_CONTEXT,	
         		port, 
         		PartnerRecommenderTestHelper.createParamsForPartnerRecommender(20,keywords ));
 	    
         assertNotNull(resultList);
         assertTrue(resultList.results.size() > 0 );
-        assertEquals(20, resultList.results.size());
-        for (int i = 0; i < resultList.results.size(); i++) {
-            ArrayList<String> ids = new ArrayList<String>();
-    		ArrayList<String> uris = new ArrayList<String>();
-            ids.add(resultList.results.get(i).documentBadge.id);
-            uris.add(resultList.results.get(i).documentBadge.uri);
-            DocumentBadgeList documentDetails = PartnerRecommenderTestHelper.getDetails(DEPLOYMENT_CONTEXT,	
-            		port, 
-            		PartnerRecommenderTestHelper.createParamsForPartnerRecommenderDetailCall(ids, uris, DATAPROVIDER));
-    	    
-            assertNotNull(documentDetails);
-            assertTrue(documentDetails.documentBadges.size() > 0 );
-            assertEquals(1, documentDetails.documentBadges.size());
-		}
-	}
-
-	@Test
-	public void singleQuerySpWithDetails() {
-		ArrayList<String> keywords = new ArrayList<String>();
-		keywords.add("sp");
-        ResultList resultList = PartnerRecommenderTestHelper.getRecommendations(DEPLOYMENT_CONTEXT,	
-        		port, 
-        		PartnerRecommenderTestHelper.createParamsForPartnerRecommender(20,keywords ));
-	    
-        assertNotNull(resultList);
-        assertTrue(resultList.results.size() > 0 );
-        assertEquals(20, resultList.results.size());
+        //assertEquals(20, resultList.results.size());
         for (int i = 0; i < resultList.results.size(); i++) {
             ArrayList<String> ids = new ArrayList<String>();
     		ArrayList<String> uris = new ArrayList<String>();

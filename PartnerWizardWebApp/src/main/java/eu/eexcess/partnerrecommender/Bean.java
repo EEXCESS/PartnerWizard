@@ -51,6 +51,25 @@ public class Bean implements Serializable {
 	private String version = ""; 
 	private String packageStr = "";
 	private String partnerName = "";
+	private String partnerURL = "";
+	private String dataLicense = "";
+
+	public String getDataLicense() {
+		return dataLicense;
+	}
+
+	public void setDataLicense(String dataLicense) {
+		this.dataLicense = dataLicense;
+	}
+
+	public String getPartnerURL() {
+		return partnerURL;
+	}
+
+	public void setPartnerURL(String partnerURL) {
+		this.partnerURL = partnerURL;
+	}
+
 
 	private String buildCMD="";
 
@@ -64,8 +83,6 @@ public class Bean implements Serializable {
 		this.buildOutput = buildOutput;
 	}
 
-
-	private String buildCMDHTML="";
 
 	private String searchEndpoint = "";
 	private String searchEndpointSearchTerm = "";
@@ -155,16 +172,6 @@ public class Bean implements Serializable {
 		this.searchEndpoint = searchEndpoint;
 	}
 
-	public String getBuildCMDHTML() {
-		return buildCMDHTML;
-	}
-
-	public void setBuildCMDHTML(String buildCMDHTML) {
-		this.buildCMDHTML = buildCMDHTML;
-	}
-
-
-
 	public String getGroupId() {
 		return groupId;
 	}
@@ -233,8 +240,10 @@ public class Bean implements Serializable {
 		this.artifactId ="MyPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
 		this.packageStr = "at.joanneum";
-		this.partnerName = "Joanneum PartnerRecommender";
-
+		this.partnerName = "Joanneum Partner Recommender";
+		this.partnerURL = "http://example.org/";
+		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
+		
 		this.searchEndpointSearchTerm="Basel";
 		this.getMappingFields().get(0).setxPath("/str[@name='uuid']");
 		this.getMappingFields().get(1).setxPath("/str[@name='_display_']");
@@ -321,37 +330,41 @@ public class Bean implements Serializable {
 
 	public void generatePR()
 	{
-		this.buildCMDHTML = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DinteractiveMode=false " 
 				+ "-DgroupId=" + this.groupId 
 				+ " -DartifactId="+ this.artifactId 
 				+ " -Dversion="+this.version 
 				+ " -Dpackage="+ this.packageStr 
-				+ " -DpartnerName=\""+ this.partnerName+"\"";
+				+ " -DpartnerName=\""+ this.partnerName+"\""
+				+ " -DpartnerURL=\""+ this.partnerURL+"\""
+				+ " -DdataLicense=\""+ this.dataLicense+"\""
+				+ " -DpartnerAPIsearchTerm=\""+ this.searchEndpointSearchTerm+"\""
+				+ " -DeexcessMappingFieldsLoopXPath=\""+ this.eexcessFieldsXPathLoop+"\"";
+		for (int i = 0; i < this.mappingFields.size(); i++) {
+			if (this.mappingFields.get(i).getxPath() != null && !this.mappingFields.get(i).getxPath().trim().isEmpty())
+				this.buildCMD += " -DeexcessMappingFieldsXPath"+this.mappingFields.get(i).getName()+"=\""+ this.mappingFields.get(i).getxPath()+"\"";
+		}
 
 		ArrayList<String> commands = new ArrayList<String>();
 		commands.add(buildENVsetup());
 		commands.add(buildENVgotoSandbox());
+		commands.add("rd " + this.artifactId + " /s /Q");
 		commands.add(this.buildCMD);
 		commands.add("cd " + this.artifactId);
 		commands.add("mvn clean install -DskipTests");
 		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
-		this.cmdExecute(commands);
-		this.buildCMDHTML += "\n" + this.buildCMD + "\n" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		this.buildOutput = this.cmdExecute(commands);
 	}
 
 	public void compilePR()
 	{
-		this.buildCMDHTML = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-
 		ArrayList<String> commands = new ArrayList<String>();
 		commands.add(buildENVsetup());
 		commands.add(buildENVgotoSandbox());
 		commands.add("cd " + this.artifactId);
 		commands.add("mvn clean install -DskipTests");
 		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
-		this.cmdExecute(commands);
-		this.buildCMDHTML += "\n" + this.buildCMD + "\n" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		this.buildOutput = this.cmdExecute(commands);
 	}
 
 	private String buildENVgotoSandbox() {

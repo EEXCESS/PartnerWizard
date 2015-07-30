@@ -26,7 +26,7 @@
 
 		    <xsl:element name="rdf:RDF">
 
-			      <xsl:attribute name="xml:base">https://kgapi.bl.ch/edm/</xsl:attribute>
+			      <xsl:attribute name="xml:base">${partnerURL}edm/</xsl:attribute>
       
 			      <xsl:element name="owl:Ontology">
 				        <xsl:attribute name="rdf:about"/>
@@ -41,7 +41,7 @@
 			      </xsl:element>
 
 
-			      <xsl:for-each select="response/result/doc">
+			      <xsl:for-each select="${eexcessMappingFieldsLoopXPath}">
 
 			      		<xsl:variable name="mainURI">
 			      			   <xsl:call-template name="Main.URI"/>
@@ -54,20 +54,20 @@
 
 					          <xsl:element name="edm:provider">
 						            <xsl:element name="edm:Agent">
-							              <xsl:attribute name="rdf:about">https://kgapi.bl.ch/</xsl:attribute>
-							              <xsl:element name="foaf:name">KIMPortal</xsl:element>
+							              <xsl:attribute name="rdf:about">${partnerURL}</xsl:attribute>
+							              <xsl:element name="foaf:name">${partnerName}</xsl:element>
 						            </xsl:element>
 					          </xsl:element>
 
 					          <xsl:element name="edm:dataProvider">
 						            <xsl:element name="edm:Agent">
-							              <xsl:attribute name="rdf:about">https://kgapi.bl.ch/</xsl:attribute>
-							              <xsl:element name="foaf:name">KIMPortal</xsl:element>
+							              <xsl:attribute name="rdf:about">${partnerURL}</xsl:attribute>
+							              <xsl:element name="foaf:name">${partnerName}</xsl:element>
 						            </xsl:element>
 					          </xsl:element>
 
 					          <xsl:element name="edm:rights">
-						            <xsl:attribute name="rdf:resource">http://creativecommons.org/publicdomain/mark/1.0/</xsl:attribute>
+						            <xsl:attribute name="rdf:resource">${dataLicense}</xsl:attribute>
 					          </xsl:element>
 
 					          <xsl:element name="edm:isShownBy">
@@ -124,7 +124,7 @@
 					
 					          <xsl:element name="edm:europeanaProxy">false</xsl:element>
 							        <xsl:element name="edm:rights">
-							    http://creativecommons.org/licenses/by-nc-sa/4.0/
+							    ${dataLicense}
 							</xsl:element>
 
 		 			         <xsl:element name="edm:language">de</xsl:element>
@@ -152,18 +152,18 @@
 	  <xsl:template name="Main.Title">
       <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
                        mode="m4"
-                       select="str[@name='_display_']"/>
+                       select="${eexcessMappingFieldsXPathTitle}"/>
    </xsl:template>
 	  <xsl:template name="Main.Description">
       <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
                        mode="m6"
-                       select="str[@name='beschreibung']"/>
+                       select="${eexcessMappingFieldsXPathDescription}"/>
    </xsl:template>
 	  <xsl:template name="Main.Date"/>
 	  <xsl:template name="Main.Identifier">
       <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
                        mode="m7"
-                       select="str[@name='inventarnummer']"/>
+                       select="${eexcessMappingFieldsXPathID}"/>
    </xsl:template>
 	  <xsl:template name="Main.isShownAt">
       <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
@@ -223,7 +223,7 @@
       </element>
    </template>
    <template xmlns="http://www.w3.org/1999/XSL/Transform"
-             match="str[@name='_display_']"
+             match="${eexcessMappingFieldsXPathTitle}"
              mode="m4">
       <element name="dc:title">
          <call-template name="StringToString"/>
@@ -239,14 +239,14 @@
       </element>
    </template>
    <template xmlns="http://www.w3.org/1999/XSL/Transform"
-             match="str[@name='beschreibung']"
+             match="${eexcessMappingFieldsXPathDescription}"
              mode="m6">
       <element name="dc:description">
          <call-template name="StringToString"/>
       </element>
    </template>
    <template xmlns="http://www.w3.org/1999/XSL/Transform"
-             match="str[@name='inventarnummer']"
+             match="${eexcessMappingFieldsXPathID}"
              mode="m7">
       <element name="dc:identifier">
          <call-template name="StringToString"/>

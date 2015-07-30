@@ -59,6 +59,20 @@
 							<p class="help-block">Name of the Partner</p>
 						</div>
 					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">partnerURL:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.partnerURL}" styleClass="form-control" />
+							<p class="help-block">URL of the Partner - used in EEXCESS XML</p>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">data license:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.dataLicense}" styleClass="form-control" />
+							<p class="help-block">License of the meta data</p>
+						</div>
+					</div>
 				</fieldset>
 
 				<fieldset>
@@ -172,7 +186,7 @@
 					<h:panelGroup id="out">
 							<h3>mvn command:</h3>
 							<p>
-								<h:outputText value="#{bean.buildCMDHTML}"
+								<h:outputText value="#{bean.buildCMD}"
 								styleClass="outhello" />
 							</p>
 							<h3>Result:</h3>
