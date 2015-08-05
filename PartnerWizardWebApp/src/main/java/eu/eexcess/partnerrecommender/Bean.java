@@ -122,6 +122,7 @@ public class Bean implements Serializable {
 			String fieldXPath = this.getMappingFields().get(this.actMappingFieldId).getxPath();
 			if (fieldXPath == null || fieldXPath.trim().isEmpty()) return;
 			if (eexcessFieldsXPathLoop == null || eexcessFieldsXPathLoop.trim().isEmpty()) return;
+			
 			String xpath = this.eexcessFieldsXPathLoop + fieldXPath;
 
 			System.out.println("xpath:" + xpath);
@@ -234,7 +235,7 @@ public class Bean implements Serializable {
 
 	private void defaultTestValues()
 	{
-		this.eexcessFieldsXPathLoop = "/response/result/doc";
+		this.eexcessFieldsXPathLoop = "/response/result/doc/";
 		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
 		this.groupId = "at.joanneum";
 		this.artifactId ="MyPartnerRecommender";
@@ -245,9 +246,10 @@ public class Bean implements Serializable {
 		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
 		
 		this.searchEndpointSearchTerm="Basel";
-		this.getMappingFields().get(0).setxPath("/str[@name='uuid']");
-		this.getMappingFields().get(1).setxPath("/str[@name='_display_']");
-		this.getMappingFields().get(2).setxPath("/str[@name='beschreibung']");
+		this.getMappingFields().get(0).setxPath("str[@name='uuid']");
+		this.getMappingFields().get(1).setxPath("str[@name='uuid']");
+		this.getMappingFields().get(2).setxPath("str[@name='_display_']");
+		this.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
 	}
 
 	private void initMappingFields() {
@@ -255,6 +257,10 @@ public class Bean implements Serializable {
 		MappingField mappingField = new MappingField();
 		mappingField.setName("ID");
 		mappingField.setDescription("identifier");
+		this.mappingFields.add(mappingField);
+		mappingField = new MappingField();
+		mappingField.setName("URI");
+		mappingField.setDescription("URI of the object");
 		this.mappingFields.add(mappingField);
 		mappingField = new MappingField();
 		mappingField.setName("Title");

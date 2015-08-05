@@ -12,6 +12,9 @@
     <requiredProperty key="eexcessMappingFieldsXPathID">
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
+    <requiredProperty key="eexcessMappingFieldsXPathURI">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
     <requiredProperty key="eexcessMappingFieldsXPathTitle">
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
