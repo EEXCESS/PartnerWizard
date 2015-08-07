@@ -87,7 +87,7 @@ public class ${artifactId}PartnerRecommenderTest {
 	
 
 	@Test
-	public void singleQueryKalenderbildWithDetails() {
+	public void singleQueryWithDetails() {
 		ArrayList<String> keywords = new ArrayList<String>();
 		keywords.add("${partnerAPIsearchTerm}");
         ResultList resultList = PartnerRecommenderTestHelper.getRecommendations(DEPLOYMENT_CONTEXT,	

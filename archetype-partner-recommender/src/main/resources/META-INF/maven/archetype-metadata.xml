@@ -22,6 +22,9 @@
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
     <requiredProperty key="partnerAPIsearchTerm"/>
+    <requiredProperty key="partnerAPIsearchEndpoint"/>
+    <requiredProperty key="partnerAPIdetailEndpoint"/>
+    
   </requiredProperties>
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">

@@ -37,7 +37,6 @@ public class ${artifactId}QueryGenerator implements QueryGeneratorApi {
             try {
 				builder.append(URLEncoder.encode(context.text,"UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -46,9 +45,7 @@ public class ${artifactId}QueryGenerator implements QueryGeneratorApi {
 
 	@Override
 	public String toDetailQuery(DocumentBadge document) {
-		if (document.uri.contains("${symbol_pound}"))
-			return document.uri.substring(document.uri.lastIndexOf("${symbol_pound}")+1);
-		return null;
+		return document.id;
 	}
 
     
