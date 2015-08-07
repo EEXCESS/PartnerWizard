@@ -87,6 +87,17 @@ public class Bean implements Serializable {
 	private String searchEndpoint = "";
 	private String searchEndpointSearchTerm = "";
 
+	private String detailEndpoint = "";
+
+	public String getDetailEndpoint() {
+		return detailEndpoint;
+	}
+
+	public void setDetailEndpoint(String detailEndpoint) {
+		this.detailEndpoint = detailEndpoint;
+	}
+
+
 	private String eexcessFieldsXPathLoop = "";
 	private String apiResponse ="";
 
@@ -236,7 +247,6 @@ public class Bean implements Serializable {
 	private void defaultTestValues()
 	{
 		this.eexcessFieldsXPathLoop = "/response/result/doc/";
-		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
 		this.groupId = "at.joanneum";
 		this.artifactId ="MyPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
@@ -244,8 +254,9 @@ public class Bean implements Serializable {
 		this.partnerName = "Joanneum Partner Recommender";
 		this.partnerURL = "http://example.org/";
 		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-		
+		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
 		this.searchEndpointSearchTerm="Basel";
+		this.detailEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}";
 		this.getMappingFields().get(0).setxPath("str[@name='uuid']");
 		this.getMappingFields().get(1).setxPath("str[@name='uuid']");
 		this.getMappingFields().get(2).setxPath("str[@name='_display_']");
@@ -342,6 +353,9 @@ public class Bean implements Serializable {
 				+ " -Dversion="+this.version 
 				+ " -Dpackage="+ this.packageStr 
 				+ " -DpartnerName=\""+ this.partnerName+"\""
+				+ " -DpartnerURL=\""+ this.partnerURL+"\""
+				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchEndpoint+"\""
+				+ " -DpartnerAPIdetailEndpoint=\""+ this.detailEndpoint+"\""
 				+ " -DpartnerURL=\""+ this.partnerURL+"\""
 				+ " -DdataLicense=\""+ this.dataLicense+"\""
 				+ " -DpartnerAPIsearchTerm=\""+ this.searchEndpointSearchTerm+"\""
