@@ -9,13 +9,13 @@
 	id="mapping" style="padding-left:10px;">
 	<fieldset>
 		<!-- Form Name -->
-		<legend>Partner API</legend>
+		<legend>Partner API #{mappingFor}</legend>
 
 		<!-- Text input-->
 		<div class="control-group">
 			<label class="control-label" for="textinput">searchEndpoint:</label>
 			<div class="controls">
-				<h:inputText value="#{bean.searchEndpoint}"
+				<h:inputText value="#{mappingBean.searchEndpoint}"
 					styleClass="form-control" />
 				<p class="help-block">URL for API</p>
 			</div>
@@ -25,14 +25,14 @@
 		<div class="control-group">
 			<label class="control-label" for="textinput">search term:</label>
 			<div class="controls">
-				<h:inputText value="#{bean.searchEndpointSearchTerm}"
+				<h:inputText value="#{mappingBean.searchEndpointSearchTerm}"
 					styleClass="form-control" />
 				<p class="help-block">search term</p>
 			</div>
 		</div>
 	</fieldset>
 	<a4j:commandButton value="Call API" execute="@form"
-		action="#{bean.callPartnerAPI}" styleClass="btn btn-primary"
+		action="#{mappingBean.callPartnerAPI}" styleClass="btn btn-primary"
 		render="apiResponseId" />
 
 	<div class="row">
@@ -41,17 +41,17 @@
 			<a4j:outputPanel id="apiResponseId">
 				<!-- 
 								<p>TODO: Show here XML Reponse from the API Call</p>
-								<h:outputText value="#{bean.apiResponse}" escape="false"></h:outputText>
+								<h:outputText value="#{mappingBean.apiResponse}" escape="false"></h:outputText>
 			-->
 
 				<!-- 
-								<h:inputTextarea rows="50" cols="80" value="#{bean.apiResponseFormated}" readonly="true"/>
+								<h:inputTextarea rows="50" cols="80" value="#{mappingBean.apiResponseFormated}" readonly="true"/>
 			-->
 				<!-- 								<div style="max-height: 550px;overflow-y:hidden;display: inline-block;max-width: 900px;"> -->
 				<!-- style="max-height: 450px;overflow-y:auto;display: inline-block;max-width: 800px;" -->
 				<syn:syntaxhighlighter id="syn2" theme="Eclipse" language="xml"
 					highlight="2" tabsize="4" gutter="false" rendered="true">
-					<h:outputText value="#{bean.apiResponseFormated}" />
+					<h:outputText value="#{mappingBean.apiResponseFormated}" />
 				</syn:syntaxhighlighter>
 			</a4j:outputPanel>
 
@@ -63,7 +63,7 @@
 					<label class="control-label" for="textinput">XPath for the
 						loop:</label>
 					<div class="controls">
-						<h:inputText value="#{bean.eexcessFieldsXPathLoop}"
+						<h:inputText value="#{mappingBean.eexcessFieldsXPathLoop}"
 							styleClass="form-control" />
 						<p class="help-block">XPath for the loop</p>
 					</div>
@@ -76,7 +76,7 @@
 						<td>xpath</td>
 						<td>value</td>
 					</tr>
-					<ui:repeat value="#{bean.mappingFields}" var="mappingField">
+					<ui:repeat value="#{mappingBean.mappingFields}" var="mappingField">
 						<tr>
 							<td>#{mappingField.name}</td>
 							<td>#{mappingField.description}</td>
@@ -88,10 +88,10 @@
 										</td>
 										<td style="border: none;">
 											<!-- execute="@form" --> <a4j:commandButton value="test"
-												render="mappingFieldsId" action="#{bean.probeXPath}"
+												render="mappingFieldsId" action="#{mappingBean.probeXPath}"
 												styleClass="btn btn-primary">
 												<a4j:param value="#{mappingField.id}"
-													assignTo="#{bean.actMappingFieldId}" />
+													assignTo="#{mappingBean.actMappingFieldId}" />
 											</a4j:commandButton>
 										</td>
 									</tr>

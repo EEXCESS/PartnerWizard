@@ -23,20 +23,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
-import eu.eexcess.config.PartnerConfiguration;
-import eu.eexcess.dataformats.userprofile.ContextKeyword;
-import eu.eexcess.dataformats.userprofile.SecureUserProfile;
-import eu.eexcess.partnerdata.reference.PartnerdataLogger;
-import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
-import eu.eexcess.partnerrecommender.api.PartnerConnectorApi;
 
 @ManagedBean
 @SessionScoped
@@ -53,6 +39,26 @@ public class Bean implements Serializable {
 	private String partnerName = "";
 	private String partnerURL = "";
 	private String dataLicense = "";
+	
+	private MappingConfigBean searchMappingConfig;
+	
+	private MappingConfigBean detailMappingConfig;
+
+	public MappingConfigBean getDetailMappingConfig() {
+		return detailMappingConfig;
+	}
+
+	public void setDetailMappingConfig(MappingConfigBean detailMappingConfig) {
+		this.detailMappingConfig = detailMappingConfig;
+	}
+
+	public MappingConfigBean getSearchMappingConfig() {
+		return searchMappingConfig;
+	}
+
+	public void setSearchMappingConfig(MappingConfigBean searchMappingConfig) {
+		this.searchMappingConfig = searchMappingConfig;
+	}
 
 	public String getDataLicense() {
 		return dataLicense;
@@ -83,107 +89,6 @@ public class Bean implements Serializable {
 		this.buildOutput = buildOutput;
 	}
 
-
-	private String searchEndpoint = "";
-	private String searchEndpointSearchTerm = "";
-
-	private String detailEndpoint = "";
-
-	public String getDetailEndpoint() {
-		return detailEndpoint;
-	}
-
-	public void setDetailEndpoint(String detailEndpoint) {
-		this.detailEndpoint = detailEndpoint;
-	}
-
-
-	private String eexcessFieldsXPathLoop = "";
-	private String apiResponse ="";
-
-	private ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
-	private int actMappingFieldId = -1; 
-
-	public int getActMappingFieldId() {
-		return actMappingFieldId;
-	}
-
-	public void setActMappingFieldId(int actMappingFieldId) {
-		this.actMappingFieldId = actMappingFieldId;
-	}
-
-	public String getSearchEndpointSearchTerm() {
-		return searchEndpointSearchTerm;
-	}
-
-	public void setSearchEndpointSearchTerm(String searchEndpointSearchTerm) {
-		this.searchEndpointSearchTerm = searchEndpointSearchTerm;
-	}
-
-
-	private XMLTools xmlTools = new XMLTools();
-
-	public void probeXPath()
-	{
-		if (this.actMappingFieldId != -1)
-		{
-//			System.out.println("probeXPath called");
-//			System.out.println("actMappingFieldId:" + this.actMappingFieldId);
-//			System.out.println("actMappingField:xpath:" + this.getMappingFields().get(this.actMappingFieldId).getxPath());
-			String fieldXPath = this.getMappingFields().get(this.actMappingFieldId).getxPath();
-			if (fieldXPath == null || fieldXPath.trim().isEmpty()) return;
-			if (eexcessFieldsXPathLoop == null || eexcessFieldsXPathLoop.trim().isEmpty()) return;
-			
-			String xpath = this.eexcessFieldsXPathLoop + fieldXPath;
-
-//			System.out.println("xpath:" + xpath);
-
-			Document apiResponseDoc = this.xmlTools.convertStringToDocument(this.apiResponse);
-			XPath xPath = XPathFactory.newInstance().newXPath();
-			NodeList nodes;
-			try {
-				nodes = (NodeList)xPath.evaluate(xpath,
-						apiResponseDoc.getDocumentElement(), XPathConstants.NODESET);
-//				System.out.println("found:" + nodes.toString());
-				ArrayList<String> values= new ArrayList<String>();
-				for (int i = 0; i < nodes.getLength();i++) {
-					values.add(nodes.item(i).getTextContent());
-//					System.out.println("found:" + nodes.item(i).getTextContent());
-				}
-				this.getMappingFields().get(this.actMappingFieldId).setExampleValues(values);
-			} catch (XPathExpressionException e1) {
-				e1.printStackTrace();
-			}
-
-		}
-	}
-
-	public String getEexcessFieldsXPathLoop() {
-		return eexcessFieldsXPathLoop;
-	}
-
-	public void setEexcessFieldsXPathLoop(String eexcessFieldsXPathLoop) {
-		this.eexcessFieldsXPathLoop = eexcessFieldsXPathLoop;
-	}
-
-	public XMLTools getXmlTools() {
-		if (this.xmlTools == null)
-			this.xmlTools = new XMLTools();
-		return xmlTools;
-	}
-
-	public void setXmlTools(XMLTools xmlTools) {
-		this.xmlTools = xmlTools;
-	}
-
-	public String getSearchEndpoint() {
-		return searchEndpoint;
-	}
-
-	public void setSearchEndpoint(String searchEndpoint) {
-		this.searchEndpoint = searchEndpoint;
-	}
-
 	public String getGroupId() {
 		return groupId;
 	}
@@ -192,19 +97,8 @@ public class Bean implements Serializable {
 		this.groupId = groupId;
 	}
 
-	public String getApiResponse() {
-		return apiResponse;
-	}
-
-	public String getApiResponseFormated() {
-		if ( this.apiResponse != null && !this.apiResponse.trim().isEmpty())
-			return this.getXmlTools().format(apiResponse);
-		return "";
-	}
-
-	public void setApiResponse(String apiResponse) {
-		this.apiResponse = apiResponse;
-	}
+/*
+*/
 
 	public String getArtifactId() {
 		return artifactId;
@@ -240,91 +134,40 @@ public class Bean implements Serializable {
 
 
 	public Bean() {
+		this.searchMappingConfig = new MappingConfigBean();
+		this.searchMappingConfig.setBean(this);
+		this.detailMappingConfig = new MappingConfigBean();
+		this.detailMappingConfig.setBean(this);
 		initMappingFields();
 		defaultTestValuesRIJKMuseum();
 		//defaultTestValues();
 	}
 
 	private void initMappingFields() {
-		this.mappingFields = new ArrayList<MappingField>();
+		ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
 		MappingField mappingField = new MappingField();
 		mappingField.setName("ID");
 		mappingField.setDescription("identifier");
-		this.mappingFields.add(mappingField);
+		mappingFields.add(mappingField);
 		mappingField = new MappingField();
 		mappingField.setName("URI");
 		mappingField.setDescription("URI of the object");
-		this.mappingFields.add(mappingField);
+		mappingFields.add(mappingField);
 		mappingField = new MappingField();
 		mappingField.setName("Title");
 		mappingField.setDescription("title");
-		this.mappingFields.add(mappingField);
+		mappingFields.add(mappingField);
 		mappingField = new MappingField();
 		mappingField.setName("Description");
 		mappingField.setDescription("description of the item");
-		this.mappingFields.add(mappingField);
+		mappingFields.add(mappingField);
 		for (int i = 0; i < mappingFields.size(); i++) {
-			this.mappingFields.get(i).setId(i);
+			mappingFields.get(i).setId(i);
 		}
+		this.searchMappingConfig.setMappingFields(mappingFields);
 	}
 
-	public ArrayList<MappingField> getMappingFields() {
-		return mappingFields;
-	}
 
-	public void setMappingFields(ArrayList<MappingField> mappingFields) {
-		this.mappingFields = mappingFields;
-	}
-
-	public void callPartnerAPI()
-	{
-		try {
-			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
-			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
-
-			partnerConfiguration.setDetailEndpoint("");
-			partnerConfiguration.setEnableEnriching(false);
-			partnerConfiguration.setTransformedNative(false);
-			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
-			//partnerConfiguration.partnerConnectorClass = "";
-			//partnerConfiguration.queryGeneratorClass = "";
-			partnerConfiguration.setSystemId(this.partnerName);
-			partnerConfiguration.setSearchEndpoint(this.searchEndpoint);
-			SecureUserProfile userProfile = createUserProfile();
-			PartnerdataLogger logger = null;
-			Document response = partnerConnector.queryPartner(partnerConfiguration, userProfile, logger);
-			this.apiResponse = this.xmlTools.getStringFromDocument(response);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-	ArrayList<String> contextList = new ArrayList<String>();
-
-
-	public SecureUserProfile createUserProfile() {
-		this.contextList = new ArrayList<String>();
-		this.contextList.add(this.searchEndpointSearchTerm);
-		SecureUserProfile profile = new SecureUserProfile();
-		profile.numResults = 40;
-		profile.contextKeywords = new ArrayList<ContextKeyword>();
-
-		for (int i = 0; i < contextList.size(); i++) {
-			String actValue = contextList.get(i);
-			ContextKeyword contextKeyword = new ContextKeyword();
-			contextKeyword.text = actValue;
-			contextKeyword.weight = 0.1;
-			contextKeyword.reason = "manual";
-			profile.contextKeywords.add(contextKeyword);
-		}
-		return profile;
-	}
 
 
 	public void generatePR()
@@ -336,15 +179,15 @@ public class Bean implements Serializable {
 				+ " -Dpackage="+ this.packageStr 
 				+ " -DpartnerName=\""+ this.partnerName+"\""
 				+ " -DpartnerURL=\""+ this.partnerURL+"\""
-				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchEndpoint+"\""
-				+ " -DpartnerAPIdetailEndpoint=\""+ this.detailEndpoint+"\""
+				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchMappingConfig.getSearchEndpoint()+"\""
+				+ " -DpartnerAPIdetailEndpoint=\""+ this.detailMappingConfig.getSearchEndpoint()+"\""
 				+ " -DpartnerURL=\""+ this.partnerURL+"\""
 				+ " -DdataLicense=\""+ this.dataLicense+"\""
-				+ " -DpartnerAPIsearchTerm=\""+ this.searchEndpointSearchTerm+"\""
-				+ " -DeexcessMappingFieldsLoopXPath=\""+ this.eexcessFieldsXPathLoop+"\"";
-		for (int i = 0; i < this.mappingFields.size(); i++) {
-			if (this.mappingFields.get(i).getxPath() != null && !this.mappingFields.get(i).getxPath().trim().isEmpty())
-				this.buildCMD += " -DeexcessMappingFieldsXPath"+this.mappingFields.get(i).getName()+"=\""+ this.mappingFields.get(i).getxPath()+"\"";
+				+ " -DpartnerAPIsearchTerm=\""+ this.searchMappingConfig.getSearchEndpointSearchTerm()+"\""
+				+ " -DeexcessMappingFieldsLoopXPath=\""+ this.searchMappingConfig.getEexcessFieldsXPathLoop()+"\"";
+		for (int i = 0; i < this.searchMappingConfig.getMappingFields().size(); i++) {
+			if (this.searchMappingConfig.getMappingFields().get(i).getxPath() != null && !this.searchMappingConfig.getMappingFields().get(i).getxPath().trim().isEmpty())
+				this.buildCMD += " -DeexcessMappingFieldsXPath"+this.searchMappingConfig.getMappingFields().get(i).getName()+"=\""+ this.searchMappingConfig.getMappingFields().get(i).getxPath()+"\"";
 		}
 
 		ArrayList<String> commands = new ArrayList<String>();
@@ -566,7 +409,6 @@ public class Bean implements Serializable {
 
 	private void defaultTestValues()
 	{
-		this.eexcessFieldsXPathLoop = "/response/result/doc/";
 		this.groupId = "at.joanneum";
 		this.artifactId ="MyPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
@@ -574,19 +416,23 @@ public class Bean implements Serializable {
 		this.partnerName = "Joanneum Partner Recommender";
 		this.partnerURL = "http://example.org/";
 		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
-		this.searchEndpointSearchTerm="Basel";
-		this.detailEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}";
-		this.getMappingFields().get(0).setxPath("str[@name='uuid']");
-		this.getMappingFields().get(1).setxPath("str[@name='uuid']");
-		this.getMappingFields().get(2).setxPath("str[@name='_display_']");
-		this.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
+
+		this.searchMappingConfig.setSearchEndpoint("https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}");
+		this.searchMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
+		this.searchMappingConfig.setSearchEndpointSearchTerm("Basel");
+		this.searchMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
+		this.searchMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
+		this.searchMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
+		this.searchMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
+
+		this.detailMappingConfig.setSearchEndpoint("https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}");
 	}
 
 	private void defaultTestValuesRIJKMuseum()
 	{
 		String key= "";
-		this.eexcessFieldsXPathLoop = "/searchGetResponse/artObjects/";
+		
+		this.searchMappingConfig.setEexcessFieldsXPathLoop("/searchGetResponse/artObjects/");
 		this.groupId = "nl.rijksmuseum";
 		this.artifactId ="RijksMuseumPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
@@ -594,13 +440,15 @@ public class Bean implements Serializable {
 		this.partnerName = "RijksMuseum Partner Recommender";
 		this.partnerURL = "http://example.org/";
 		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-		this.searchEndpoint = "https://www.rijksmuseum.nl/api/en/collection?q=${query}&key="+key+"&format=xml";
-		this.searchEndpointSearchTerm="Basel";
-		this.detailEndpoint = "https://www.rijksmuseum.nl/api/en/collection/${detailQuery}?format=xml&key="+key;
-		this.getMappingFields().get(0).setxPath("objectNumber");
-		this.getMappingFields().get(1).setxPath("links/web");
-		this.getMappingFields().get(2).setxPath("title");
-		this.getMappingFields().get(3).setxPath("longTitle");
+
+		this.searchMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection?q=${query}&key="+key+"&format=xml");
+		this.searchMappingConfig.setSearchEndpointSearchTerm("Basel");
+		this.searchMappingConfig.getMappingFields().get(0).setxPath("objectNumber");
+		this.searchMappingConfig.getMappingFields().get(1).setxPath("links/web");
+		this.searchMappingConfig.getMappingFields().get(2).setxPath("title");
+		this.searchMappingConfig.getMappingFields().get(3).setxPath("longTitle");
+		
+		this.detailMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection/${detailQuery}?format=xml&key="+key);
 	}
 
 
