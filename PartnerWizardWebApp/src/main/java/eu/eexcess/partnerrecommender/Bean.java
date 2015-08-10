@@ -127,16 +127,16 @@ public class Bean implements Serializable {
 	{
 		if (this.actMappingFieldId != -1)
 		{
-			System.out.println("probeXPath called");
-			System.out.println("actMappingFieldId:" + this.actMappingFieldId);
-			System.out.println("actMappingField:xpath:" + this.getMappingFields().get(this.actMappingFieldId).getxPath());
+//			System.out.println("probeXPath called");
+//			System.out.println("actMappingFieldId:" + this.actMappingFieldId);
+//			System.out.println("actMappingField:xpath:" + this.getMappingFields().get(this.actMappingFieldId).getxPath());
 			String fieldXPath = this.getMappingFields().get(this.actMappingFieldId).getxPath();
 			if (fieldXPath == null || fieldXPath.trim().isEmpty()) return;
 			if (eexcessFieldsXPathLoop == null || eexcessFieldsXPathLoop.trim().isEmpty()) return;
 			
 			String xpath = this.eexcessFieldsXPathLoop + fieldXPath;
 
-			System.out.println("xpath:" + xpath);
+//			System.out.println("xpath:" + xpath);
 
 			Document apiResponseDoc = this.xmlTools.convertStringToDocument(this.apiResponse);
 			XPath xPath = XPathFactory.newInstance().newXPath();
@@ -144,13 +144,13 @@ public class Bean implements Serializable {
 			try {
 				nodes = (NodeList)xPath.evaluate(xpath,
 						apiResponseDoc.getDocumentElement(), XPathConstants.NODESET);
-				System.out.println("found:" + nodes.toString());
-				String values= "";
+//				System.out.println("found:" + nodes.toString());
+				ArrayList<String> values= new ArrayList<String>();
 				for (int i = 0; i < nodes.getLength();i++) {
-					values += nodes.item(i).getTextContent() + "\n";
-					System.out.println("found:" + nodes.item(i).getTextContent());
+					values.add(nodes.item(i).getTextContent());
+//					System.out.println("found:" + nodes.item(i).getTextContent());
 				}
-				this.getMappingFields().get(this.actMappingFieldId).setExampleValue(values);
+				this.getMappingFields().get(this.actMappingFieldId).setExampleValues(values);
 			} catch (XPathExpressionException e1) {
 				e1.printStackTrace();
 			}
@@ -242,44 +242,7 @@ public class Bean implements Serializable {
 	public Bean() {
 		initMappingFields();
 		defaultTestValuesRIJKMuseum();
-	}
-
-	private void defaultTestValues()
-	{
-		this.eexcessFieldsXPathLoop = "/response/result/doc/";
-		this.groupId = "at.joanneum";
-		this.artifactId ="MyPartnerRecommender";
-		this.version = "1.0-SNAPSHOT"; 
-		this.packageStr = "at.joanneum";
-		this.partnerName = "Joanneum Partner Recommender";
-		this.partnerURL = "http://example.org/";
-		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
-		this.searchEndpointSearchTerm="Basel";
-		this.detailEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}";
-		this.getMappingFields().get(0).setxPath("str[@name='uuid']");
-		this.getMappingFields().get(1).setxPath("str[@name='uuid']");
-		this.getMappingFields().get(2).setxPath("str[@name='_display_']");
-		this.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
-	}
-
-	private void defaultTestValuesRIJKMuseum()
-	{
-		this.eexcessFieldsXPathLoop = "/searchGetResponse/artObjects/";
-		this.groupId = "rijksmuseum";
-		this.artifactId ="RijksMuseumPartnerRecommender";
-		this.version = "1.0-SNAPSHOT"; 
-		this.packageStr = "nl.rijksmuseum";
-		this.partnerName = "RijksMuseum Partner Recommender";
-		this.partnerURL = "http://example.org/";
-		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-		this.searchEndpoint = "https://www.rijksmuseum.nl/api/nl/collection?q=${query}&key=&format=xml";
-		this.searchEndpointSearchTerm="Basel";
-		this.detailEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}";
-		this.getMappingFields().get(0).setxPath("id");
-		this.getMappingFields().get(1).setxPath("links/web");
-		this.getMappingFields().get(2).setxPath("title");
-		this.getMappingFields().get(3).setxPath("longTitle");
+		//defaultTestValues();
 	}
 
 	private void initMappingFields() {
@@ -463,6 +426,7 @@ public class Bean implements Serializable {
 			processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
 			String output = processOutput.toString();
 			shell.waitFor();
+			System.out.println("finished!");
 			return output;
 		} catch (Exception e) {
 		} finally {
@@ -599,5 +563,45 @@ public class Bean implements Serializable {
 			in.close();
 		}
 	}
+
+	private void defaultTestValues()
+	{
+		this.eexcessFieldsXPathLoop = "/response/result/doc/";
+		this.groupId = "at.joanneum";
+		this.artifactId ="MyPartnerRecommender";
+		this.version = "1.0-SNAPSHOT"; 
+		this.packageStr = "at.joanneum";
+		this.partnerName = "Joanneum Partner Recommender";
+		this.partnerURL = "http://example.org/";
+		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
+		this.searchEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}";
+		this.searchEndpointSearchTerm="Basel";
+		this.detailEndpoint = "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}";
+		this.getMappingFields().get(0).setxPath("str[@name='uuid']");
+		this.getMappingFields().get(1).setxPath("str[@name='uuid']");
+		this.getMappingFields().get(2).setxPath("str[@name='_display_']");
+		this.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
+	}
+
+	private void defaultTestValuesRIJKMuseum()
+	{
+		String key= "";
+		this.eexcessFieldsXPathLoop = "/searchGetResponse/artObjects/";
+		this.groupId = "nl.rijksmuseum";
+		this.artifactId ="RijksMuseumPartnerRecommender";
+		this.version = "1.0-SNAPSHOT"; 
+		this.packageStr = "nl.rijksmuseum";
+		this.partnerName = "RijksMuseum Partner Recommender";
+		this.partnerURL = "http://example.org/";
+		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
+		this.searchEndpoint = "https://www.rijksmuseum.nl/api/en/collection?q=${query}&key="+key+"&format=xml";
+		this.searchEndpointSearchTerm="Basel";
+		this.detailEndpoint = "https://www.rijksmuseum.nl/api/en/collection/${detailQuery}?format=xml&key="+key;
+		this.getMappingFields().get(0).setxPath("objectNumber");
+		this.getMappingFields().get(1).setxPath("links/web");
+		this.getMappingFields().get(2).setxPath("title");
+		this.getMappingFields().get(3).setxPath("longTitle");
+	}
+
 
 }

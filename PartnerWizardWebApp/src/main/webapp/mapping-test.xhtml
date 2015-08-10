@@ -168,7 +168,11 @@
 													</table>
 												</td>
 												<td>
-													<h:inputText value="#{mappingField.exampleValue}" styleClass="form-control" />
+													<ul>
+														<ui:repeat value="#{mappingField.exampleValues}" var="value">
+															<li>#{value}</li>
+														</ui:repeat>
+													</ul>
 												</td>
 											</tr>
 										</ui:repeat>

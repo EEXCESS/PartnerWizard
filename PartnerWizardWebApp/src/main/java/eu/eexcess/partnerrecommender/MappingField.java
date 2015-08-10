@@ -1,6 +1,7 @@
 package eu.eexcess.partnerrecommender;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class MappingField implements Serializable{
 
@@ -11,7 +12,8 @@ public class MappingField implements Serializable{
 	private String name="";
 	private String description="";
 	private String xPath = "";
-	private String exampleValue = "";
+	private ArrayList<String> exampleValues;
+	
 	private int id;
 	public int getId() {
 		return id;
@@ -37,11 +39,11 @@ public class MappingField implements Serializable{
 	public void setxPath(String xPath) {
 		this.xPath = xPath;
 	}
-	public String getExampleValue() {
-		return exampleValue;
+	public ArrayList<String> getExampleValues() {
+		return exampleValues;
 	}
-	public void setExampleValue(String exampleValue) {
-		this.exampleValue = exampleValue;
+	public void setExampleValues(ArrayList<String> exampleValues) {
+		this.exampleValues = exampleValues;
 	}
 
 }
