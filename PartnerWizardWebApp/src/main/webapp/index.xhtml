@@ -3,7 +3,9 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:syn="http://richfaces.org/sandbox/syntaxhighlighter"
+	>
 
 <body>
 	<ui:composition template="/templates/template.xhtml">
@@ -57,6 +59,20 @@
 							<p class="help-block">Name of the Partner</p>
 						</div>
 					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">partnerURL:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.partnerURL}" styleClass="form-control" />
+							<p class="help-block">URL of the Partner - used in EEXCESS XML</p>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">data license:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.dataLicense}" styleClass="form-control" />
+							<p class="help-block">License of the meta data</p>
+						</div>
+					</div>
 				</fieldset>
 
 				<fieldset>
@@ -72,275 +88,128 @@
 						</div>
 					</div>
 
+					<!-- Text input-->
+					<div class="control-group">
+						<label class="control-label" for="textinput">search term:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.searchEndpointSearchTerm}" styleClass="form-control" />
+							<p class="help-block">search term</p>
+						</div>
+					</div>
 				</fieldset>
-				<a4j:commandButton value="Call API" render="out" execute="@form"
-				action="#{bean.callPartnerAPI}" styleClass="btn btn-primary" />
+				<a4j:commandButton value="Call API" execute="@form"
+				action="#{bean.callPartnerAPI}" styleClass="btn btn-primary" render="apiResponseId"/>
 				
 			<div class="row">
-				<div class="container">
-					<h2>API Response</h2>
-					<!-- 
-					<p>TODO: Show here XML Reponse from the API Call</p>
-					<h:outputText value="#{bean.apiResponse}" escape="false"></h:outputText>
--->
-					<pre id="xmlOutput" class="xml prettyprint">
-						<span class="pun">&lt;?</span><span class="pln">xml version</span><span
-							class="pun">=</span><span class="str">"1.0"</span><span
-							class="pln"> encoding</span><span class="pun">=</span><span
-							class="str">"UTF-8"</span><span class="pun">?&gt;</span><span
-							class="pln">
-</span><span class="tag">&lt;response&gt;</span><span class="pln">
-   </span><span class="tag">&lt;lst</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"responseHeader"</span><span class="tag">&gt;</span><span
-							class="pln">
-      </span><span class="tag">&lt;int</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"status"</span><span class="tag">&gt;</span><span
-							class="pln">0</span><span class="tag">&lt;/int&gt;</span><span
-							class="pln">
-      </span><span class="tag">&lt;int</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"QTime"</span><span class="tag">&gt;</span><span
-							class="pln">1</span><span class="tag">&lt;/int&gt;</span><span
-							class="pln">
-      </span><span class="tag">&lt;lst</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"params"</span><span class="tag">&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"q"</span><span class="tag">&gt;</span><span
-							class="pln">_fulltext_:(bierglas)</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"rows"</span><span class="tag">&gt;</span><span
-							class="pln">1</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-      </span><span class="tag">&lt;/lst&gt;</span><span class="pln">
-   </span><span class="tag">&lt;/lst&gt;</span><span class="pln">
-   </span><span class="tag">&lt;result</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"response"</span><span class="pln"> </span><span
-							class="atn">numFound</span><span class="pun">=</span><span
-							class="atv">"57"</span><span class="pln"> </span><span
-							class="atn">start</span><span class="pun">=</span><span
-							class="atv">"0"</span><span class="tag">&gt;</span><span
-							class="pln">
-      </span><span class="tag">&lt;doc&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"ort_herstellung"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Schweiz</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_participant_"</span><span class="tag">&gt;</span><span
-							class="pln">adam</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;float</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"dimension_objekt_hoehe"</span><span class="tag">&gt;</span><span
-							class="pln">19.1</span><span class="tag">&lt;/float&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"material_s"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Glas</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"objekttyp"</span><span class="tag">&gt;</span><span
-							class="pln">Ethnologie</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"beschreibung"</span><span class="tag">&gt;</span><span
-							class="pln">Bierglas HIGH LIFE DE LUXE EUROPEAN BEER (Ziegelhofbier), Stange mit geschwelltem Unterteil, Scheibenfuss und breitem Goldrand; 2-3 dl, ungeeicht; Etikette in schwarz-gold: Schriftzug golden mit schwarzem Schatten. Keine Nähte sichtbar; Etikette, 2-farbig.</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"klassifikation_sachgruppe"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Bierkultur</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Trinkbecher aus Glas oder Kristall (Trink-, Tafelgläser, geätzt, bemalt usw.)</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"einheit_dimension_objekt_hoehe"</span><span
-							class="tag">&gt;</span><span class="pln">cm</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"klassifikation_s_sachgruppe"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Handwerk, Gewerbe, Industrie&amp;gt;&amp;gt;Rohstoffverarbeitung&amp;gt;&amp;gt;Uebrige rohstoffverarbeitende Gewerbe&amp;gt;&amp;gt;Uebrige rohstoffverarbeitende Gewerbe (I)&amp;gt;&amp;gt;Bierbrauerei&amp;gt;&amp;gt;Bierkultur</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Hauswirtschaft&amp;gt;&amp;gt;Hausarbeit&amp;gt;&amp;gt;Bewirtung&amp;gt;&amp;gt;Trinkgeschirr&amp;gt;&amp;gt;Trinkbecher, Trinkschalen (individuelle)&amp;gt;&amp;gt;Trinkbecher aus Glas oder Kristall (Trink-, Tafelgläser, geätzt, bemalt usw.)</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"inventarnummer"</span><span class="tag">&gt;</span><span
-							class="pln">E1.6906</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_thumbs_"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">media/adam/resources/images/thumbs/a443f14b-4b5e-1268-655b-419682e00567_0001.jpg</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"sammlung"</span><span class="tag">&gt;</span><span
-							class="pln">Volkskunde</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;int</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_imagecount_"</span><span class="tag">&gt;</span><span
-							class="pln">1</span><span class="tag">&lt;/int&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"objektbezeichnung"</span><span class="tag">&gt;</span><span
-							class="pln">Bierglas HIGH LIFE DE LUXE EUROPEAN BEER</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"ort_s_herstellung"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Schweiz</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"technik_s"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">geblasen</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"institution"</span><span class="tag">&gt;</span><span
-							class="pln">Archäologie und Museum Baselland</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"copyright"</span><span class="tag">&gt;</span><span
-							class="pln">Archäologie und Museum Baselland</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"technik"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">geblasen</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"einheit_dimension_objekt_durchmesser"</span><span
-							class="tag">&gt;</span><span class="pln">cm</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"material"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">Glas</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;float</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"dimension_objekt_durchmesser"</span><span
-							class="tag">&gt;</span><span class="pln">6.4</span><span
-							class="tag">&lt;/float&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_thumbs_mini_"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">media/adam/resources/images/thumbs-mini/a443f14b-4b5e-1268-655b-419682e00567_0001.jpg</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;date</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_lastchange_"</span><span class="tag">&gt;</span><span
-							class="pln">2015-06-18T12:23:27Z</span><span class="tag">&lt;/date&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"uuid"</span><span class="tag">&gt;</span><span
-							class="pln">a443f14b-4b5e-1268-655b-419682e00567</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;arr</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_previews_"</span><span class="tag">&gt;</span><span
-							class="pln">
-            </span><span class="tag">&lt;str&gt;</span><span class="pln">media/adam/resources/images/previews/a443f14b-4b5e-1268-655b-419682e00567_0001.jpg</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;/arr&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_display_"</span><span class="tag">&gt;</span><span
-							class="pln">Bierglas HIGH LIFE DE LUXE EUROPEAN BEER</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;long</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"_version_"</span><span class="tag">&gt;</span><span
-							class="pln">1504353273166954496</span><span class="tag">&lt;/long&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"lizenzbedingung_url"</span><span class="tag">&gt;</span><span
-							class="pln">https://creativecommons.org/licenses/by-nc-sa/4.0/</span><span
-							class="tag">&lt;/str&gt;</span><span class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"lizenzbedingung"</span><span class="tag">&gt;</span><span
-							class="pln">CC BY-NC-SA 4.0</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;float</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"anzahl"</span><span class="tag">&gt;</span><span
-							class="pln">1.0</span><span class="tag">&lt;/float&gt;</span><span
-							class="pln">
-         </span><span class="tag">&lt;str</span><span class="pln"> </span><span
-							class="atn">name</span><span class="pun">=</span><span
-							class="atv">"sprache"</span><span class="tag">&gt;</span><span
-							class="pln">de</span><span class="tag">&lt;/str&gt;</span><span
-							class="pln">
-      </span><span class="tag">&lt;/doc&gt;</span><span class="pln">
-   </span><span class="tag">&lt;/result&gt;</span><span class="pln">
-</span><span class="tag">&lt;/response&gt;</span>
-					</pre>
-				</div>
-				<div class="container">
-					<h2>EEXCESS Fields 2</h2>
-					<ul>
-						<li>ID</li>
-						<li>Title</li>
-						<li>Uri</li>
-						<li>description</li>
-					</ul>
-				</div>
+							<div>
+								<h2>API Response</h2>
+								<a4j:outputPanel id="apiResponseId">
+								<!-- 
+								<p>TODO: Show here XML Reponse from the API Call</p>
+								<h:outputText value="#{bean.apiResponse}" escape="false"></h:outputText>
+			-->
+			
+			<!-- 
+								<h:inputTextarea rows="50" cols="80" value="#{bean.apiResponseFormated}" readonly="true"/>
+			-->
+<!-- 								<div style="max-height: 550px;overflow-y:hidden;display: inline-block;max-width: 900px;"> -->
+<!-- style="max-height: 450px;overflow-y:auto;display: inline-block;max-width: 800px;" -->
+									<syn:syntaxhighlighter id="syn2" theme="Eclipse" language="xml" 
+										highlight="2" tabsize="4" gutter="false" rendered="true" > 
+											<h:outputText value="#{bean.apiResponseFormated}" />
+									</syn:syntaxhighlighter>
+									</a4j:outputPanel>
+							
+							</div>
+							<div>
+								<a4j:outputPanel id="mappingFieldsId">
+									<h2>Mapping to EEXCESS fields</h2>
+									<div class="control-group">
+										<label class="control-label" for="textinput">XPath for the loop:</label>
+										<div class="controls">
+											<h:inputText value="#{bean.eexcessFieldsXPathLoop}" styleClass="form-control" />
+											<p class="help-block">XPath for the loop</p>
+										</div>
+									</div>
+									<h3>EEXCESS Fields </h3>
+									<table class="eexcessMappingFieldsTable">
+										<tr>
+											<td>name
+											</td>
+											<td>description
+											</td>
+											<td>xpath
+											</td>
+											<td>value
+											</td>
+										</tr>
+										<ui:repeat value="#{bean.mappingFields}" var="mappingField">
+											<tr>
+												<td>
+													#{mappingField.name}
+												</td>
+												<td>
+													#{mappingField.description}
+												</td>
+												<td>
+													<table>
+														<tr>
+															<td style="border:none;">
+																<h:inputText value="#{mappingField.xPath}" styleClass="form-control" />
+															</td>
+															<td style="border:none;">
+															<!-- execute="@form" -->
+																<a4j:commandButton value="test" render="mappingFieldsId" 
+																	action="#{bean.probeXPath}" styleClass="btn btn-primary" >
+																	<a4j:param value="#{mappingField.id}" assignTo="#{bean.actMappingFieldId}" />
+																</a4j:commandButton>
+															</td>
+														</tr>
+													</table>
+												</td>
+												<td>
+													<ul>
+														<ui:repeat value="#{mappingField.exampleValues}" var="value">
+															<li>#{value}</li>
+														</ui:repeat>
+													</ul>
+												</td>
+											</tr>
+										</ui:repeat>
+									</table>
+								</a4j:outputPanel>
+							</div>
 			</div>
 				
-			<a4j:commandButton value="Build" render="out" execute="@form"
-				action="#{bean.buildPR}" styleClass="btn btn-primary" />
-			
-			<b>mvn command:</b>
-			<br/>
-			<h:panelGroup id="out">
-				<h:outputText value="#{bean.buildCMDHTML}"
-					styleClass="outhello" />
-			</h:panelGroup>
-			</h:form>
+			<div class="row">
+				<div>
+					<h2>Create PartnerRecommender/project </h2>
+					<a4j:commandButton value="Build" render="out" execute="@form"
+						action="#{bean.generatePR}" styleClass="btn btn-primary" />
+					
+					<h:panelGroup id="out">
+							<h3>mvn command:</h3>
+							<p>
+								<h:outputText value="#{bean.buildCMD}"
+								styleClass="outhello" />
+							</p>
+							<h3>Result:</h3>
+							<p>
+								<h:inputTextarea rows="40" cols="120" value="#{bean.buildOutput}" readonly="true"/>
+							</p>
+					</h:panelGroup>
+					<p>
+						<h:commandLink action="#{bean.downloadWAR}" value="Download WAR"/>
+					</p>
+					<p>
+						<h:commandLink action="#{bean.createSourceZIP}" value="create Source ZIP"/>
+					</p>
+					<p>
+						<h:commandLink action="#{bean.downloadSourceZIP}" value="Download Source ZIP"/>
+					</p>
+				</div>
+			</div>
+		</h:form>
 
 			<br />
 			
