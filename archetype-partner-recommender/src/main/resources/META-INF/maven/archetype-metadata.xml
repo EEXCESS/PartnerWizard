@@ -8,22 +8,38 @@
     <requiredProperty key="partnerName"/>
     <requiredProperty key="partnerURL"/>
     <requiredProperty key="dataLicense"/>
-    <requiredProperty key="eexcessMappingFieldsLoopXPath"/>
-    <requiredProperty key="eexcessMappingFieldsXPathID">
-       <defaultValue>pleaseDefineTheXPath</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="eexcessMappingFieldsXPathURI">
-       <defaultValue>pleaseDefineTheXPath</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="eexcessMappingFieldsXPathTitle">
-       <defaultValue>pleaseDefineTheXPath</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="eexcessMappingFieldsXPathDescription">
-       <defaultValue>pleaseDefineTheXPath</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="partnerAPIsearchTerm"/>
+
     <requiredProperty key="partnerAPIsearchEndpoint"/>
+    <requiredProperty key="partnerAPIsearchTerm"/>
+    <requiredProperty key="partnerAPIsearchMappingFieldsLoopXPath"/>
+    <requiredProperty key="partnerAPIsearchMappingFieldsXPathID">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIsearchMappingFieldsXPathURI">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIsearchMappingFieldsXPathTitle">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIsearchMappingFieldsXPathDescription">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+
     <requiredProperty key="partnerAPIdetailEndpoint"/>
+    <requiredProperty key="partnerAPIdetailTerm"/>
+    <requiredProperty key="partnerAPIdetailMappingFieldsLoopXPath"/>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathID">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathURI">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathTitle">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathDescription">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
     
   </requiredProperties>
   <fileSets>
