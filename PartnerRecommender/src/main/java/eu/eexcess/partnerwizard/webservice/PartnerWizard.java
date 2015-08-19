@@ -17,7 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Main class setting up an embedded Jetty providing a REST API and static
+ * file assets.
  *
  * @author Heimo Gursch <gursch@tugraz.at>
  * @date 2015-08-17
