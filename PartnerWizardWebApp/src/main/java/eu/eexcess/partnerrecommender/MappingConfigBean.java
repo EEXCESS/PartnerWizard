@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import eu.eexcess.config.PartnerConfiguration;
+import eu.eexcess.dataformats.result.DocumentBadge;
 import eu.eexcess.dataformats.userprofile.ContextKeyword;
 import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 import eu.eexcess.partnerdata.reference.PartnerdataLogger;
@@ -129,13 +130,12 @@ public class MappingConfigBean implements Serializable{
 
 		}
 	}
-	public void callPartnerAPI()
+	public void callPartnerAPIsearch()
 	{
 		try {
 			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
 			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
 
-			partnerConfiguration.setDetailEndpoint("");
 			partnerConfiguration.setEnableEnriching(false);
 			partnerConfiguration.setTransformedNative(false);
 			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
@@ -159,6 +159,35 @@ public class MappingConfigBean implements Serializable{
 
 	}
 	
+	public void callPartnerAPIdetail()
+	{
+		try {
+			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
+			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
+
+			partnerConfiguration.setEnableEnriching(false);
+			partnerConfiguration.setTransformedNative(false);
+			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
+			//partnerConfiguration.partnerConnectorClass = "";
+			//partnerConfiguration.queryGeneratorClass = "";
+			partnerConfiguration.setSystemId(this.bean.getPartnerName());
+			partnerConfiguration.setDetailEndpoint(this.searchEndpoint);
+			PartnerdataLogger logger = null;
+			DocumentBadge document = createDocument();
+			Document response = partnerConnector.queryPartnerDetails(partnerConfiguration, document, logger);
+			this.apiResponse = this.xmlTools.getStringFromDocument(response);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	ArrayList<String> contextList = new ArrayList<String>();
 
 
@@ -180,4 +209,10 @@ public class MappingConfigBean implements Serializable{
 		return profile;
 	}
 
+	public DocumentBadge createDocument() {
+		
+		DocumentBadge document = new DocumentBadge();
+		document.id = this.searchEndpointSearchTerm;
+		return document ;
+	}
 }

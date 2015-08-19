@@ -1,4 +1,5 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
+<div xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -13,7 +14,7 @@
 
 		<!-- Text input-->
 		<div class="control-group">
-			<label class="control-label" for="textinput">searchEndpoint:</label>
+			<label class="control-label" for="textinput">endpoint:</label>
 			<div class="controls">
 				<h:inputText value="#{mappingBean.searchEndpoint}"
 					styleClass="form-control" />
@@ -31,14 +32,17 @@
 			</div>
 		</div>
 	</fieldset>
-	<a4j:commandButton value="Call API" execute="@form"
-		action="#{mappingBean.callPartnerAPI}" styleClass="btn btn-primary"
-		render="apiResponseId" />
+	<a4j:commandButton value="Call API search" execute="@form"
+		action="#{mappingBean.callPartnerAPIsearch}" styleClass="btn btn-primary"
+		render="apiResponseId#{mappingId}" rendered="#{mappingId =='search'}"/>
+	<a4j:commandButton value="Call API detail" execute="@form"
+		action="#{mappingBean.callPartnerAPIdetail}" styleClass="btn btn-primary"
+		render="apiResponseId#{mappingId}"  rendered="#{mappingId !='search'}"/>
 
 	<div class="row">
 		<div>
 			<h3>API Response</h3>
-			<a4j:outputPanel id="apiResponseId">
+			<a4j:outputPanel id="apiResponseId#{mappingId}">
 				<!-- 
 								<p>TODO: Show here XML Reponse from the API Call</p>
 								<h:outputText value="#{mappingBean.apiResponse}" escape="false"></h:outputText>
@@ -49,7 +53,7 @@
 			-->
 				<!-- 								<div style="max-height: 550px;overflow-y:hidden;display: inline-block;max-width: 900px;"> -->
 				<!-- style="max-height: 450px;overflow-y:auto;display: inline-block;max-width: 800px;" -->
-				<syn:syntaxhighlighter id="syn2" theme="Eclipse" language="xml"
+				<syn:syntaxhighlighter id="syn#{mappingId}" theme="Eclipse" language="xml"
 					highlight="2" tabsize="4" gutter="false" rendered="true">
 					<h:outputText value="#{mappingBean.apiResponseFormated}" />
 				</syn:syntaxhighlighter>
@@ -57,7 +61,7 @@
 
 		</div>
 		<div>
-			<a4j:outputPanel id="mappingFieldsId">
+			<a4j:outputPanel id="mappingFieldsId#{mappingId}">
 				<h3>Mapping to EEXCESS fields</h3>
 				<div class="control-group">
 					<label class="control-label" for="textinput">XPath for the
@@ -88,7 +92,7 @@
 										</td>
 										<td style="border: none;">
 											<!-- execute="@form" --> <a4j:commandButton value="test"
-												render="mappingFieldsId" action="#{mappingBean.probeXPath}"
+												render="mappingFieldsId#{mappingId}" action="#{mappingBean.probeXPath}"
 												styleClass="btn btn-primary">
 												<a4j:param value="#{mappingField.id}"
 													assignTo="#{mappingBean.actMappingFieldId}" />

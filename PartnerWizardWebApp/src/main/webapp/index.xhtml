@@ -17,10 +17,33 @@
 			<h:form styleClass="form-horizontal" id="formID">
 				<h2>General Settings</h2>
 				<fieldset>
-					<!-- Form Name -->
+					<legend>Partner Information</legend>
+
+					<div class="control-group">
+						<label class="control-label" for="textinput">username:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.partnerInfo.username}" styleClass="form-control" />
+							<p class="help-block">your username</p>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">e-mail:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.partnerInfo.contactEmail}" styleClass="form-control" />
+							<p class="help-block">e-mail</p>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">licenseAgreement:</label>
+						<div class="controls">
+							<h:selectBooleanCheckbox  value="#{bean.partnerInfo.licenseAgreement}" styleClass="form-control" />
+							<p class="help-block">link to the license agreement</p>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
 					<legend>Parameter</legend>
 
-					<!-- Text input-->
 					<div class="control-group">
 						<label class="control-label" for="textinput">groupId:</label>
 						<div class="controls">
@@ -65,6 +88,7 @@
 							<p class="help-block">Name of the Partner</p>
 						</div>
 					</div>
+					
 					<div class="control-group">
 						<label class="control-label" for="textinput">partnerURL:</label>
 						<div class="controls">
@@ -73,6 +97,7 @@
 								XML</p>
 						</div>
 					</div>
+					
 					<div class="control-group">
 						<label class="control-label" for="textinput">data license:</label>
 						<div class="controls">
@@ -84,8 +109,13 @@
 				</fieldset>
 				
 				<h2>configure Search API</h2>
-				<rich:collapsiblePanel header="Overview" switchType="client">
-					<eexcess:mapping mappingFor="search" mappingBean="#{bean.searchMappingConfig}"></eexcess:mapping>
+				<rich:collapsiblePanel header="configure Search API" switchType="client">
+					<eexcess:mapping mappingFor="search" mappingId="search" mappingBean="#{bean.searchMappingConfig}"></eexcess:mapping>
+				</rich:collapsiblePanel>
+
+				<h2>configure Detail API</h2>
+				<rich:collapsiblePanel header="configure Detail API" switchType="client">
+					<eexcess:mapping mappingFor="detail" mappingId="detail"  mappingBean="#{bean.detailMappingConfig}"></eexcess:mapping>
 				</rich:collapsiblePanel>
 
 				<div class="row">

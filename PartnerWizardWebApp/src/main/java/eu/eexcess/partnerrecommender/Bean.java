@@ -40,6 +40,19 @@ public class Bean implements Serializable {
 	private String partnerURL = "";
 	private String dataLicense = "";
 	
+	private PartnerInfo partnerInfo;
+	
+	public PartnerInfo getPartnerInfo() {
+		if (this.partnerInfo == null )
+			this.partnerInfo = new PartnerInfo();
+		return partnerInfo;
+	}
+
+	public void setPartnerInfo(PartnerInfo partnerInfo) {
+		this.partnerInfo = partnerInfo;
+	}
+
+
 	private MappingConfigBean searchMappingConfig;
 	
 	private MappingConfigBean detailMappingConfig;
@@ -136,14 +149,15 @@ public class Bean implements Serializable {
 	public Bean() {
 		this.searchMappingConfig = new MappingConfigBean();
 		this.searchMappingConfig.setBean(this);
+		this.searchMappingConfig.setMappingFields(initMappingFields());
 		this.detailMappingConfig = new MappingConfigBean();
 		this.detailMappingConfig.setBean(this);
-		initMappingFields();
+		this.detailMappingConfig.setMappingFields(initMappingFields());
 		defaultTestValuesRIJKMuseum();
 		//defaultTestValues();
 	}
 
-	private void initMappingFields() {
+	private ArrayList<MappingField> initMappingFields() {
 		ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
 		MappingField mappingField = new MappingField();
 		mappingField.setName("ID");
@@ -164,7 +178,7 @@ public class Bean implements Serializable {
 		for (int i = 0; i < mappingFields.size(); i++) {
 			mappingFields.get(i).setId(i);
 		}
-		this.searchMappingConfig.setMappingFields(mappingFields);
+		return mappingFields;
 	}
 
 
@@ -179,15 +193,20 @@ public class Bean implements Serializable {
 				+ " -Dpackage="+ this.packageStr 
 				+ " -DpartnerName=\""+ this.partnerName+"\""
 				+ " -DpartnerURL=\""+ this.partnerURL+"\""
-				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchMappingConfig.getSearchEndpoint()+"\""
-				+ " -DpartnerAPIdetailEndpoint=\""+ this.detailMappingConfig.getSearchEndpoint()+"\""
-				+ " -DpartnerURL=\""+ this.partnerURL+"\""
 				+ " -DdataLicense=\""+ this.dataLicense+"\""
+				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchMappingConfig.getSearchEndpoint()+"\""
 				+ " -DpartnerAPIsearchTerm=\""+ this.searchMappingConfig.getSearchEndpointSearchTerm()+"\""
-				+ " -DeexcessMappingFieldsLoopXPath=\""+ this.searchMappingConfig.getEexcessFieldsXPathLoop()+"\"";
+				+ " -DpartnerAPIsearchMappingFieldsLoopXPath=\""+ this.searchMappingConfig.getEexcessFieldsXPathLoop()+"\"";
 		for (int i = 0; i < this.searchMappingConfig.getMappingFields().size(); i++) {
 			if (this.searchMappingConfig.getMappingFields().get(i).getxPath() != null && !this.searchMappingConfig.getMappingFields().get(i).getxPath().trim().isEmpty())
-				this.buildCMD += " -DeexcessMappingFieldsXPath"+this.searchMappingConfig.getMappingFields().get(i).getName()+"=\""+ this.searchMappingConfig.getMappingFields().get(i).getxPath()+"\"";
+				this.buildCMD += " -DpartnerAPIsearchMappingFieldsXPath"+this.searchMappingConfig.getMappingFields().get(i).getName()+"=\""+ this.searchMappingConfig.getMappingFields().get(i).getxPath()+"\"";
+		}
+		this.buildCMD += " -DpartnerAPIdetailEndpoint=\""+ this.detailMappingConfig.getSearchEndpoint()+"\"";
+		this.buildCMD += " -DpartnerAPIdetailTerm=\""+ this.detailMappingConfig.getSearchEndpointSearchTerm()+"\"";
+		this.buildCMD += " -DpartnerAPIdetailMappingFieldsLoopXPath=\""+ this.detailMappingConfig.getEexcessFieldsXPathLoop()+"\"";
+		for (int i = 0; i < this.detailMappingConfig.getMappingFields().size(); i++) {
+			if (this.detailMappingConfig.getMappingFields().get(i).getxPath() != null && !this.detailMappingConfig.getMappingFields().get(i).getxPath().trim().isEmpty())
+				this.buildCMD += " -DpartnerAPIdetailMappingFieldsXPath"+this.detailMappingConfig.getMappingFields().get(i).getName()+"=\""+ this.detailMappingConfig.getMappingFields().get(i).getxPath()+"\"";
 		}
 
 		ArrayList<String> commands = new ArrayList<String>();
@@ -432,7 +451,6 @@ public class Bean implements Serializable {
 	{
 		String key= "";
 		
-		this.searchMappingConfig.setEexcessFieldsXPathLoop("/searchGetResponse/artObjects/");
 		this.groupId = "nl.rijksmuseum";
 		this.artifactId ="RijksMuseumPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
@@ -443,12 +461,19 @@ public class Bean implements Serializable {
 
 		this.searchMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection?q=${query}&key="+key+"&format=xml");
 		this.searchMappingConfig.setSearchEndpointSearchTerm("Basel");
+		this.searchMappingConfig.setEexcessFieldsXPathLoop("/searchGetResponse/artObjects/");
 		this.searchMappingConfig.getMappingFields().get(0).setxPath("objectNumber");
 		this.searchMappingConfig.getMappingFields().get(1).setxPath("links/web");
 		this.searchMappingConfig.getMappingFields().get(2).setxPath("title");
 		this.searchMappingConfig.getMappingFields().get(3).setxPath("longTitle");
 		
 		this.detailMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection/${detailQuery}?format=xml&key="+key);
+		this.detailMappingConfig.setSearchEndpointSearchTerm("RP-P-1959-614");
+		this.detailMappingConfig.setEexcessFieldsXPathLoop("/artObjectGetResponse/artObject/");
+		this.detailMappingConfig.getMappingFields().get(0).setxPath("objectNumber");
+		this.detailMappingConfig.getMappingFields().get(1).setxPath("id");
+		this.detailMappingConfig.getMappingFields().get(2).setxPath("longTitle");
+		this.detailMappingConfig.getMappingFields().get(3).setxPath("description");
 	}
 
 
