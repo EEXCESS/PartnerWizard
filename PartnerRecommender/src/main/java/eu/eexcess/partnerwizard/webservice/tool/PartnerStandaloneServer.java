@@ -1,9 +1,9 @@
-/* Copyright (C) 2014 
-"Kompetenzzentrum fuer wissensbasierte Anwendungen Forschungs- und EntwicklungsgmbH" 
+/* Copyright (C) 2014
+"Kompetenzzentrum fuer wissensbasierte Anwendungen Forschungs- und EntwicklungsgmbH"
 (Know-Center), Graz, Austria, office@know-center.at.
 
 Licensees holding valid Know-Center Commercial licenses may use this file in
-accordance with the Know-Center Commercial License Agreement provided with 
+accordance with the Know-Center Commercial License Agreement provided with
 the Software or, alternatively, in accordance with the terms contained in
 a written agreement between Licensees and Know-Center.
 
@@ -22,23 +22,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package eu.eexcess.partnerwizard.webservice.tool;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-
-import eu.eexcess.partnerwebservice.PartnerContextListener;
-
 /**
  * Standalone server to test the web service.
- * 
+ *
  * @author rkern@know-center.at
  */
 public class PartnerStandaloneServer {
@@ -53,22 +54,83 @@ public class PartnerStandaloneServer {
             throw new IllegalStateException("Server is already running");
         }
 
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath("/eexcess-partner-wizard-1.0-SNAPSHOT");
-        Map<String, Object> initMap = new HashMap<String, Object>();
-        initMap.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
-        initMap.put("com.sun.jersey.config.property.packages", "eu.eexcess.partnerwebservice");
-        PackagesResourceConfig packagesResourceConfig = new PackagesResourceConfig(initMap);
-        ServletContainer servletContainer = new ServletContainer(packagesResourceConfig);
-        context.addServlet(new ServletHolder(servletContainer), "/*");
-        context.addEventListener(new PartnerContextListener());
-        server = new Server(port);
-        server.setHandler(context);
-        try {
-            server.start();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Server could not be started", e);
-        }
+		// Configuration context of complete server
+		ServletContextHandler servletHandler = new ServletContextHandler();
+		servletHandler.setContextPath( "/api" );
+
+		// Configure the servlet container containg the servelt for training
+		// the partner connector
+		ServletHolder probeServletHolder = new ServletHolder( ServletContainer.class );
+		// Setting the init order to 1 will load the servlets on statup
+		probeServletHolder.setInitOrder( 1 );
+		probeServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
+		probeServletHolder.setInitParameter( "com.sun.jersey.api.json.POJOMappingFeature", "true" );
+		// Specify package containing Jersey Servlets of the partner connector
+		probeServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "eu.eexcess.partnerwizard.webservice" );
+		// Extra debugging output, comment in if needed
+		probeServletHolder.setInitParameter("com.sun.jersey.config.feature.Debug", "true");
+		probeServletHolder.setInitParameter("com.sun.jersey.config.feature.Trace", "true");
+		probeServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
+		probeServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
+		// Add servlets to server
+		servletHandler.addServlet( probeServletHolder, "/*" );
+
+
+//		// Configure the servlet container running the Jersey servlets from the
+//		// EEXCESS infrastructure
+//		ServletHolder partnerServletHolder = new ServletHolder( ServletContainer.class );
+//		// Setting the init order to 1 will load the servlets on statup
+//		partnerServletHolder.setInitOrder( 1 );
+//		partnerServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
+//		partnerServletHolder.setInitParameter( "com.sun.jersey.api.json.POJOMappingFeature", "true" );
+//		// Specify package containing Jersey Servlets for the EEXCESS infrastructure
+//		partnerServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "eu.eexcess.partnerwebservice" );
+////		// Extra debugging output, comment in if needed
+////		partnerServletHolder.setInitParameter("com.sun.jersey.config.feature.Debug", "true");
+////		partnerServletHolder.setInitParameter("com.sun.jersey.config.feature.Trace", "true");
+////		partnerServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
+////		partnerServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
+//		// Add servlets to server
+//		servletHandler.addServlet( partnerServletHolder, "/*" );
+
+
+		// Create and configure handler to serve static files
+		ResourceHandler staticFileHandler = new ResourceHandler();
+		staticFileHandler.setDirectoriesListed( false );
+		staticFileHandler.setResourceBase( "./src/main/web" );
+		staticFileHandler.setWelcomeFiles( new String[] {"index.html"} );
+
+		// Log HTTP Requests
+		NCSARequestLog requestLog = new NCSARequestLog();
+		// Set time zone to the one used by the JVM
+		requestLog.setLogTimeZone( TimeZone.getDefault().getID() );
+		// Handler needed for Logging
+		RequestLogHandler requestLogHandler = new RequestLogHandler();
+		requestLogHandler.setRequestLog(requestLog);
+
+
+		// Create server and set configuration
+		server = new Server( port );
+
+		// Add all Handlers to the server
+		ContextHandlerCollection contexts = new ContextHandlerCollection();
+		HandlerCollection handlers = new HandlerCollection();
+		handlers.setHandlers( new Handler[] {contexts, staticFileHandler, servletHandler, new DefaultHandler(), requestLogHandler } );
+		server.setHandler( handlers );
+
+
+//		// Configure thread pool manually, comment in if needed
+//		QueuedThreadPool queuedThreadPool = new QueuedThreadPool( 10 );
+//		queuedThreadPool.setName( "HttpServ" );
+//		server.setThreadPool( queuedThreadPool );
+
+
+		try{
+			server.start();
+		}
+		catch( Exception e ){
+			LOGGER.log( Level.SEVERE, "Server could not be started", e );
+		}
     }
 
     public static synchronized void stop() {
