@@ -16,6 +16,7 @@
 		<ui:define name="body">
 			<h:form styleClass="form-horizontal" id="formID">
 				<h2>General Settings</h2>
+<!-- 
 				<fieldset>
 					<legend>Partner Information</legend>
 
@@ -41,6 +42,7 @@
 						</div>
 					</div>
 				</fieldset>
+				-->
 				<fieldset>
 					<legend>Parameter</legend>
 
@@ -137,10 +139,6 @@
 						</h:panelGroup>
 						<p>
 							<h:commandLink action="#{bean.downloadWAR}" value="Download WAR" />
-						</p>
-						<p>
-							<h:commandLink action="#{bean.createSourceZIP}"
-								value="create Source ZIP" />
 						</p>
 						<p>
 							<h:commandLink action="#{bean.downloadSourceZIP}"

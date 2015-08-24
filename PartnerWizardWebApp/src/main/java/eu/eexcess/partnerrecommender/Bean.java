@@ -445,6 +445,12 @@ public class Bean implements Serializable {
 		this.searchMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
 
 		this.detailMappingConfig.setSearchEndpoint("https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}");
+		this.detailMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
+		this.detailMappingConfig.setSearchEndpointSearchTerm("70e1531b-4ce5-33cb-8ba7-91b2dcd033f8");
+		this.detailMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
+		this.detailMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
+		this.detailMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
+		this.detailMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
 	}
 
 	private void defaultTestValuesRIJKMuseum()
