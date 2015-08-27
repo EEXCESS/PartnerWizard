@@ -1,6 +1,8 @@
 package eu.eexcess.partnerrecommender;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -16,6 +20,8 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -23,10 +29,25 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @ManagedBean
 @SessionScoped
 public class Bean implements Serializable {
+
+	private static final String COOKIE_NAME_SEARCH_MAPPING_CONFIG = "SearchMappingConfig";
+
+	private static final String COOKIE_NAME_MAPPING_FIELDS = "MappingFields";
+
+	private static final String COOKIE_NAME_PARTNER_INFO = "PartnerInfo";
+
+	private static final String COOKIE_NAME_DETAIL_MAPPING_CONFIG = "DetailMappingConfig";
+
+	private static final String COOKIENAME = "EEXCESSPartnerWizard";
+
+	private static final String PATH_JDK = "C:\\java\\jdk1.8.0_25\\";
 
 	private final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
 
@@ -153,10 +174,172 @@ public class Bean implements Serializable {
 		this.detailMappingConfig = new MappingConfigBean();
 		this.detailMappingConfig.setBean(this);
 		this.detailMappingConfig.setMappingFields(initMappingFields());
-		defaultTestValuesRIJKMuseum();
+		//defaultTestValuesRIJKMuseum();
 		//defaultTestValues();
+		
+		
+		//wenn cookie vorhanden dann werte aus cookie auslesen
+		
+		loadFromCookie();
+
 	}
 
+	public void saveToCookie(){
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+		HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+		
+		response.addCookie(createCookie(request,"ArtifactId", this.getArtifactId()));
+		response.addCookie(createCookie(request,"DataLicense", this.getDataLicense()));
+		response.addCookie(createCookie(request,"GroupId", this.getGroupId()));
+		response.addCookie(createCookie(request,"PackageStr", this.getPackageStr()));
+		response.addCookie(createCookie(request,"PartnerName", this.getPartnerName()));
+		response.addCookie(createCookie(request,"PartnerURL", this.getPartnerURL()));
+		response.addCookie(createCookie(request,"Version", this.getVersion()));
+		
+		createCookie(response,request,COOKIE_NAME_DETAIL_MAPPING_CONFIG, this.getDetailMappingConfig());
+		createCookie(response, request,COOKIE_NAME_PARTNER_INFO, this.getPartnerInfo());
+		createCookie(response,request,COOKIE_NAME_SEARCH_MAPPING_CONFIG, this.getSearchMappingConfig());
+	}
+
+	private void createCookie(HttpServletResponse response,
+			HttpServletRequest request, String prefix,
+			PartnerInfo myPartnerInfo) {
+		response.addCookie(createCookie(request,prefix+"ContactEmail", myPartnerInfo.getContactEmail()));
+		response.addCookie(createCookie(request,prefix+"Username", myPartnerInfo.getUsername()));
+	}
+
+	private void createCookie(HttpServletResponse response,
+			HttpServletRequest request, String prefix,
+			MappingConfigBean myMappingConfigBean) {
+		response.addCookie(createCookie(request,prefix+"EexcessFieldsXPathLoop", myMappingConfigBean.getEexcessFieldsXPathLoop()));
+		response.addCookie(createCookie(request,prefix+"SearchEndpoint", myMappingConfigBean.getSearchEndpoint()));
+		response.addCookie(createCookie(request,prefix+"SearchEndpointSearchTerm", myMappingConfigBean.getSearchEndpointSearchTerm()));
+		createCookie(response, request,prefix+COOKIE_NAME_MAPPING_FIELDS, myMappingConfigBean.getMappingFields());
+	}
+
+	private void createCookie(HttpServletResponse response,
+			HttpServletRequest request, String prefix,
+			ArrayList<MappingField> myMappingFields) {
+		for (int i = 0; i < myMappingFields.size(); i++) {
+			createCookie(response,request,prefix+i, myMappingFields.get(i));
+		}
+	}
+
+	private void createCookie(HttpServletResponse response,
+			HttpServletRequest request, String prefix,
+			MappingField myMappingField) {
+		response.addCookie(createCookie(request,prefix+"xPath", myMappingField.getxPath()));
+	}
+
+	private Cookie createCookie(HttpServletRequest request, String name, String value) {
+		Cookie myNewCookie = new Cookie(COOKIENAME+name, value);
+	    myNewCookie.setPath(request.getContextPath());
+		return myNewCookie;
+	}
+	
+	public void loadFromCookie(){
+		ArrayList<Cookie> myCookies = this.getCookies();
+		for (Cookie myActCookie : myCookies) {
+			System.out.println("cookie:"+ myActCookie.getName() + " " + myActCookie.getValue());
+			if (myActCookie.getName().startsWith(COOKIENAME))
+			{
+				if (myActCookie.getName().equals(COOKIENAME+"ArtifactId"))
+					this.setArtifactId(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"DataLicense"))
+					this.setDataLicense(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"GroupId"))
+					this.setGroupId(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"PackageStr"))
+					this.setPackageStr(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"PartnerName"))
+					this.setPartnerName(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"PartnerURL"))
+					this.setPartnerURL(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"Version"))
+					this.setVersion(myActCookie.getValue());
+				
+				if (myActCookie.getName().startsWith(COOKIENAME+COOKIE_NAME_DETAIL_MAPPING_CONFIG))
+				{
+					String actPrefix = COOKIENAME+COOKIE_NAME_DETAIL_MAPPING_CONFIG;
+					if (myActCookie.getName().equals(actPrefix+"EexcessFieldsXPathLoop"))
+						this.getDetailMappingConfig().setEexcessFieldsXPathLoop(myActCookie.getValue());
+					if (myActCookie.getName().equals(actPrefix+"SearchEndpoint"))
+						this.getDetailMappingConfig().setSearchEndpoint(myActCookie.getValue());
+					if (myActCookie.getName().equals(actPrefix+"SearchEndpointSearchTerm"))
+						this.getDetailMappingConfig().setSearchEndpointSearchTerm(myActCookie.getValue());
+					if (myActCookie.getName().startsWith(actPrefix+COOKIE_NAME_MAPPING_FIELDS))
+					{
+						String actPrefixField = actPrefix+COOKIE_NAME_MAPPING_FIELDS;
+						for (int i = 0; i < this.getDetailMappingConfig().getMappingFields().size(); i++) {
+							if (myActCookie.getName().equals(actPrefixField+i+"xPath"))
+								this.getDetailMappingConfig().getMappingFields().get(i).setxPath(myActCookie.getValue());
+						}
+					}					
+				}
+
+				if (myActCookie.getName().startsWith(COOKIENAME+COOKIE_NAME_PARTNER_INFO))
+				{
+					String actPrefix = COOKIENAME+COOKIE_NAME_PARTNER_INFO;
+					if (myActCookie.getName().equals(actPrefix+"ContactEmail"))
+						this.getPartnerInfo().setContactEmail(myActCookie.getValue());
+					if (myActCookie.getName().equals(actPrefix+"Username"))
+						this.getPartnerInfo().setUsername(myActCookie.getValue());
+				}
+
+				if (myActCookie.getName().startsWith(COOKIENAME+COOKIE_NAME_SEARCH_MAPPING_CONFIG))
+				{
+					String actPrefix = COOKIENAME+COOKIE_NAME_SEARCH_MAPPING_CONFIG;
+					if (myActCookie.getName().equals(actPrefix+"EexcessFieldsXPathLoop"))
+						this.getSearchMappingConfig().setEexcessFieldsXPathLoop(myActCookie.getValue());
+					if (myActCookie.getName().equals(actPrefix+"SearchEndpoint"))
+						this.getSearchMappingConfig().setSearchEndpoint(myActCookie.getValue());
+					if (myActCookie.getName().equals(actPrefix+"SearchEndpointSearchTerm"))
+						this.getSearchMappingConfig().setSearchEndpointSearchTerm(myActCookie.getValue());
+					if (myActCookie.getName().startsWith(actPrefix+COOKIE_NAME_MAPPING_FIELDS))
+					{
+						String actPrefixField = actPrefix+COOKIE_NAME_MAPPING_FIELDS;
+						for (int i = 0; i < this.getSearchMappingConfig().getMappingFields().size(); i++) {
+							if (myActCookie.getName().equals(actPrefixField+i+"xPath"))
+								this.getSearchMappingConfig().getMappingFields().get(i).setxPath(myActCookie.getValue());
+						}
+					}					
+				}
+				
+			}
+		}
+
+	}
+/*
+	public String toCookieString() {
+		String serializedObject = "";
+		// serialize the object
+		try {
+			ByteArrayOutputStream bo = new ByteArrayOutputStream();
+			ObjectOutputStream so = new ObjectOutputStream(bo);
+			so.writeObject(this);
+			so.flush();
+			serializedObject = bo.toString();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return serializedObject;
+	}
+	
+	public void fromCookieString(String serializedObject) {
+	 // deserialize the object
+	 try {
+	     byte b[] = serializedObject.getBytes(); 
+	     ByteArrayInputStream bi = new ByteArrayInputStream(b);
+	     ObjectInputStream si = new ObjectInputStream(bi);
+	     Bean obj = (Bean) si.readObject();
+	     this.setArtifactId(obj.getArtifactId());
+	 } catch (Exception e) {
+	     System.out.println(e);
+	 }
+	}
+	*/
+	
 	private ArrayList<MappingField> initMappingFields() {
 		ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
 		MappingField mappingField = new MappingField();
@@ -186,7 +369,7 @@ public class Bean implements Serializable {
 
 	public void generatePR()
 	{
-		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DinteractiveMode=false " 
+		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DarchetypeVersion=1.0-SNAPSHOT -DinteractiveMode=false " 
 				+ "-DgroupId=" + this.groupId 
 				+ " -DartifactId="+ this.artifactId 
 				+ " -Dversion="+this.version 
@@ -210,7 +393,7 @@ public class Bean implements Serializable {
 		}
 
 		ArrayList<String> commands = new ArrayList<String>();
-		commands.add(buildENVsetup());
+		commands= buildENVsetup(commands);
 		commands.add(buildENVgotoSandbox());
 		commands.add("rd " + this.artifactId + " /s /Q");
 		commands.add(this.buildCMD);
@@ -223,7 +406,7 @@ public class Bean implements Serializable {
 	public void compilePR()
 	{
 		ArrayList<String> commands = new ArrayList<String>();
-		commands.add(buildENVsetup());
+		commands=buildENVsetup(commands);
 		commands.add(buildENVgotoSandbox());
 		commands.add("cd " + this.artifactId);
 		commands.add("mvn clean install -DskipTests");
@@ -235,8 +418,10 @@ public class Bean implements Serializable {
 		return "cd "+PATH_BUILD_SANDBOX;
 	}
 
-	private String buildENVsetup() {
-		return "set PATH=%PATH%;C:\\java\\jdk1.8.0_25\\bin\\;C:\\java\\apache-maven-3.2.3\\bin";
+	private ArrayList<String> buildENVsetup(ArrayList<String> commands) {
+		commands.add("set PATH="+PATH_JDK+"bin\\;C:\\java\\apache-maven-3.2.3\\bin;%PATH%;");
+		commands.add("set JAVA_HOME="+PATH_JDK);
+		return commands;
 	}
 
 	public String getBuildCMD() {
@@ -249,7 +434,7 @@ public class Bean implements Serializable {
 
 	public String cleanupPR() {
 		ArrayList<String> commands = new ArrayList<String>();
-		commands.add(buildENVsetup());
+		commands = buildENVsetup(commands);
 		commands.add(buildENVgotoSandbox());
 		commands.add(this.buildCMD);
 		commands.add("cd " + this.artifactId);
@@ -425,6 +610,13 @@ public class Bean implements Serializable {
 			in.close();
 		}
 	}
+	
+	  public ArrayList<Cookie> getCookies() {
+	        FacesContext context = FacesContext.getCurrentInstance();
+	        Map cookieMap = context.getExternalContext().getRequestCookieMap();
+	        ArrayList<Cookie> cookies = new ArrayList<Cookie>(cookieMap.values()); 
+	        return cookies;
+	    }
 
 	private void defaultTestValues()
 	{

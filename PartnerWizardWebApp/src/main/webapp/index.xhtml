@@ -14,9 +14,11 @@
 		<ui:define name="title">EEXCESS PartnerRecommender Setup</ui:define>
 
 		<ui:define name="body">
-			<h:form styleClass="form-horizontal" id="formID">
+			<!--  <h:form styleClass="form-horizontal" id="formID"> -->
+				<br/>
+				<br/>
+				<br/>
 				<h2>General Settings</h2>
-<!-- 
 				<fieldset>
 					<legend>Partner Information</legend>
 
@@ -42,7 +44,7 @@
 						</div>
 					</div>
 				</fieldset>
-				-->
+				
 				<fieldset>
 					<legend>Parameter</legend>
 
@@ -144,9 +146,11 @@
 							<h:commandLink action="#{bean.downloadSourceZIP}"
 								value="Download Source ZIP" />
 						</p>
+						<a4j:commandButton value="save" render="out" execute="@form"
+							action="#{bean.saveToCookie}" styleClass="btn btn-primary" />
 					</div>
 				</div>
-			</h:form>
+<!-- 			</h:form> -->
 
 			<br />
 
