@@ -6,15 +6,15 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	<display-name>EEXCESS Webapp</display-name>
-<listener>
-      <listener-class>${groupId}.partnerwebservice.PartnerContextListener</listener-class>
+	<listener>
+      <listener-class>eu.eexcess.partnerwebservice.PartnerContextListener</listener-class>
     </listener>
 	<servlet>
 		<servlet-name>jersey-servlet</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>${groupId}.partnerwebservice</param-value>
+			<param-value>eu.eexcess.partnerwebservice</param-value>
 		</init-param>
 		<init-param>
 			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>

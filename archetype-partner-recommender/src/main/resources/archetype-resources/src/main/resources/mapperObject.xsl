@@ -30,7 +30,7 @@
 			</xsl:element>
 
 
-			<xsl:for-each select="${eexcessMappingFieldsLoopXPath}">
+			<xsl:for-each select="${partnerAPIdetailMappingFieldsLoopXPath}">
 
 				<xsl:variable name="mainURI">
 					<xsl:call-template name="Main.URI" />
@@ -149,20 +149,20 @@
 	<!-- <xsl:template name="Main.Language" /> -->
 	<xsl:template name="Main.Title">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m4" select="${eexcessMappingFieldsXPathTitle}" />
+			mode="m4" select="${partnerAPIdetailMappingFieldsXPathTitle}" />
 	</xsl:template>
 	<xsl:template name="Main.Description">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m6" select="${eexcessMappingFieldsXPathDescription}" />
+			mode="m6" select="${partnerAPIdetailMappingFieldsXPathDescription}" />
 	</xsl:template>
 	<xsl:template name="Main.Date" />
 	<xsl:template name="Main.Identifier">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m7" select="${eexcessMappingFieldsXPathID}" />
+			mode="m7" select="${partnerAPIdetailMappingFieldsXPathID}" />
 	</xsl:template>
 	<xsl:template name="Main.isShownAt">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m0" select="${eexcessMappingFieldsXPathURI}" />
+			mode="m0" select="${partnerAPIdetailMappingFieldsXPathURI}" />
 	</xsl:template>
 	<xsl:template name="Main.previewImage">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
@@ -181,7 +181,7 @@
 			mode="m2" select="str[@name='klassifikation_sachgruppe']/str" />
 	</xsl:template>
 
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${eexcessMappingFieldsXPathURI}"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathURI}"
 		mode="m0">
 		<element name="uri">
 			<call-template name="StringToString" />
@@ -202,13 +202,13 @@
 			<call-template name="StringToString" />
 		</element>
 	</template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${eexcessMappingFieldsXPathURI}"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathURI}"
 		mode="m3">
 		<element name="uri">
 			<call-template name="StringToString" />
 		</element>
 	</template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${eexcessMappingFieldsXPathTitle}"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathTitle}"
 		mode="m4">
 		<element name="dc:title">
 			<call-template name="StringToString" />
@@ -222,13 +222,13 @@
          </attribute>
 		</element>
 	</template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${eexcessMappingFieldsXPathDescription}"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathDescription}"
 		mode="m6">
 		<element name="dc:description">
 			<call-template name="StringToString" />
 		</element>
 	</template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${eexcessMappingFieldsXPathID}"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathID}"
 		mode="m7">
 		<element name="dc:identifier">
 			<call-template name="StringToString" />

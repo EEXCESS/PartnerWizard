@@ -1,6 +1,3 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
 /* Copyright (C) 2014
 "JOANNEUM RESEARCH Forschungsgesellschaft mbH" 
  Graz, Austria, digital-iis@joanneum.at.
@@ -41,9 +38,6 @@ public class ${artifactId}Transformer extends Transformer{
 
 	@Override
 	protected Result postProcessResult(Document orgPartnerResult, Result result, QuerySolution querySol) {
-//		result.uri = "http://www.kim.bl.openinteractive.ch/sammlungen${symbol_pound}"+ result.uri;
-		if (result.previewImage != null && !result.previewImage.isEmpty())
-			result.previewImage = result.previewImage.replace("kgapi.bl.ch/edm/", "kgapi.bl.ch/");
 		return result;
 	}
 	
@@ -53,51 +47,6 @@ public class ${artifactId}Transformer extends Transformer{
 	public Document preProcessTransform(Document input, PartnerdataLogger logger)
 			throws EEXCESSDataTransformationException {
 		PartnerdataTracer.dumpFile(this.getClass(), partnerConfig, input, "before-transform-before-process", logger); 
-
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		NodeList nodes;
-		try {
-			NodeList itemsRootNode = (NodeList)xPath.evaluate("/response/result",input.getDocumentElement(), XPathConstants.NODESET);
-			nodes = (NodeList)xPath.evaluate("/response/result/doc",input.getDocumentElement(), XPathConstants.NODESET);
-			for (int i = 0; i < nodes.getLength();i++) {
-			    Element e = (Element) nodes.item(i);
-			    NodeList itemFields = e.getChildNodes();
-			    for (int j = 0; j < itemFields.getLength(); j++) {
-					Node field = itemFields.item(j);
-					if (field.getNodeName().equalsIgnoreCase("str"))
-					{
-						if (field.hasAttributes() ){
-							if (field.getAttributes().getNamedItem("name") != null)
-							{
-								if (field.getAttributes().getNamedItem("name").getNodeValue().equalsIgnoreCase("uuid"))
-								{
-									Element eexcessURI = input.createElement("eexcessURI");
-									
-									
-									
-									if (field.getNodeType() == Node.ELEMENT_NODE) {
-										NodeList fieldChilds = field.getChildNodes();
-										if(fieldChilds != null && fieldChilds.getLength() > 0) {
-											for(int k = 0 ; k < fieldChilds.getLength();k++) {
-												Node fieldChild = fieldChilds.item(k);
-													eexcessURI.appendChild(input.createTextNode("http://www.kim.bl.openinteractive.ch/sammlungen${symbol_pound}" + fieldChild.getNodeValue()));
-													field.getParentNode().appendChild(eexcessURI);
-											}
-										}
-									}
-									
-									
-									
-									
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			System.out.println(e.toString());
-		}
 		PartnerdataTracer.dumpFile(this.getClass(), partnerConfig, input, "before-transform-done-process", logger); 
 		return input;
 	}
@@ -106,7 +55,6 @@ public class ${artifactId}Transformer extends Transformer{
 
 	@Override
 	protected ResultList postProcessResults(Document orgPartnerResult, ResultList resultList) {
-		resultList.totalResults = Integer.parseInt(getAttributeWithXPath("/response/result/@numFound", orgPartnerResult));
 		return resultList;
 	}
 

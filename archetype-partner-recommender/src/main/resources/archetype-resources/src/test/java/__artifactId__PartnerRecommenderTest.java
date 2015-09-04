@@ -70,17 +70,15 @@ public class ${artifactId}PartnerRecommenderTest {
 	public void detailCall() {
         ArrayList<String> ids = new ArrayList<String>();
 		ArrayList<String> uris = new ArrayList<String>();
-        ids.add("E1.6882");
-        uris.add("http://www.kim.bl.openinteractive.ch/sammlungen#f19e71ca-4dc6-48b8-858c-60a1710066f0");
-        ids.add("E1.6880");
-        uris.add("http://www.kim.bl.openinteractive.ch/sammlungen#f04ae6c5-45fd-ff40-333c-f3b50dffbe3d");
+        ids.add("id");
+        uris.add("uri of id");
         DocumentBadgeList documentDetails = PartnerRecommenderTestHelper.getDetails(DEPLOYMENT_CONTEXT,	
         		port, 
         		PartnerRecommenderTestHelper.createParamsForPartnerRecommenderDetailCall(ids, uris, DATAPROVIDER));
 	    
         assertNotNull(documentDetails);
         assertTrue(documentDetails.documentBadges.size() > 0 );
-        assertEquals(2, documentDetails.documentBadges.size());
+        assertEquals(1, documentDetails.documentBadges.size());
 
 	}
 */
