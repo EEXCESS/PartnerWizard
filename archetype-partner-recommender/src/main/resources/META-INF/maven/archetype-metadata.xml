@@ -24,6 +24,9 @@
     <requiredProperty key="partnerAPIsearchMappingFieldsXPathDescription">
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
+    <requiredProperty key="partnerAPIsearchMappingFieldsXPathpreviewImage">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
 
     <requiredProperty key="partnerAPIdetailEndpoint"/>
     <requiredProperty key="partnerAPIdetailTerm"/>
@@ -38,6 +41,9 @@
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
     <requiredProperty key="partnerAPIdetailMappingFieldsXPathDescription">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathpreviewImage">
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
     

@@ -166,7 +166,7 @@
 	</xsl:template>
 	<xsl:template name="Main.previewImage">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m5" select="arr[@name='_thumbs_']/str[1]" />
+			mode="m5" select="${partnerAPIsearchMappingFieldsXPathpreviewImage}" />
 	</xsl:template>
 	<xsl:template name="Main.URI">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
