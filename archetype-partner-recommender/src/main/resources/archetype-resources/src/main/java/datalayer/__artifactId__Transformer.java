@@ -31,6 +31,15 @@ public class ${artifactId}Transformer extends Transformer{
 
 	@Override
 	protected Result postProcessResult(Document orgPartnerResult, Result result, QuerySolution querySol) {
+		if (result.previewImage != null && !result.previewImage.isEmpty()) {
+//			if (!"${partnerAPIpreviewImagePathPrefix}".isEmpty())
+//			{
+//				result.previewImage = result.previewImage.replace("${partnerURL}edm/", "${partnerAPIpreviewImagePathPrefix}");
+				result.mediaType ="IMAGE";
+//			}
+		}
+		if (result.mediaType == null || result.mediaType.trim().isEmpty() || result.mediaType.equalsIgnoreCase(EEXCESS_FACETS_VALUE_UNKNOWN))
+			result.mediaType = EEXCESS_MEDIATYPE_TEXT;
 		return result;
 	}
 	

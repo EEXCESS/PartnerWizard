@@ -32,8 +32,11 @@
 
 			<xsl:for-each select="${partnerAPIdetailMappingFieldsLoopXPath}">
 
-				<xsl:variable name="mainURI">
+				<xsl:variable name="tempMainURI">
 					<xsl:call-template name="Main.URI" />
+				</xsl:variable>
+				<xsl:variable name="mainURI">
+			         <xsl:value-of select="concat('${partnerAPIURIPathPrefix}',$tempMainURI)" />
 				</xsl:variable>
 
 				<xsl:element name="ore:Aggregation">
@@ -183,9 +186,7 @@
 
 	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathURI}"
 		mode="m0">
-		<element name="uri">
-			<call-template name="StringToString" />
-		</element>
+		<element name="uri">${partnerAPIURIPathPrefix}<call-template name="StringToString" /></element>
 	</template>
 	<xsl:template name="StringToString">
 		<xsl:value-of select="." />
@@ -217,9 +218,7 @@
 	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="arr[@name='_thumbs_']/str[1]"
 		mode="m5">
 		<element name="edm:preview">
-			<attribute name="resource">
-            <call-template name="StringToString" />
-         </attribute>
+			<attribute name="resource">${partnerAPIpreviewImagePathPrefix}<call-template name="StringToString" /></attribute>
 		</element>
 	</template>
 	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathDescription}"

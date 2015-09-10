@@ -47,6 +47,14 @@
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
     
+    
+    <requiredProperty key="partnerAPIpreviewImagePathPrefix">
+       <defaultValue>unkown</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIURIPathPrefix">
+       <defaultValue>unkown</defaultValue>
+    </requiredProperty>
+
   </requiredProperties>
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
