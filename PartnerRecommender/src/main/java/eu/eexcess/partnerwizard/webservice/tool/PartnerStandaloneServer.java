@@ -54,9 +54,9 @@ public class PartnerStandaloneServer {
             throw new IllegalStateException("Server is already running");
         }
 
-		// Configuration context of complete server
-		ServletContextHandler servletHandler = new ServletContextHandler();
-		servletHandler.setContextPath( "/api" );
+		// Configuration Handler to add the servlet
+		ServletContextHandler probeServletHandler = new ServletContextHandler();
+		probeServletHandler.setContextPath( "/api" );
 
 		// Configure the servlet container containg the servelt for training
 		// the partner connector
@@ -67,31 +67,24 @@ public class PartnerStandaloneServer {
 		probeServletHolder.setInitParameter( "com.sun.jersey.api.json.POJOMappingFeature", "true" );
 		// Specify package containing Jersey Servlets of the partner connector
 		probeServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "eu.eexcess.partnerwizard.webservice" );
-		// Extra debugging output, comment in if needed
-		probeServletHolder.setInitParameter("com.sun.jersey.config.feature.Debug", "true");
-		probeServletHolder.setInitParameter("com.sun.jersey.config.feature.Trace", "true");
-		probeServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
-		probeServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
+//		// Extra debugging output, comment in if needed
+//		probeServletHolder.setInitParameter("com.sun.jersey.config.feature.Debug", "true");
+//		probeServletHolder.setInitParameter("com.sun.jersey.config.feature.Trace", "true");
+//		probeServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
+//		probeServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
 		// Add servlets to server
-		servletHandler.addServlet( probeServletHolder, "/*" );
+		probeServletHandler.addServlet( probeServletHolder, "/*" );
 
 
-//		// Configure the servlet container running the Jersey servlets from the
-//		// EEXCESS infrastructure
-//		ServletHolder partnerServletHolder = new ServletHolder( ServletContainer.class );
-//		// Setting the init order to 1 will load the servlets on statup
-//		partnerServletHolder.setInitOrder( 1 );
-//		partnerServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
-//		partnerServletHolder.setInitParameter( "com.sun.jersey.api.json.POJOMappingFeature", "true" );
-//		// Specify package containing Jersey Servlets for the EEXCESS infrastructure
-//		partnerServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "eu.eexcess.partnerwebservice" );
-////		// Extra debugging output, comment in if needed
-////		partnerServletHolder.setInitParameter("com.sun.jersey.config.feature.Debug", "true");
-////		partnerServletHolder.setInitParameter("com.sun.jersey.config.feature.Trace", "true");
-////		partnerServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
-////		partnerServletHolder.setInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.LoggingFilter");
-//		// Add servlets to server
-//		servletHandler.addServlet( partnerServletHolder, "/*" );
+		// Repeat exaclty the same from above to add the EEXCESS partnerwebservice
+		ServletContextHandler partnerServletHandler = new ServletContextHandler();
+		partnerServletHandler.setContextPath( "/api" );
+		ServletHolder partnerServletHolder = new ServletHolder( ServletContainer.class );
+		partnerServletHolder.setInitOrder( 1 );
+		partnerServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
+		partnerServletHolder.setInitParameter( "com.sun.jersey.api.json.POJOMappingFeature", "true" );
+		partnerServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "eu.eexcess.partnerwebservice" );
+		partnerServletHandler.addServlet( partnerServletHolder, "/*" );
 
 
 		// Create and configure handler to serve static files
@@ -115,11 +108,12 @@ public class PartnerStandaloneServer {
 		// Add all Handlers to the server
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		HandlerCollection handlers = new HandlerCollection();
-		handlers.setHandlers( new Handler[] {contexts, staticFileHandler, servletHandler, new DefaultHandler(), requestLogHandler } );
+		handlers.setHandlers( new Handler[] {contexts, staticFileHandler, probeServletHandler, partnerServletHandler, new DefaultHandler(), requestLogHandler } );
 		server.setHandler( handlers );
 
 
-//		// Configure thread pool manually, comment in if needed
+
+		// Configure thread pool manually, comment in if needed
 //		QueuedThreadPool queuedThreadPool = new QueuedThreadPool( 10 );
 //		queuedThreadPool.setName( "HttpServ" );
 //		server.setThreadPool( queuedThreadPool );
