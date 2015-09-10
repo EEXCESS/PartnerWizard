@@ -37,10 +37,10 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="textinput">licenseAgreement:</label>
+						<label class="control-label" for="textinput">Data Access Agreement:</label>
 						<div class="controls">
 							<h:selectBooleanCheckbox  value="#{bean.partnerInfo.licenseAgreement}" styleClass="form-control" />
-							<p class="help-block">link to the license agreement</p>
+							<p class="help-block"><a href="./Data-Access-Agreement.pdf" target="_blank">EEXCESS Data Access Agreement</a></p>
 						</div>
 					</div>
 				</fieldset>
@@ -103,6 +103,23 @@
 					</div>
 					
 					<div class="control-group">
+						<label class="control-label" for="textinput">prefix for the URI to the objects:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.apiURIPathPrefix}"
+								styleClass="form-control" />
+							<p class="help-block">prefix for the URI to the objects</p>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="textinput">prefix for access to images:</label>
+						<div class="controls">
+							<h:inputText value="#{bean.apiPreviewImagePrefix}"
+								styleClass="form-control" />
+							<p class="help-block">prefix for access to images</p>
+						</div>
+					</div>
+					
+					<div class="control-group">
 						<label class="control-label" for="textinput">data license:</label>
 						<div class="controls">
 							<h:inputText value="#{bean.dataLicense}"
@@ -146,8 +163,19 @@
 							<h:commandLink action="#{bean.downloadSourceZIP}"
 								value="Download Source ZIP" />
 						</p>
-						<a4j:commandButton value="save" render="out" execute="@form"
-							action="#{bean.saveToCookie}" styleClass="btn btn-primary" />
+						<p>
+							<a4j:commandButton value="load example KIMportal" render="wholePage" execute="@form"
+								action="#{bean.defaultTestValuesKIMportal}" styleClass="btn btn-primary" />
+						</p>
+						<p>
+							<a4j:commandButton value="load example RIJKMuseum" render="wholePage" execute="@form"
+								action="#{bean.defaultTestValuesRIJKMuseum}" styleClass="btn btn-primary" />
+						</p>
+						<p>
+							<a4j:commandButton value="load example Kierling" render="wholePage" execute="@form"
+								action="#{bean.defaultTestValuesSolRKierling}" styleClass="btn btn-primary" />
+						</p>
+							
 					</div>
 				</div>
 <!-- 			</h:form> -->

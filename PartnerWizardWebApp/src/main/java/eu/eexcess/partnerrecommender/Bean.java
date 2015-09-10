@@ -1,8 +1,6 @@
 package eu.eexcess.partnerrecommender;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -20,7 +16,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -47,8 +42,6 @@ public class Bean implements Serializable {
 
 	private static final String COOKIENAME = "EEXCESSPartnerWizard";
 
-	private static final String PATH_JDK = "C:\\java\\jdk1.8.0_25\\";
-
 	private final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
 
 	private static final long serialVersionUID = -2403138958014741653L;
@@ -60,6 +53,8 @@ public class Bean implements Serializable {
 	private String partnerName = "";
 	private String partnerURL = "";
 	private String dataLicense = "";
+	private String apiPreviewImagePrefix="";
+	private String apiURIPathPrefix="";
 	
 	private PartnerInfo partnerInfo;
 	
@@ -97,6 +92,15 @@ public class Bean implements Serializable {
 	public String getDataLicense() {
 		return dataLicense;
 	}
+	
+	public String getApiPreviewImagePrefix() {
+		return apiPreviewImagePrefix;
+	}
+
+	public void setApiPreviewImagePrefix(String apiPreviewImagePrefix) {
+		this.apiPreviewImagePrefix = apiPreviewImagePrefix;
+	}
+
 
 	public void setDataLicense(String dataLicense) {
 		this.dataLicense = dataLicense;
@@ -130,9 +134,6 @@ public class Bean implements Serializable {
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
-
-/*
-*/
 
 	public String getArtifactId() {
 		return artifactId;
@@ -174,14 +175,8 @@ public class Bean implements Serializable {
 		this.detailMappingConfig = new MappingConfigBean();
 		this.detailMappingConfig.setBean(this);
 		this.detailMappingConfig.setMappingFields(initMappingFields());
-		//defaultTestValuesRIJKMuseum();
-		//defaultTestValues();
-		
-		
 		//wenn cookie vorhanden dann werte aus cookie auslesen
-		
 		loadFromCookie();
-
 	}
 
 	public void saveToCookie(){
@@ -196,6 +191,8 @@ public class Bean implements Serializable {
 		response.addCookie(createCookie(request,"PartnerName", this.getPartnerName()));
 		response.addCookie(createCookie(request,"PartnerURL", this.getPartnerURL()));
 		response.addCookie(createCookie(request,"Version", this.getVersion()));
+		response.addCookie(createCookie(request,"ApiPreviewImagePrefix", this.getApiPreviewImagePrefix()));
+		response.addCookie(createCookie(request,"ApiURIPathPrefix", this.getApiURIPathPrefix()));
 		
 		createCookie(response,request,COOKIE_NAME_DETAIL_MAPPING_CONFIG, this.getDetailMappingConfig());
 		createCookie(response, request,COOKIE_NAME_PARTNER_INFO, this.getPartnerInfo());
@@ -258,6 +255,11 @@ public class Bean implements Serializable {
 					this.setPartnerURL(myActCookie.getValue());
 				if (myActCookie.getName().equals(COOKIENAME+"Version"))
 					this.setVersion(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"ApiPreviewImagePrefix"))
+					this.setApiPreviewImagePrefix(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"ApiURIPathPrefix"))
+					this.setApiURIPathPrefix(myActCookie.getValue());
+				
 				
 				if (myActCookie.getName().startsWith(COOKIENAME+COOKIE_NAME_DETAIL_MAPPING_CONFIG))
 				{
@@ -310,36 +312,7 @@ public class Bean implements Serializable {
 		}
 
 	}
-/*
-	public String toCookieString() {
-		String serializedObject = "";
-		// serialize the object
-		try {
-			ByteArrayOutputStream bo = new ByteArrayOutputStream();
-			ObjectOutputStream so = new ObjectOutputStream(bo);
-			so.writeObject(this);
-			so.flush();
-			serializedObject = bo.toString();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return serializedObject;
-	}
-	
-	public void fromCookieString(String serializedObject) {
-	 // deserialize the object
-	 try {
-	     byte b[] = serializedObject.getBytes(); 
-	     ByteArrayInputStream bi = new ByteArrayInputStream(b);
-	     ObjectInputStream si = new ObjectInputStream(bi);
-	     Bean obj = (Bean) si.readObject();
-	     this.setArtifactId(obj.getArtifactId());
-	 } catch (Exception e) {
-	     System.out.println(e);
-	 }
-	}
-	*/
-	
+
 	private ArrayList<MappingField> initMappingFields() {
 		ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
 		MappingField mappingField = new MappingField();
@@ -358,14 +331,15 @@ public class Bean implements Serializable {
 		mappingField.setName("Description");
 		mappingField.setDescription("description of the item");
 		mappingFields.add(mappingField);
+		mappingField = new MappingField();
+		mappingField.setName("previewImage");
+		mappingField.setDescription("URL of the preview image");
+		mappingFields.add(mappingField);
 		for (int i = 0; i < mappingFields.size(); i++) {
 			mappingFields.get(i).setId(i);
 		}
 		return mappingFields;
 	}
-
-
-
 
 	public void generatePR()
 	{
@@ -377,6 +351,8 @@ public class Bean implements Serializable {
 				+ " -DpartnerName=\""+ this.partnerName+"\""
 				+ " -DpartnerURL=\""+ this.partnerURL+"\""
 				+ " -DdataLicense=\""+ this.dataLicense+"\""
+				+ " -DpartnerAPIpreviewImagePathPrefix=\""+ this.apiPreviewImagePrefix+"\""
+				+ " -DpartnerAPIURIPathPrefix=\""+ this.apiURIPathPrefix+"\""
 				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchMappingConfig.getSearchEndpoint()+"\""
 				+ " -DpartnerAPIsearchTerm=\""+ this.searchMappingConfig.getSearchEndpointSearchTerm()+"\""
 				+ " -DpartnerAPIsearchMappingFieldsLoopXPath=\""+ this.searchMappingConfig.getEexcessFieldsXPathLoop()+"\"";
@@ -419,8 +395,8 @@ public class Bean implements Serializable {
 	}
 
 	private ArrayList<String> buildENVsetup(ArrayList<String> commands) {
-		commands.add("set PATH="+PATH_JDK+"bin\\;C:\\java\\apache-maven-3.2.3\\bin;%PATH%;");
-		commands.add("set JAVA_HOME="+PATH_JDK);
+//		commands.add("set PATH="+PATH_JDK+"bin\\;C:\\java\\apache-maven-3.2.3\\bin;%PATH%;");
+//		commands.add("set JAVA_HOME="+PATH_JDK);
 		return commands;
 	}
 
@@ -618,14 +594,14 @@ public class Bean implements Serializable {
 	        return cookies;
 	    }
 
-	private void defaultTestValues()
+	public void defaultTestValuesKIMportal()
 	{
 		this.groupId = "at.joanneum";
 		this.artifactId ="MyPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
 		this.packageStr = "at.joanneum";
-		this.partnerName = "Joanneum Partner Recommender";
-		this.partnerURL = "http://example.org/";
+		this.partnerName = "archetype example";
+		this.partnerURL = "https://www.kgportal.bl.ch/";
 		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
 
 		this.searchMappingConfig.setSearchEndpoint("https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}");
@@ -643,9 +619,12 @@ public class Bean implements Serializable {
 		this.detailMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
 		this.detailMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
 		this.detailMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
+		
+		this.apiPreviewImagePrefix = "https://kgapi.bl.ch/";
+		this.apiURIPathPrefix = "https://www.kgportal.bl.ch/sammlungen#";
 	}
 
-	private void defaultTestValuesRIJKMuseum()
+	public void defaultTestValuesRIJKMuseum()
 	{
 		String key= "";
 		
@@ -653,8 +632,8 @@ public class Bean implements Serializable {
 		this.artifactId ="RijksMuseumPartnerRecommender";
 		this.version = "1.0-SNAPSHOT"; 
 		this.packageStr = "nl.rijksmuseum";
-		this.partnerName = "RijksMuseum Partner Recommender";
-		this.partnerURL = "http://example.org/";
+		this.partnerName = "RijksMuseum";
+		this.partnerURL = "https://www.rijksmuseum.nl/";
 		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
 
 		this.searchMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection?q=${query}&key="+key+"&format=xml");
@@ -672,7 +651,50 @@ public class Bean implements Serializable {
 		this.detailMappingConfig.getMappingFields().get(1).setxPath("id");
 		this.detailMappingConfig.getMappingFields().get(2).setxPath("longTitle");
 		this.detailMappingConfig.getMappingFields().get(3).setxPath("description");
+
+		this.apiPreviewImagePrefix = "remove";
+		this.apiURIPathPrefix = "remove";
+
 	}
 
+	public void defaultTestValuesSolRKierling()
+	{
+		this.groupId = "at.joanneum";
+		this.artifactId ="SOLRKierlingRecommender";
+		this.version = "1.0-SNAPSHOT"; 
+		this.packageStr = "at.joanneum";
+		this.partnerName = "Kierling Recommender";
+		this.partnerURL = "http://digv548.joanneum.at/";
+		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
+
+		this.searchMappingConfig.setSearchEndpoint("http://digv548.joanneum.at:8983/solr/imdas-online.common/select?q=${query}&wt=xml&indent=true&rows=${numResults}");
+		this.searchMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
+		this.searchMappingConfig.setSearchEndpointSearchTerm("Allmayer");
+		this.searchMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
+		this.searchMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
+		this.searchMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
+		this.searchMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
+		this.searchMappingConfig.getMappingFields().get(4).setxPath("arr[@name='_thumbs_']");
+
+		this.detailMappingConfig.setSearchEndpoint("http://digv548.joanneum.at:8983/solr/imdas-online.common/select?q=uuid:${detailQuery}&wt=xml&indent=true");
+		this.detailMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
+		this.detailMappingConfig.setSearchEndpointSearchTerm("6e4888c5-f636-4d60-9145-82b22adecf67");
+		this.detailMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
+		this.detailMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
+		this.detailMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
+		this.detailMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
+		this.detailMappingConfig.getMappingFields().get(4).setxPath("arr[@name='_thumbs_']");
+		
+		this.apiPreviewImagePrefix = "http://digv548.joanneum.at/";
+		this.apiURIPathPrefix = "http://digv548.joanneum.at/detailview/";
+	}
+
+	public String getApiURIPathPrefix() {
+		return apiURIPathPrefix;
+	}
+
+	public void setApiURIPathPrefix(String apiURIPathPrefix) {
+		this.apiURIPathPrefix = apiURIPathPrefix;
+	}
 
 }
