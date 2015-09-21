@@ -7,13 +7,17 @@ package eu.eexcess.partnerwizard.webservice;
  * @date 2015-08-18
  */
 import com.sun.jersey.spi.resource.Singleton;
+
+import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 import eu.eexcess.partnerwizard.probe.PartnerProber;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponseDone;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponseInit;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponseNext;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponseStore;
+
 import java.util.Collections;
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -35,12 +39,12 @@ public class ProbeService{
 	@Path("init")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponseInit init( List<String> keywords ){
+	public ProberResponseInit init( List<SecureUserProfile> keywords ){
 		if( keywords==null || keywords.isEmpty() ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
-		keywords.removeAll( Collections.<String>singleton(null) );
-		keywords.removeAll( Collections.<String>singleton( "" ) );
+		keywords.removeAll( Collections.<SecureUserProfile>singleton(null) );
+	//	keywords.removeAll( Collections.<SecureUserProfile>singleton( "" ) );
 		if( keywords.isEmpty() ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
@@ -51,11 +55,15 @@ public class ProbeService{
 	@GET
 	@Path("next")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponseNext next( @QueryParam("id") String id ){
+	public ProberResponseNext next( @QueryParam("id") String id, @QueryParam("winner") @DefaultValue("-1") int winnerID){
+		if(winnerID>-1){
+			store(id,true,winnerID);
+		}
 		try{
 			return prober.next( id );
 		}
 		catch(IllegalStateException ex){
+			ex.printStackTrace();
 			throw new WebApplicationException( Response.Status.FORBIDDEN );
 		}
 		catch(IllegalArgumentException ex){

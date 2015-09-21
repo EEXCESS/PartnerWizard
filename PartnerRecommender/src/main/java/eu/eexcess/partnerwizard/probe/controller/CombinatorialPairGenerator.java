@@ -25,6 +25,7 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 
 
 	public CombinatorialPairGenerator( Collection<T> elements ){
+		
 		if( elements==null||elements.isEmpty() ){
 			throw new IllegalArgumentException( "Input Collection must not be null or empty." );
 		}

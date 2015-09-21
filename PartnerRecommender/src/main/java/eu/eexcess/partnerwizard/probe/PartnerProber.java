@@ -49,7 +49,7 @@ public class PartnerProber{
 	public PartnerRecommender recommender = new PartnerRecommender();
 
 
-	public ProberResponseInit init( List<String> keywords ){
+	public ProberResponseInit init( List<SecureUserProfile> keywords ){
 		List<String> generators = testWorkingGeneratorClasses( keywords );
 		String id = getId();
 
@@ -91,8 +91,10 @@ public class PartnerProber{
 
 			try{
 				ProberResponseNext response = new ProberResponseNext(id, State.Next, State.Store);
+				StringBuilder builder = new StringBuilder();
 
-				response.keywords = probeConfigs.first.keyword;
+				probeConfigs.first.keyword.contextKeywords.forEach((kw)->{builder.append(kw.text +" ");});
+				response.keywords = builder.toString();
 				response.firstList = fristResponse.get();
 				response.secondList = secondResponse.get();
 
@@ -139,14 +141,14 @@ public class PartnerProber{
 	}
 
 
-	private List<String> testWorkingGeneratorClasses( List<String> keywords ){
+	private List<String> testWorkingGeneratorClasses( List<SecureUserProfile> keywords ){
 		Map<String, Integer> generatorResults = Collections.synchronizedMap( new HashMap<String, Integer>( DEFAULT_GENERATORS.length ) );
 		List<FutureTask<Void>> tasks = new ArrayList<>( DEFAULT_GENERATORS.length*keywords.size() );
-		for( String keyword: keywords ){
+		for( SecureUserProfile keyword: keywords ){
 			for( String generatorClass: DEFAULT_GENERATORS ){
 				FutureTask<Void> recommenderTask = new FutureTask<>( () -> {
 					ProbeConfiguration config = new ProbeConfiguration( keyword, generatorClass, Boolean.FALSE, Boolean.FALSE );
-					SecureUserProfile userProfile = toUserProfile( config );
+					SecureUserProfile userProfile = keyword;//toUserProfile( config );
 
 					ResultList results;
 					try{
@@ -200,12 +202,12 @@ public class PartnerProber{
 		partnerBadge.setQueryGeneratorClass( config.queryGeneratorClass );
 		partnerBadge.setIsQueryExpansionEnabled( config.queryExpansionEnabled );
 		partnerBadge.setIsQuerySplittingEnabled( config.querySplittingEnabled );
+		
+//		S new SecureUserProfile();
+//		userProfile.contextKeywords.add( new ContextKeyword( config.keyword ) );
+//		userProfile.partnerList.add( partnerBadge );
 
-		SecureUserProfile userProfile = new SecureUserProfile();
-		userProfile.contextKeywords.add( new ContextKeyword( config.keyword ) );
-		userProfile.partnerList.add( partnerBadge );
-
-		return userProfile;
+		return config.keyword;
 	}
 
 }

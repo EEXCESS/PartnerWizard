@@ -1,9 +1,11 @@
 package eu.eexcess.partnerwizard.probe.controller;
 
+import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 import eu.eexcess.partnerwizard.probe.model.Pair;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.model.ProbeStatus;
 import eu.eexcess.partnerwizard.probe.model.QueryOptions;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,7 @@ import java.util.Map;
 public class ProbeConfigurationIterator{
 	ProbeStatus state;
 
-	private final List<String> keywords;
+	private final List<SecureUserProfile> keywords;
 	private int currentKeyword;
 	private final PairGenerator<String> generators;
 	private final PairGenerator<QueryOptions> queryOptions;
@@ -25,7 +27,7 @@ public class ProbeConfigurationIterator{
 	private final Map<String, Integer> generatorWinners;
 	private final Map<QueryOptions, Integer> queryOptionsWinners;
 
-	public ProbeConfigurationIterator( List<String> keywords, List<String> generators, boolean enableExpansion, boolean enableSplitting ){
+	public ProbeConfigurationIterator( List<SecureUserProfile> keywords, List<String> generators, boolean enableExpansion, boolean enableSplitting ){
 		this.keywords = keywords;
 		this.currentKeyword = 0;
 		this.generators = new CombinatorialPairGenerator<>( generators );
@@ -60,7 +62,7 @@ public class ProbeConfigurationIterator{
 		}
 
 		Pair<ProbeConfiguration> configPair = new Pair<>();
-		String keyword = keywords.get( currentKeyword );
+		SecureUserProfile keyword = keywords.get( currentKeyword );
 
 		if( state==ProbeStatus.GeneratorsNext ){
 			Pair<String> generatorPair = generators.nextPair();
