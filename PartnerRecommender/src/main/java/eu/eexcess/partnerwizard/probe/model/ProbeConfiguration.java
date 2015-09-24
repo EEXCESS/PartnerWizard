@@ -2,7 +2,6 @@ package eu.eexcess.partnerwizard.probe.model;
 
 import java.util.Objects;
 
-import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 
 /**
  *
@@ -11,20 +10,20 @@ import eu.eexcess.dataformats.userprofile.SecureUserProfile;
  * @date 2015-08-27
  */
 public class ProbeConfiguration {
-	public final SecureUserProfile keyword;
+	public final String keyword;
 	public final String queryGeneratorClass;
 	public final Boolean queryExpansionEnabled;
 	public final Boolean querySplittingEnabled;
 
 
-	public ProbeConfiguration( SecureUserProfile keyword, String queryGeneratorClass, Boolean queryExpansionEnabled, Boolean querySplittingEnabled ){
+	public ProbeConfiguration( String keyword, String queryGeneratorClass, Boolean queryExpansionEnabled, Boolean querySplittingEnabled ){
 		this.keyword = keyword;
 		this.queryGeneratorClass = queryGeneratorClass;
 		this.queryExpansionEnabled = queryExpansionEnabled;
 		this.querySplittingEnabled = querySplittingEnabled;
 	}
 
-	public ProbeConfiguration( SecureUserProfile keyword, String queryGeneratorClass, QueryOptions queryOptions ){
+	public ProbeConfiguration( String keyword, String queryGeneratorClass, QueryOptions queryOptions ){
 		this.keyword = keyword;
 		this.queryGeneratorClass = queryGeneratorClass;
 		this.queryExpansionEnabled = queryOptions.expansion;
