@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.eexcess.partnerwizard.probe.controller;
 
 import eu.eexcess.partnerwizard.probe.model.Pair;
@@ -22,7 +17,7 @@ public class ProbeConfigurationIteratorTest{
 	public void testProbeConfigurationIterator(){
 		System.out.println( "Test ProbeConfigurationIterator" );
 
-		List<String> keywords = Arrays.asList( "keyword 1", "keyword 2", "keyword 3");
+		List<String> keywords = Arrays.asList( "keyword 1", "keyword 2", "keyword 3" );
 		List<String> generators = Arrays.asList( "Generator 1", "Generator 2", "Generator 3" );
 
 		ProbeConfigurationIterator iterator = new ProbeConfigurationIterator(keywords, generators, true, true );

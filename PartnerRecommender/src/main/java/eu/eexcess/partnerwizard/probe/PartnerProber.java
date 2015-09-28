@@ -9,12 +9,11 @@ import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
 import eu.eexcess.partnerrecommender.reference.PartnerRecommender;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.controller.ProbeConfigurationIterator;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseNext;
+import eu.eexcess.partnerwizard.probe.model.web.ProberResponseIteration;
 import eu.eexcess.partnerwizard.probe.model.Pair;
+import eu.eexcess.partnerwizard.probe.model.ProberResult;
+import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse.State;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseDone;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseInit;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseStore;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,95 +48,91 @@ public class PartnerProber{
 	public PartnerRecommender recommender = new PartnerRecommender();
 
 
-	public ProberResponseInit init( List<String> keywords ){
+	public ProberResponse init( List<String> keywords ){
 		List<String> generators = testWorkingGeneratorClasses( keywords );
-		String id = getId();
 
-		ProbeConfigurationIterator iterator = new ProbeConfigurationIterator( keywords, generators, true, true );
-		configs.put( id, iterator );
+		if( !generators.isEmpty() ){
+			String id = getId();
 
+			ProbeConfigurationIterator iterator = new ProbeConfigurationIterator( keywords, generators, true, true );
+			configs.put( id, iterator );
 
-		State nextState;
-		if( iterator.isDone() ){
-			nextState = State.Done;
+			State nextState;
+			if( iterator.isDone() ){
+				nextState = State.Done;
+			}
+			else{
+				nextState = State.Iteration;
+			}
+
+			return new ProberResponse( id, nextState );
 		}
 		else{
-			nextState = State.Next;
+			return new ProberResponse( "Error", State.Error );
 		}
-
-		return  new ProberResponseInit(id, State.Init, nextState );
 	}
 
-	public ProberResponseNext next( String id ){
+
+	public ProberResponse storeAndNext( String id, boolean hasWinner, int result ){
 		ProbeConfigurationIterator iterator = configs.get( id );
 		if( iterator==null ){
-			throw new IllegalArgumentException("Unknown Id");
+			throw new IllegalArgumentException( "Unknown Id" );
 		}
-		else {
-			Pair<ProbeConfiguration> probeConfigs = iterator.nextPair();
-
-			FutureTask<List<Result>> fristResponse = new FutureTask<>( () -> {
-				ProbeConfiguration config = probeConfigs.first;
-				return recommender.recommend( toUserProfile( config ) ).results;
-			});
-			executorService.submit( fristResponse );
-
-			FutureTask<List<Result>> secondResponse = new FutureTask<>( () -> {
-				ProbeConfiguration config = probeConfigs.second;
-				return recommender.recommend( toUserProfile( config ) ).results;
-			});
-			executorService.submit( secondResponse );
-
-
+		else{
 			try{
-				ProberResponseNext response = new ProberResponseNext(id, State.Next, State.Store);
+				Pair<ProbeConfiguration> probeConfigs;
+				List<ProberResult> firstList;
+				List<ProberResult> secondList;
+				do{
+					if( iterator.isWaitingForStore() ){
+						iterator.storeResponse( hasWinner, result );
 
+						hasWinner = false;
+						result = -1;
+					}
+
+					if( iterator.isNextPairAvailable()) {
+						probeConfigs = iterator.nextPair();
+						Pair<FutureTask<List<ProberResult>>> resultListPair = retriveNextResultListPair( probeConfigs );
+						firstList = resultListPair.first.get();
+						secondList = resultListPair.second.get();
+					}
+					else{
+						return new ProberResponse( id, State.Done );
+					}
+				}
+				while( areResultListsEqual(firstList, secondList) );
+
+				ProberResponseIteration response = new ProberResponseIteration( id, State.Iteration );
 				response.keywords = probeConfigs.first.keyword;
-				response.firstList = fristResponse.get();
-				response.secondList = secondResponse.get();
+				response.firstList = firstList;
+				response.secondList = secondList;
 
 				return response;
 			}
 			catch( InterruptedException|ExecutionException ex ){
 				LOGGER.log( Level.SEVERE, "Query was interrupted ", ex );
-				ProberResponseNext response = new ProberResponseNext(id, State.Next, State.Next);
-				response.keywords = "ERROR: An Excpetion happend!";
-
-				return response;
+				return new ProberResponse( id, State.Error );
 			}
 		}
 	}
 
-	public ProberResponseStore store( String id, boolean hasWinner, int result ){
+
+	public ProbeConfiguration getConfiguration( String id ){
 		ProbeConfigurationIterator iterator = configs.get( id );
 		if( iterator==null ){
-			throw new IllegalArgumentException("Unknown Id");
-		}
-		else {
-			boolean hasNext = iterator.storeResponse( hasWinner, result );
-
-			if(hasNext){
-				return new ProberResponseStore(id, State.Store, State.Next );
-			}
-			else{
-				return new ProberResponseStore(id, State.Store, State.Done );
-			}
-		}
-	}
-
-	public ProberResponseDone getConfiguration( String id ){
-		ProbeConfigurationIterator iterator = configs.get( id );
-		if( iterator==null ){
-			throw new IllegalArgumentException("Unknown Id");
+			throw new IllegalArgumentException( "Unknown Id" );
 		}
 		else{
-			ProberResponseDone response = new ProberResponseDone(id, State.Done, State.Done);
-			response.configuration = iterator.getWinningConfiguration();
-			
-			return response;
+			return iterator.getWinningConfiguration();
 		}
 	}
 
+
+	private synchronized String getId(){
+		idCounter++;
+		return ID_Prefix+idCounter;
+	}
 
 	private List<String> testWorkingGeneratorClasses( List<String> keywords ){
 		Map<String, Integer> generatorResults = Collections.synchronizedMap( new HashMap<String, Integer>( DEFAULT_GENERATORS.length ) );
@@ -173,7 +168,7 @@ public class PartnerProber{
 			try{
 				future.get();
 			}
-			catch( InterruptedException | ExecutionException ex ){
+			catch( InterruptedException|ExecutionException ex ){
 				LOGGER.log( Level.SEVERE, "Execution of generator class validity test was unexcpetedly terminated!", ex );
 			}
 		} );
@@ -189,9 +184,52 @@ public class PartnerProber{
 		return generators;
 	}
 
-	private synchronized String getId(){
-		idCounter++;
-		return ID_Prefix+idCounter;
+	private Pair<FutureTask<List<ProberResult>>> retriveNextResultListPair( Pair<ProbeConfiguration> probeConfigs ){
+		FutureTask<List<ProberResult>> firstResponse = new FutureTask<>( () -> {
+			SecureUserProfile profile = toUserProfile( probeConfigs.first );
+			List<Result> recommenderResults = recommender.recommend( profile ).results;
+			List<ProberResult> results = new ArrayList<>( recommenderResults.size() );
+
+			for( Result recommenderResult: recommenderResults ){
+				results.add( new ProberResult( recommenderResult.title, recommenderResult.description, recommenderResult.description ) );
+			}
+
+			return results;
+		} );
+		executorService.submit( firstResponse );
+
+		FutureTask<List<ProberResult>> secondResponse = new FutureTask<>( () -> {
+			SecureUserProfile profile = toUserProfile( probeConfigs.second );
+			List<Result> recommenderResults = recommender.recommend( profile ).results;
+			List<ProberResult> results = new ArrayList<>( recommenderResults.size() );
+
+			for( Result recommenderResult: recommenderResults ){
+				results.add( new ProberResult( recommenderResult.title, recommenderResult.description, recommenderResult.description ) );
+			}
+
+			return results;
+		} );
+		executorService.submit( secondResponse );
+
+		return new Pair<>(firstResponse, secondResponse);
+	}
+
+	
+	private static boolean areResultListsEqual(List<ProberResult> first, List<ProberResult> second){
+		if( first.size()!=second.size() ){
+			return false;
+		}
+		else{
+			for( int i=0; i<first.size(); i++ ){
+				ProberResult firstElement = first.get( i );
+				ProberResult secondElement = second.get( i );
+
+				if( !firstElement.equals( secondElement ) ){
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 
 	private static SecureUserProfile toUserProfile( ProbeConfiguration config ){
@@ -207,5 +245,4 @@ public class PartnerProber{
 
 		return userProfile;
 	}
-
 }

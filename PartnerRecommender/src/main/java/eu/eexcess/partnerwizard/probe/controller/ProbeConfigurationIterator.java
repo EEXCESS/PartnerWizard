@@ -4,6 +4,7 @@ import eu.eexcess.partnerwizard.probe.model.Pair;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.model.ProbeStatus;
 import eu.eexcess.partnerwizard.probe.model.QueryOptions;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

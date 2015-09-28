@@ -7,11 +7,10 @@ package eu.eexcess.partnerwizard.webservice;
  * @date 2015-08-18
  */
 import com.sun.jersey.spi.resource.Singleton;
+
 import eu.eexcess.partnerwizard.probe.PartnerProber;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseDone;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseInit;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseNext;
-import eu.eexcess.partnerwizard.probe.model.web.ProberResponseStore;
+import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
+import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
 import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -35,7 +34,7 @@ public class ProbeService{
 	@Path("init")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponseInit init( List<String> keywords ){
+	public ProberResponse init( List<String> keywords ){
 		if( keywords==null || keywords.isEmpty() ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
@@ -51,26 +50,11 @@ public class ProbeService{
 	@GET
 	@Path("next")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponseNext next( @QueryParam("id") String id ){
+	public ProberResponse storeAndNext( @QueryParam("id") String id,
+										 @QueryParam("hasWinner") @DefaultValue("true") boolean hasWinner,
+										 @QueryParam("winner") @DefaultValue("-1") int winner ){
 		try{
-			return prober.next( id );
-		}
-		catch(IllegalStateException ex){
-			throw new WebApplicationException( Response.Status.FORBIDDEN );
-		}
-		catch(IllegalArgumentException ex){
-			throw new WebApplicationException( Response.Status.BAD_REQUEST );
-		}
-	}
-
-	@GET
-	@Path("store")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponseStore store( @QueryParam("id") String id,
-									  @QueryParam("hasWinner") @DefaultValue("true") boolean hasWinner,
-									  @QueryParam("winner") @DefaultValue("-1") int winner ) {
-		try{
-			return prober.store( id, hasWinner, winner );
+			return prober.storeAndNext( id, hasWinner, winner );
 		}
 		catch(IllegalStateException ex){
 			throw new WebApplicationException( Response.Status.FORBIDDEN );
@@ -83,7 +67,7 @@ public class ProbeService{
 	@GET
 	@Path("get")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponseDone getConfiguration( @QueryParam("id") String id ) {
+	public ProbeConfiguration getConfiguration( @QueryParam("id") String id ) {
 		try{
 			return prober.getConfiguration( id );
 		}
