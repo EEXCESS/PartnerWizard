@@ -69,8 +69,9 @@ public class PartnerConnector implements PartnerConnectorApi{
 		String query = queryGenerator.toQuery( userProfile );
 		parameters.put( "query", urlEncode( query ) );
 
-		if( userProfile.numResults!=null&&userProfile.numResults>0 ){
-			parameters.put( NUMBER_OF_RESULTS_PARAMETER_NAME, userProfile.numResults.toString() );
+		Integer numberOfResults = userProfile.getNumResults();
+		if( numberOfResults!=null && numberOfResults>0 ){
+			parameters.put( NUMBER_OF_RESULTS_PARAMETER_NAME, numberOfResults.toString() );
 		}
 		else{
 			parameters.put( NUMBER_OF_RESULTS_PARAMETER_NAME, NUMBER_OF_RESULTS_PARAMETER );

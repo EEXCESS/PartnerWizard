@@ -4,6 +4,7 @@ import eu.eexcess.partnerwizard.probe.model.Pair;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.model.ProbeStatus;
 import eu.eexcess.partnerwizard.probe.model.QueryOptions;
+import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class ProbeConfigurationIterator{
 	ProbeStatus state;
 
-	private final List<String> keywords;
+	private final List<ProberKeyword[]> queries;
 	private int currentKeyword;
 	private final PairGenerator<String> generators;
 	private final PairGenerator<QueryOptions> queryOptions;
@@ -25,8 +26,8 @@ public class ProbeConfigurationIterator{
 	private final Map<String, Integer> generatorWinners;
 	private final Map<QueryOptions, Integer> queryOptionsWinners;
 
-	public ProbeConfigurationIterator( List<String> keywords, List<String> generators, boolean enableExpansion, boolean enableSplitting ){
-		this.keywords = keywords;
+	public ProbeConfigurationIterator( List<ProberKeyword[]> queries, List<String> generators, boolean enableExpansion, boolean enableSplitting ){
+		this.queries = queries;
 		this.currentKeyword = 0;
 		this.generators = new CombinatorialPairGenerator<>( generators );
 		List<QueryOptions> queryOptions = QueryOptions.getQueryOptions( enableExpansion, enableSplitting );
@@ -40,7 +41,7 @@ public class ProbeConfigurationIterator{
 	}
 
 	public boolean isNextPairAvailable(){
-		return currentKeyword<keywords.size() && state.isNextState();
+		return currentKeyword<queries.size() && state.isNextState();
 	}
 
 	public boolean isWaitingForStore(){
@@ -60,7 +61,7 @@ public class ProbeConfigurationIterator{
 		}
 
 		Pair<ProbeConfiguration> configPair = new Pair<>();
-		String keyword = keywords.get( currentKeyword );
+		ProberKeyword[] keyword = queries.get( currentKeyword );
 
 		if( state==ProbeStatus.GeneratorsNext ){
 			Pair<String> generatorPair = generators.nextPair();
@@ -132,7 +133,7 @@ public class ProbeConfigurationIterator{
 					queryOptions.reset();
 
 					currentKeyword++;
-					if( currentKeyword<keywords.size() ){
+					if( currentKeyword<queries.size() ){
 						state = ProbeStatus.Init;
 						toNextState();
 					}
