@@ -195,16 +195,16 @@ public class MappingConfigBean implements Serializable{
 		this.contextList = new ArrayList<String>();
 		this.contextList.add(this.searchEndpointSearchTerm);
 		SecureUserProfile profile = new SecureUserProfile();
-		profile.numResults = 40;
-		profile.contextKeywords = new ArrayList<ContextKeyword>();
+		profile.setNumResults(40);
+		profile.setContextKeywords(new ArrayList<ContextKeyword>());
 
 		for (int i = 0; i < contextList.size(); i++) {
 			String actValue = contextList.get(i);
 			ContextKeyword contextKeyword = new ContextKeyword();
-			contextKeyword.text = actValue;
-			contextKeyword.weight = 0.1;
-			contextKeyword.reason = "manual";
-			profile.contextKeywords.add(contextKeyword);
+			contextKeyword.setText(actValue);
+//			contextKeyword.weight = 0.1;
+//			contextKeyword.reason = "manual";
+			profile.getContextKeywords().add(contextKeyword);
 		}
 		return profile;
 	}

@@ -14,6 +14,12 @@
 		<ui:define name="title">EEXCESS PartnerRecommender Setup</ui:define>
 
 		<ui:define name="body">
+		<script>
+			function agreededLicense() {
+			    document.getElementById("formID:generatePR").disabled = false;
+			}
+		</script>
+		
 			<!--  <h:form styleClass="form-horizontal" id="formID"> -->
 				<br/>
 				<br/>
@@ -25,21 +31,21 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">username:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.partnerInfo.username}" styleClass="form-control" />
+							<h:inputText id="username" value="#{bean.partnerInfo.username}" styleClass="form-control" />
 							<p class="help-block">your username</p>
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="textinput">e-mail:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.partnerInfo.contactEmail}" styleClass="form-control" />
+							<h:inputText id="email" value="#{bean.partnerInfo.contactEmail}" styleClass="form-control" />
 							<p class="help-block">e-mail</p>
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="textinput">Data Access Agreement:</label>
 						<div class="controls">
-							<h:selectBooleanCheckbox  value="#{bean.partnerInfo.licenseAgreement}" styleClass="form-control" />
+							<h:selectBooleanCheckbox id="dataAccessAgreement" value="#{bean.partnerInfo.licenseAgreement}" styleClass="form-control" onclick="agreededLicense()" />
 							<p class="help-block"><a href="./Data-Access-Agreement.pdf" target="_blank">EEXCESS Data Access Agreement</a></p>
 						</div>
 					</div>
@@ -51,7 +57,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">groupId:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.groupId}" styleClass="form-control" />
+							<h:inputText id="groupId" value="#{bean.groupId}" styleClass="form-control" />
 							<p class="help-block">id used in the Maven-Repository (e.g
 								eu.eexcess)</p>
 						</div>
@@ -60,7 +66,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">artifactId:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.artifactId}" styleClass="form-control" />
+							<h:inputText id="artifactId" value="#{bean.artifactId}" styleClass="form-control" />
 							<p class="help-block">id used in the Maven-Repository (e.g
 								MyPR)</p>
 						</div>
@@ -69,7 +75,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">version:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.version}" styleClass="form-control" />
+							<h:inputText id="version" value="#{bean.version}" styleClass="form-control" />
 							<p class="help-block">version used in the Maven-Repository
 								(e.g 1.0)</p>
 						</div>
@@ -78,7 +84,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">package:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.packageStr}" styleClass="form-control" />
+							<h:inputText id="packageStr" value="#{bean.packageStr}" styleClass="form-control" />
 							<p class="help-block">java package, can be the same as the
 								groupId (e.g eu.eexcess)</p>
 						</div>
@@ -87,7 +93,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">partnerName:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.partnerName}"
+							<h:inputText id="partnerName" value="#{bean.partnerName}"
 								styleClass="form-control" />
 							<p class="help-block">Name of the Partner</p>
 						</div>
@@ -96,7 +102,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">partnerURL:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.partnerURL}" styleClass="form-control" />
+							<h:inputText id="partnerURL" value="#{bean.partnerURL}" styleClass="form-control" />
 							<p class="help-block">URL of the Partner - used in EEXCESS
 								XML</p>
 						</div>
@@ -105,7 +111,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">prefix for the URI to the objects:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.apiURIPathPrefix}"
+							<h:inputText id="apiURIPathPrefix" value="#{bean.apiURIPathPrefix}"
 								styleClass="form-control" />
 							<p class="help-block">prefix for the URI to the objects</p>
 						</div>
@@ -113,7 +119,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">prefix for access to images:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.apiPreviewImagePrefix}"
+							<h:inputText id="apiPreviewImagePrefix" value="#{bean.apiPreviewImagePrefix}"
 								styleClass="form-control" />
 							<p class="help-block">prefix for access to images</p>
 						</div>
@@ -122,7 +128,7 @@
 					<div class="control-group">
 						<label class="control-label" for="textinput">data license:</label>
 						<div class="controls">
-							<h:inputText value="#{bean.dataLicense}"
+							<h:inputText id="dataLicense" value="#{bean.dataLicense}"
 								styleClass="form-control" />
 							<p class="help-block">License of the meta data</p>
 						</div>
@@ -142,8 +148,8 @@
 				<div class="row">
 					<div>
 						<h2>Create PartnerRecommender/project</h2>
-						<a4j:commandButton value="Build" render="out" execute="@form"
-							action="#{bean.generatePR}" styleClass="btn btn-primary" />
+						<a4j:commandButton id="generatePR" value="Build" render="out" execute="@form"
+							action="#{bean.generatePR}" styleClass="btn btn-primary" disabled="true"/>
 
 						<h:panelGroup id="out">
 							<h3>mvn command:</h3>
@@ -152,29 +158,31 @@
 							</p>
 							<h3>Result:</h3>
 							<p>
-								<h:inputTextarea rows="40" cols="120"
+								<h:inputTextarea id="buildOutputID" rows="40" cols="120"
 									value="#{bean.buildOutput}" readonly="true" />
 							</p>
 						</h:panelGroup>
 						<p>
-							<h:commandLink action="#{bean.downloadWAR}" value="Download WAR" />
+							<h:commandLink id="downloadWAR" action="#{bean.downloadWAR}" value="Download WAR" />
 						</p>
 						<p>
-							<h:commandLink action="#{bean.downloadSourceZIP}"
+							<h:commandLink id="downloadSourceZIP" action="#{bean.downloadSourceZIP}"
 								value="Download Source ZIP" />
 						</p>
-						<p>
-							<a4j:commandButton value="load example KIMportal" render="wholePage" execute="@form"
-								action="#{bean.defaultTestValuesKIMportal}" styleClass="btn btn-primary" />
-						</p>
-						<p>
-							<a4j:commandButton value="load example RIJKMuseum" render="wholePage" execute="@form"
-								action="#{bean.defaultTestValuesRIJKMuseum}" styleClass="btn btn-primary" />
-						</p>
-						<p>
-							<a4j:commandButton value="load example Kierling" render="wholePage" execute="@form"
-								action="#{bean.defaultTestValuesSolRKierling}" styleClass="btn btn-primary" />
-						</p>
+						<ui:remove>
+							<p>
+								<a4j:commandButton id="" value="load example KIMportal" render="wholePage" execute="@form"
+									action="#{bean.defaultTestValuesKIMportal}" styleClass="btn btn-primary" />
+							</p>
+							<p>
+								<a4j:commandButton id="" value="load example RIJKMuseum" render="wholePage" execute="@form"
+									action="#{bean.defaultTestValuesRIJKMuseum}" styleClass="btn btn-primary" />
+							</p>
+							<p>
+								<a4j:commandButton id="" value="load example Kierling" render="wholePage" execute="@form"
+									action="#{bean.defaultTestValuesSolRKierling}" styleClass="btn btn-primary" />
+							</p>
+						</ui:remove>
 							
 					</div>
 				</div>

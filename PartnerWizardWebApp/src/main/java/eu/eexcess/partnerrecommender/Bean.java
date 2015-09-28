@@ -587,107 +587,12 @@ public class Bean implements Serializable {
 		}
 	}
 	
-	  public ArrayList<Cookie> getCookies() {
-	        FacesContext context = FacesContext.getCurrentInstance();
-	        Map cookieMap = context.getExternalContext().getRequestCookieMap();
-	        ArrayList<Cookie> cookies = new ArrayList<Cookie>(cookieMap.values()); 
-	        return cookies;
-	    }
-
-	public void defaultTestValuesKIMportal()
-	{
-		this.groupId = "at.joanneum";
-		this.artifactId ="MyPartnerRecommender";
-		this.version = "1.0-SNAPSHOT"; 
-		this.packageStr = "at.joanneum";
-		this.partnerName = "archetype example";
-		this.partnerURL = "https://www.kgportal.bl.ch/";
-		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-
-		this.searchMappingConfig.setSearchEndpoint("https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=_fulltext_:${query}&rows=${numResults}");
-		this.searchMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
-		this.searchMappingConfig.setSearchEndpointSearchTerm("Basel");
-		this.searchMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
-		this.searchMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
-		this.searchMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
-		this.searchMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
-
-		this.detailMappingConfig.setSearchEndpoint("https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}");
-		this.detailMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
-		this.detailMappingConfig.setSearchEndpointSearchTerm("70e1531b-4ce5-33cb-8ba7-91b2dcd033f8");
-		this.detailMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
-		this.detailMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
-		this.detailMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
-		this.detailMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
-		
-		this.apiPreviewImagePrefix = "https://kgapi.bl.ch/";
-		this.apiURIPathPrefix = "https://www.kgportal.bl.ch/sammlungen#";
-	}
-
-	public void defaultTestValuesRIJKMuseum()
-	{
-		String key= "";
-		
-		this.groupId = "nl.rijksmuseum";
-		this.artifactId ="RijksMuseumPartnerRecommender";
-		this.version = "1.0-SNAPSHOT"; 
-		this.packageStr = "nl.rijksmuseum";
-		this.partnerName = "RijksMuseum";
-		this.partnerURL = "https://www.rijksmuseum.nl/";
-		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-
-		this.searchMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection?q=${query}&key="+key+"&format=xml");
-		this.searchMappingConfig.setSearchEndpointSearchTerm("Basel");
-		this.searchMappingConfig.setEexcessFieldsXPathLoop("/searchGetResponse/artObjects/");
-		this.searchMappingConfig.getMappingFields().get(0).setxPath("objectNumber");
-		this.searchMappingConfig.getMappingFields().get(1).setxPath("links/web");
-		this.searchMappingConfig.getMappingFields().get(2).setxPath("title");
-		this.searchMappingConfig.getMappingFields().get(3).setxPath("longTitle");
-		
-		this.detailMappingConfig.setSearchEndpoint("https://www.rijksmuseum.nl/api/en/collection/${detailQuery}?format=xml&key="+key);
-		this.detailMappingConfig.setSearchEndpointSearchTerm("RP-P-1959-614");
-		this.detailMappingConfig.setEexcessFieldsXPathLoop("/artObjectGetResponse/artObject/");
-		this.detailMappingConfig.getMappingFields().get(0).setxPath("objectNumber");
-		this.detailMappingConfig.getMappingFields().get(1).setxPath("id");
-		this.detailMappingConfig.getMappingFields().get(2).setxPath("longTitle");
-		this.detailMappingConfig.getMappingFields().get(3).setxPath("description");
-
-		this.apiPreviewImagePrefix = "remove";
-		this.apiURIPathPrefix = "remove";
-
-	}
-
-	public void defaultTestValuesSolRKierling()
-	{
-		this.groupId = "at.joanneum";
-		this.artifactId ="SOLRKierlingRecommender";
-		this.version = "1.0-SNAPSHOT"; 
-		this.packageStr = "at.joanneum";
-		this.partnerName = "Kierling Recommender";
-		this.partnerURL = "http://digv548.joanneum.at/";
-		this.dataLicense ="http://creativecommons.org/licenses/by-nc-sa/4.0/";
-
-		this.searchMappingConfig.setSearchEndpoint("http://digv548.joanneum.at:8983/solr/imdas-online.common/select?q=${query}&wt=xml&indent=true&rows=${numResults}");
-		this.searchMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
-		this.searchMappingConfig.setSearchEndpointSearchTerm("Allmayer");
-		this.searchMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
-		this.searchMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
-		this.searchMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
-		this.searchMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
-		this.searchMappingConfig.getMappingFields().get(4).setxPath("arr[@name='_thumbs_']");
-
-		this.detailMappingConfig.setSearchEndpoint("http://digv548.joanneum.at:8983/solr/imdas-online.common/select?q=uuid:${detailQuery}&wt=xml&indent=true");
-		this.detailMappingConfig.setEexcessFieldsXPathLoop("/response/result/doc/");
-		this.detailMappingConfig.setSearchEndpointSearchTerm("6e4888c5-f636-4d60-9145-82b22adecf67");
-		this.detailMappingConfig.getMappingFields().get(0).setxPath("str[@name='uuid']");
-		this.detailMappingConfig.getMappingFields().get(1).setxPath("str[@name='uuid']");
-		this.detailMappingConfig.getMappingFields().get(2).setxPath("str[@name='_display_']");
-		this.detailMappingConfig.getMappingFields().get(3).setxPath("str[@name='beschreibung']");
-		this.detailMappingConfig.getMappingFields().get(4).setxPath("arr[@name='_thumbs_']");
-		
-		this.apiPreviewImagePrefix = "http://digv548.joanneum.at/";
-		this.apiURIPathPrefix = "http://digv548.joanneum.at/detailview/";
-	}
+	public ArrayList<Cookie> getCookies() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map cookieMap = context.getExternalContext().getRequestCookieMap();
+        ArrayList<Cookie> cookies = new ArrayList<Cookie>(cookieMap.values()); 
+        return cookies;
+    }
 
 	public String getApiURIPathPrefix() {
 		return apiURIPathPrefix;

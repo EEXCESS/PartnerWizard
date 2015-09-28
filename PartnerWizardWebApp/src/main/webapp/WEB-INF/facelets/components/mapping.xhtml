@@ -16,7 +16,7 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 		<div class="control-group">
 			<label class="control-label" for="textinput">endpoint:</label>
 			<div class="controls">
-				<h:inputText value="#{mappingBean.searchEndpoint}"
+				<h:inputText id="#{mappingId}EndPoint" value="#{mappingBean.searchEndpoint}"
 					styleClass="form-control" />
 				<p class="help-block">URL for API</p>
 			</div>
@@ -26,16 +26,16 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 		<div class="control-group">
 			<label class="control-label" for="textinput">search term:</label>
 			<div class="controls">
-				<h:inputText value="#{mappingBean.searchEndpointSearchTerm}"
+				<h:inputText id="#{mappingId}EndPointSearchTerm" value="#{mappingBean.searchEndpointSearchTerm}"
 					styleClass="form-control" />
 				<p class="help-block">search term</p>
 			</div>
 		</div>
 	</fieldset>
-	<a4j:commandButton value="Call API search" execute="@form"
+	<a4j:commandButton id="#{mappingId}callPartnerAPIsearch" value="Call API search" execute="@form"
 		action="#{mappingBean.callPartnerAPIsearch}" styleClass="btn btn-primary"
 		render="apiResponseId#{mappingId}" rendered="#{mappingId =='search'}"/>
-	<a4j:commandButton value="Call API detail" execute="@form"
+	<a4j:commandButton id="#{mappingId}callPartnerAPIdetail" value="Call API detail" execute="@form"
 		action="#{mappingBean.callPartnerAPIdetail}" styleClass="btn btn-primary"
 		render="apiResponseId#{mappingId}"  rendered="#{mappingId !='search'}"/>
 
@@ -67,7 +67,7 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 					<label class="control-label" for="textinput">XPath for the
 						loop:</label>
 					<div class="controls">
-						<h:inputText value="#{mappingBean.eexcessFieldsXPathLoop}"
+						<h:inputText id="#{mappingId}eexcessFieldsXPathLoop" value="#{mappingBean.eexcessFieldsXPathLoop}"
 							styleClass="form-control" />
 						<p class="help-block">XPath for the loop</p>
 					</div>
@@ -80,18 +80,18 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 						<td>xpath</td>
 						<td>value</td>
 					</tr>
-					<ui:repeat value="#{mappingBean.mappingFields}" var="mappingField">
+					<ui:repeat value="#{mappingBean.mappingFields}" var="mappingField" id="#{mappingId}FieldsLoop" >
 						<tr>
 							<td>#{mappingField.name}</td>
 							<td>#{mappingField.description}</td>
 							<td>
 								<table>
 									<tr>
-										<td style="border: none;"><h:inputText
+										<td style="border: none;"><h:inputText id="#{mappingId}Fields#{mappingField.id}xPath"
 												value="#{mappingField.xPath}" styleClass="form-control" />
 										</td>
 										<td style="border: none;">
-											<!-- execute="@form" --> <a4j:commandButton value="test"
+											<a4j:commandButton id="#{mappingId}Fields#{mappingField.id}xPathTestButton" value="test"
 												render="mappingFieldsId#{mappingId}" action="#{mappingBean.probeXPath}"
 												styleClass="btn btn-primary">
 												<a4j:param value="#{mappingField.id}"
