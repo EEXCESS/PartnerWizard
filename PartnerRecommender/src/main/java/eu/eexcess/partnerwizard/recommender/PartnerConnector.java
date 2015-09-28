@@ -18,17 +18,10 @@
 package eu.eexcess.partnerwizard.recommender;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
-import java.io.IOException;
-import java.util.logging.Logger;
-
-import org.w3c.dom.Document;
-
+import com.sun.jersey.api.client.WebResource;
 import eu.eexcess.config.PartnerConfiguration;
 import eu.eexcess.dataformats.result.DocumentBadge;
 import eu.eexcess.dataformats.result.ResultList;
@@ -37,188 +30,157 @@ import eu.eexcess.partnerdata.api.EEXCESSDataTransformationException;
 import eu.eexcess.partnerdata.reference.PartnerdataLogger;
 import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
 import eu.eexcess.partnerrecommender.api.PartnerConnectorApi;
-import eu.eexcess.partnerrecommender.reference.PartnerConnectorBase;
-import eu.eexcess.partnerwizard.recommender.dataformat.MendeleyAuthors;
-import eu.eexcess.partnerwizard.recommender.dataformat.MendeleyDocs;
-import eu.eexcess.partnerwizard.recommender.dataformat.MendeleyResponse;
-import eu.eexcess.utils.URLParamEncoder;
+import eu.eexcess.partnerrecommender.api.QueryGeneratorApi;
+import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.ws.rs.core.MediaType;
-import net.sf.json.JSONObject;
+import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.CharEncoding;
+import net.sf.json.xml.XMLSerializer;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.dom4j.DocumentException;
+import org.dom4j.io.DOMWriter;
+import org.dom4j.io.SAXReader;
+import org.w3c.dom.Document;
 
 /**
- * This is dummy implementation talking only to Mendeley
- *
- * ToDo Change to generic recommender with:
- * Fetch result als String:
- * String resultdocString = client.resource(request)
- *									.header("Authorization", "Bearer " + accessTokenResponse.getAccessToken())
- *									.accept(APPLICATION_MENDELEY_TYPE)
- *									.get(String.class);
- * Test if it is JSON or XML
- * Use
- * transformJSON2XML(resultdocString) to get the result as XML document
  *
  * @author hgursch
  */
-
-
-public class PartnerConnector extends PartnerConnectorBase implements PartnerConnectorApi{
-	public static final MediaType APPLICATION_MENDELEY_TYPE = new MediaType( "application", "vnd.mendeley-document.1+json" );
-	private static final String TOKEN_URL = "https://api.mendeley.com/oauth/token";
+public class PartnerConnector implements PartnerConnectorApi{
 	private static final Logger LOGGER = Logger.getLogger( PartnerConnector.class.getName() );
+	private static final String NUMBER_OF_RESULTS_PARAMETER_NAME = "numResults";
+	private static final String NUMBER_OF_RESULTS_PARAMETER = "25";
+	private static final String USER_NAME_PARAMETER_NAME = "userName";
+	private static final String PASSWORD_PARAMETER_NAME = "password";
+	private static final String API_KEY_PARAMETER_NAME = "apiKey";
 
-	public PartnerConnector(){
-
-	}
-
-	/**
-	 * Call to get the documents from the partners API
-	 */
 	@Override
 	public Document queryPartner( PartnerConfiguration partnerConfiguration, SecureUserProfile userProfile, PartnerdataLogger logger ) throws IOException{
-		ClientConfig clientConfig = new DefaultClientConfig();
-		clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
+		Map<String, String> parameters = new HashMap<>();
 
-		Client client = Client.create( clientConfig );
-		AccessTokenResponse accessTokenResponse = getAccessToken( client, partnerConfiguration );
+		QueryGeneratorApi queryGenerator = PartnerConfigurationCache.CONFIG.getQueryGenerator( partnerConfiguration.getQueryGeneratorClass() );
+		String query = queryGenerator.toQuery( userProfile );
+		parameters.put( "query", urlEncode( query ) );
 
-		MendeleyResponse mR;
+		if( userProfile.numResults!=null&&userProfile.numResults>0 ){
+			parameters.put( NUMBER_OF_RESULTS_PARAMETER_NAME, userProfile.numResults.toString() );
+		}
+		else{
+			parameters.put( NUMBER_OF_RESULTS_PARAMETER_NAME, NUMBER_OF_RESULTS_PARAMETER );
+		}
+
+		String userName = partnerConfiguration.getUserName();
+		if( userName!=null&&!userName.isEmpty() ){
+			parameters.put( USER_NAME_PARAMETER_NAME, userName );
+		}
+
+		String password = partnerConfiguration.getPassword();
+		if( password!=null&&!password.isEmpty() ){
+			parameters.put( PASSWORD_PARAMETER_NAME, password );
+		}
+
+		String apiKey = partnerConfiguration.getApiKey();
+		if( apiKey!=null&&!apiKey.isEmpty() ){
+			parameters.put( API_KEY_PARAMETER_NAME, apiKey );
+		}
+
+		String searchUrl = StrSubstitutor.replace( partnerConfiguration.getSearchEndpoint(), parameters );
+
+		Client client = new Client( PartnerConfigurationCache.CONFIG.getClientDefault() );
+		WebResource.Builder builder = client.resource( searchUrl )
+				.accept( MediaType.APPLICATION_JSON_TYPE )
+				.accept( MediaType.APPLICATION_XML_TYPE );
+		ClientResponse response;
 		try{
-			mR = fetchSearchResults( client, userProfile, accessTokenResponse, partnerConfiguration );
+			response = builder.get( ClientResponse.class );
 		}
-		catch( InstantiationException|IllegalAccessException|ClassNotFoundException e1 ){
-			LOGGER.log( Level.SEVERE, "Could not get results from partner for query: "+userProfile+"\n with accestoken:"+accessTokenResponse+"\n and configuration:"+partnerConfiguration, e1 );
-			throw new IOException( e1 );
+		catch( ClientHandlerException|UniformInterfaceException ex ){
+			throw new IOException( "Cannot query partner API!", ex );
 		}
-		client.destroy();
-		ObjectMapper mapper = PartnerConfigurationCache.CONFIG.getObjectMapper();// can reuse, share globally
-		for( MendeleyDocs doc: mR.getDocuments() ){
-			doc.authorsString = getAuthorsString( doc.authors );
-		}
-
-		Document newResponse;
 		try{
-			newResponse = transformJSON2XML( mapper.writeValueAsString( mR ) );
+			return parseResponse( response );
 		}
-		catch( EEXCESSDataTransformationException e ){
-			LOGGER.log( Level.SEVERE, "Partners response could not be transformed to xml for query: "+userProfile+"\n with accestoken:"+accessTokenResponse+"\n configuration:"+partnerConfiguration+"\n and repsonse:"+mR, e );
-			throw new IOException( e );
+		catch( EEXCESSDataTransformationException ex ){
+			throw new IOException( "The partner's response could not be parsed", ex );
 		}
-		return newResponse;
 	}
 
-	/**
-	 * Call to get the details (more facets) of an document
-	 */
 	@Override
-	public Document queryPartnerDetails( PartnerConfiguration partnerConfiguration, DocumentBadge document, PartnerdataLogger logger ) throws IOException{
-
+	public Document queryPartnerDetails( PartnerConfiguration partnerConfiguration, DocumentBadge document, PartnerdataLogger logger ){
+		LOGGER.log( Level.SEVERE, "Call of not implemented queryPartnerDetails method. Returned null." );
 		return null;
 	}
 
-	/**
-	 * Could be used if we have no transformation file for that Partner.
-	 */
 	@Override
-	public ResultList queryPartnerNative( PartnerConfiguration partnerConfiguration, SecureUserProfile userProfile, PartnerdataLogger dataLogger ) throws IOException{
+	public ResultList queryPartnerNative( PartnerConfiguration partnerConfiguration, SecureUserProfile userProfile, PartnerdataLogger logger ) throws IOException{
 		return null;
 	}
 
-	protected MendeleyResponse fetchSearchResults( Client client, SecureUserProfile userProfile, AccessTokenResponse accessTokenResponse,
-												   PartnerConfiguration partnerConfiguration ) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
-		LOGGER.log( Level.INFO, "Query Generator fetch Partner: "+partnerConfiguration.getQueryGeneratorClass() );
-		String query = PartnerConfigurationCache.CONFIG.getQueryGenerator( partnerConfiguration.getQueryGeneratorClass() ).toQuery( userProfile );
-		Map<String, String> valuesMap = new HashMap<String, String>();
-		valuesMap.put( "query", URLParamEncoder.encode( query ) );
-		String searchRequest = StrSubstitutor.replace( partnerConfiguration.getSearchEndpoint(), valuesMap );
-		MendeleyResponse jsonResponse = getJSONResponse( client, accessTokenResponse, searchRequest );
+	private Document parseResponse( ClientResponse response ) throws EEXCESSDataTransformationException{
+		MediaType type = response.getType();
 
-		if( jsonResponse==null||jsonResponse.getDocuments()==null ){
-			LOGGER.log( Level.WARNING, "Mendeley returned an empty result list" );
+		if( type.equals( MediaType.APPLICATION_ATOM_XML_TYPE ) ){
+			return response.getEntity( Document.class );
 		}
-
-		int numResults = 100;
-		if( userProfile.numResults!=null ){
-			numResults = userProfile.numResults;
+		else if( type.equals( MediaType.APPLICATION_JSON_TYPE ) ){
+			String jsonString = response.getEntity( String.class );
+			String xmlString = jsonToXmlString( jsonString );
+			return xmlStringToDocument( xmlString );
 		}
-
-		jsonResponse.limitNumDocuments( numResults );
-
-		return jsonResponse;
-	}
-
-	private MendeleyResponse getJSONResponse( Client client, AccessTokenResponse accessTokenResponse, String request ){
-		MendeleyResponse result = null;
-		try{
-			client.addFilter( new LoggingFilter( LOGGER ) );
-			MendeleyDocs[] docs = client.resource( request )
-					.header( "Authorization", "Bearer "+accessTokenResponse.getAccessToken() ).accept( APPLICATION_MENDELEY_TYPE )
-					.get( MendeleyDocs[].class );
-			result = new MendeleyResponse( Arrays.asList( docs ) );
-		}
-		catch( UniformInterfaceException e ){
-			String resultString = e.getResponse().getEntity( String.class );
-			ClientResponse header = client.resource( request ).header( "Authorization", "Bearer "+accessTokenResponse.getAccessToken() ).head();
-
-			LOGGER.log( Level.WARNING, "Server returned equal or above 300 \nResponse as String:\n"+resultString+"\n Header: "+header
-									   +"\n Request: "+request
-									   +"\n AccessTokenResponse: "+accessTokenResponse.toString(), e );
-
-		}
-		return result;
-	}
-
-	protected AccessTokenResponse getAccessToken( Client client, PartnerConfiguration partnerConfiguration ) throws UnsupportedEncodingException{
-		String tokenParams = String.format( "grant_type=client_credentials&scope=all&client_id=%s&client_secret=%s",
-											partnerConfiguration.getUserName(), partnerConfiguration.getPassword() );
-
-		ClientResponse postResponse = client.resource( TOKEN_URL )
-				.entity( tokenParams, MediaType.APPLICATION_FORM_URLENCODED_TYPE )
-				.header( "Authorization", basic( partnerConfiguration.getUserName(), partnerConfiguration.getPassword() ) )
-				.post( ClientResponse.class );
-
-		String json = postResponse.getEntity( String.class );
-		JSONObject accessToken = (JSONObject) JSONSerializer.toJSON( json );
-
-		AccessTokenResponse response = new AccessTokenResponse();
-		response.setAccessToken( accessToken.getString( "access_token" ) );
-		response.setExpiresIn( accessToken.getLong( "expires_in" ) );
-		response.setRefreshToken( accessToken.getString( "refresh_token" ) );
-		response.setTokenType( accessToken.getString( "token_type" ) );
-
-		return response;
-	}
-
-	private String basic( String username, String password ) throws UnsupportedEncodingException{
-		String credentials = username+":"+password;
-		return "Basic "+Base64.encodeBase64String( credentials.getBytes( CharEncoding.UTF_8 ) );
-	}
-
-	private String getAuthorsString( List<MendeleyAuthors> authors ){
-		String authorsString = "";
-		if( authors!=null ){
-			for( MendeleyAuthors mendeleyAuthors: authors ){
-				if( authorsString.length()>0 ){
-					authorsString += ", ";
-				}
-				mendeleyAuthors.first_name = mendeleyAuthors.first_name!=null?mendeleyAuthors.first_name.replaceAll( "\\r\\n|\\r|\\n", " " ):"";
-				mendeleyAuthors.last_name = mendeleyAuthors.last_name.replaceAll( "\\r\\n|\\r|\\n", " " );
-				authorsString += mendeleyAuthors.first_name+" "+mendeleyAuthors.last_name;
+		else{
+			String plainContent = response.getEntity( String.class ).trim();
+			if( plainContent.startsWith( "{" ) ){
+				String xmlString = jsonToXmlString( plainContent );
+				return xmlStringToDocument( xmlString );
+			}
+			else{
+				return xmlStringToDocument( plainContent );
 			}
 		}
-
-		return authorsString;
 	}
 
+	private String jsonToXmlString( String jsonString ){
+		XMLSerializer serializer = new XMLSerializer();
+		JSON json = JSONSerializer.toJSON( jsonString );
+		serializer.setTypeHintsEnabled( false );
+
+		return serializer.write( json );
+	}
+
+	private Document xmlStringToDocument( String xmlData ) throws EEXCESSDataTransformationException{
+		try{
+//			// Alternative implementation:
+//			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+//			return builder.parse( new InputSource( new StringReader( xmlData ) ) );
+			SAXReader reader = new SAXReader();
+			org.dom4j.Document dom4jDoc = reader.read( new StringReader( xmlData ) );
+
+			DOMWriter writer = new DOMWriter();
+			org.w3c.dom.Document w3cDoc = writer.write( dom4jDoc );
+
+			return w3cDoc;
+		}
+		catch( DocumentException ex ){
+			LOGGER.log( Level.WARNING, "XML could not be parsed into a valid org.w3c.dom.Document.", ex );
+			throw new EEXCESSDataTransformationException( ex );
+		}
+
+	}
+
+	private static String urlEncode( String field ){
+		try{
+			return URLEncoder.encode( field, "UTF-8" );
+		}
+		catch( UnsupportedEncodingException unsupportedEncodingException ){
+			LOGGER.log( Level.SEVERE, "No support for UTF-8 encoding found. URL-Parameters could not be encoded!" );
+			throw new RuntimeException( "No support for UTF-8 encoding found. URL-Parameters could not be encoded!" );
+		}
+	}
 }
