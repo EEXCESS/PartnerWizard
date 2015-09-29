@@ -84,6 +84,19 @@ limitations under the License.
 			<version>${eexcess.version}</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+		 <repository>
+               <id>eexcess</id>
+               <releases>
+                  <enabled>true</enabled>
+               </releases>
+               <snapshots>
+                  <enabled>true</enabled>
+                  <updatePolicy>always</updatePolicy>
+               </snapshots>
+               <url>https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/</url>
+            </repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>
