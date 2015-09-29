@@ -20,8 +20,8 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 	private Pair<T> pair;
 	private int firstIndex;
 	private int secondIndex;
-	private final Map<T, Integer> scores;
-	private final Map<T, Integer> positions;
+	private final Map<T, Integer> votingScores;
+	private final Map<T, Integer> positionScores;
 
 
 	public CombinatorialPairGenerator( Collection<T> elements ){
@@ -43,13 +43,13 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 
 		this.pair = null;
 
-		this.scores = new HashMap<>( this.elements.length );
-		this.positions = new HashMap<>( this.elements.length );
-		int i = 0;
+		this.votingScores = new HashMap<>( this.elements.length );
+		this.positionScores = new HashMap<>( this.elements.length );
+		int i = elements.size();
 		for( T element: elements ){
-			scores.put( element, 0 );
-			positions.put( element, i );
-			i++;
+			votingScores.put( element, 0 );
+			positionScores.put( element, i );
+			i--;
 		}
 
 		firstIndex = 0;
@@ -92,8 +92,8 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 			}
 
 			T element = pair.getElement( elementPosition );
-			int newScore = scores.get( element )+1;
-			scores.put( element, newScore );
+			int newScore = votingScores.get( element )+1;
+			votingScores.put( element, newScore );
 		}
 
 		toNextIndex();
@@ -147,7 +147,7 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 		this.pair = null;
 
 		for( T element: elements ){
-			scores.put( element, 0 );
+			votingScores.put( element, 0 );
 		}
 
 		firstIndex = 0;
@@ -155,6 +155,7 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 		toNextIndex();
 	}
 
+	
 	private void toNextIndex(){
 		secondIndex++;
 		if( secondIndex>=elements.length ){
@@ -170,16 +171,15 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 		}
 	}
 
-
 	private void generateSortedElements(){
 		sortedElements = Arrays.copyOf( elements, elements.length );
 
 		Arrays.sort( sortedElements, ( T element1, T element2 ) -> {
-			int ordinal1 = this.scores.get( element1 );
-			int ordinal2 = this.scores.get( element2 );
+			int ordinal1 = this.votingScores.get( element1 );
+			int ordinal2 = this.votingScores.get( element2 );
 			if( ordinal1==ordinal2 ){
-				ordinal1 = this.positions.get( element1 );
-				ordinal2 = this.positions.get( element2 );
+				ordinal1 = this.positionScores.get( element1 );
+				ordinal2 = this.positionScores.get( element2 );
 			}
 
 			return Integer.compare( ordinal2, ordinal1 );

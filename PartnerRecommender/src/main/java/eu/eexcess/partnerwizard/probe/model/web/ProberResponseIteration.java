@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2015-09-02
  */
 public class ProberResponseIteration extends ProberResponse{
-	public String keywords;
+	public ProberKeyword[] keywords;
 	public List<ProberResult> firstList;
 	public List<ProberResult> secondList;
 

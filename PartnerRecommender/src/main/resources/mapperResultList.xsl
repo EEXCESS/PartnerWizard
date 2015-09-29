@@ -26,30 +26,22 @@
 
 		    <xsl:element name="rdf:RDF">
 
-			      <xsl:attribute name="xml:base">http://api.mendeley.com//edm/</xsl:attribute>
+			      <xsl:attribute name="xml:base">https://kgapi.bl.ch/edm/</xsl:attribute>
       
 			      <xsl:element name="owl:Ontology">
 				        <xsl:attribute name="rdf:about"/>
 
 				        <xsl:element name="owl:imports">
-					          <xsl:attribute name="rdf:resource">http://www.ebu.ch/metadata/ontologies/ebucore</xsl:attribute>
-				        </xsl:element>
-
-				        <xsl:element name="owl:imports">
 					          <xsl:attribute name="rdf:resource">http://www.europeana.eu/schemas/edm/</xsl:attribute>
 				        </xsl:element>
-
 				        <xsl:element name="owl:imports">
 					          <xsl:attribute name="rdf:resource">http://www.openarchives.org/ore/1.0/terms</xsl:attribute>
 				        </xsl:element>
 
-				        <xsl:element name="owl:imports">
-					          <xsl:attribute name="rdf:resource">http://www.w3.org/ns/ma-ont</xsl:attribute>
-				        </xsl:element>
 			      </xsl:element>
 
 
-			      <xsl:for-each select="/o/documents/e">
+			      <xsl:for-each select="response/result/doc">
 
 			      		<xsl:variable name="mainURI">
 			      			   <xsl:call-template name="Main.URI"/>
@@ -57,20 +49,20 @@
 
 				        <xsl:element name="ore:Aggregation">
 					          <xsl:attribute name="rdf:about">
-						            <xsl:value-of select="concat($mainURI,'/aggregation/')"/>
+									         <xsl:value-of select="concat($mainURI,'/aggregation/')"/>
 					          </xsl:attribute>
 
 					          <xsl:element name="edm:provider">
 						            <xsl:element name="edm:Agent">
-							              <xsl:attribute name="rdf:about">http://api.mendeley.com/</xsl:attribute>
-							              <xsl:element name="foaf:name">Mendeley</xsl:element>
+							              <xsl:attribute name="rdf:about">https://kgapi.bl.ch/</xsl:attribute>
+							              <xsl:element name="foaf:name">KIMPortal</xsl:element>
 						            </xsl:element>
 					          </xsl:element>
 
 					          <xsl:element name="edm:dataProvider">
 						            <xsl:element name="edm:Agent">
-							              <xsl:attribute name="rdf:about">http://api.mendeley.com/</xsl:attribute>
-							              <xsl:element name="foaf:name">Mendeley</xsl:element>
+							              <xsl:attribute name="rdf:about">https://kgapi.bl.ch/</xsl:attribute>
+							              <xsl:element name="foaf:name">KIMPortal</xsl:element>
 						            </xsl:element>
 					          </xsl:element>
 
@@ -81,26 +73,26 @@
 					          <xsl:element name="edm:isShownBy">
 						            <xsl:element name="edm:WebResource">
 							              <xsl:attribute name="rdf:about">
-								                <xsl:value-of select="concat($mainURI,'/webresource/')"/>
+											             <xsl:value-of select="concat($mainURI,'/webresource/')"/>
 							              </xsl:attribute>
-							              <xsl:element name="edm:rights">
-								                <xsl:attribute name="rdf:resource">http://creativecommons.org/publicdomain/mark/1.0/</xsl:attribute>
-							              </xsl:element>
 						            </xsl:element>
 					          </xsl:element>
 
-					          <xsl:element name="edm:isShownAt">
-						            <xsl:attribute name="rdf:resource">
-							              <xsl:call-template name="Main.isShownAt"/>
-						            </xsl:attribute>	
-					          </xsl:element>
+			                    <xsl:element name="edm:isShownAt">
+									         <xsl:attribute name="rdf:resource">
+										           <xsl:call-template name="Main.isShownAt"/>
+									         </xsl:attribute>	
+								       </xsl:element>
 
-					          <xsl:call-template name="Main.collectionName"/>
+										     <xsl:call-template name="Main.previewImage"/>
+
+								       <xsl:call-template name="Main.collectionName"/> 
+
 					          <xsl:element name="edm:aggregatedCHO">
 
 						            <xsl:element name="eexcess:Object">
 							              <xsl:attribute name="rdf:about">
-				                    <xsl:call-template name="Main.URI"/>
+								                <xsl:call-template name="Main.URI"/>
 							              </xsl:attribute>
 
 						            </xsl:element>
@@ -114,31 +106,36 @@
 
 				        <xsl:element name="eexcess:Proxy">
 					          <xsl:attribute name="rdf:about">
-						            <xsl:value-of select="concat($mainURI,'/proxy/')"/>
+									         <xsl:value-of select="concat($mainURI,'/proxy/')"/>
 					          </xsl:attribute>
 					
 					          <xsl:element name="ore:proxyFor">
 						            <xsl:attribute name="rdf:resource">
-			                  <xsl:call-template name="Main.URI"/>
+							              <xsl:call-template name="Main.URI"/>
 						            </xsl:attribute>	
 					          </xsl:element>
 					
 					
 					          <xsl:element name="ore:proxyIn">
 						            <xsl:attribute name="rdf:resource">
-							              <xsl:value-of select="concat($mainURI,'/aggregation/')"/>
+										           <xsl:value-of select="concat($mainURI,'/aggregation/')"/>
 						            </xsl:attribute>	
 					          </xsl:element>
 					
 					          <xsl:element name="edm:europeanaProxy">false</xsl:element>
+							        <xsl:element name="edm:rights">
+							    http://creativecommons.org/licenses/by-nc-sa/4.0/
+							</xsl:element>
 
-					          <xsl:call-template name="Main.Identifier"/>
-					          <xsl:call-template name="Main.Title"/>
-					          <xsl:call-template name="Main.Description"/>
-					          <xsl:call-template name="Main.Date"/>
-					          <xsl:call-template name="Main.Creator"/>
-					
-					
+		 			         <xsl:element name="edm:language">de</xsl:element>
+
+							        <!-- <xsl:call-template name="Main.Language"/> -->
+							        <xsl:call-template name="Main.Identifier"/>
+							        <xsl:call-template name="Main.Title"/>
+							        <xsl:call-template name="Main.Description"/>
+							        <xsl:call-template name="Main.Date"/>
+					                <xsl:call-template name="Main.Subject"/>					
+					          <xsl:call-template name="Main.Country"/>	
 				        </xsl:element>
 					
 
@@ -152,84 +149,123 @@
 	  </xsl:template>
 
 
-
+	  <!-- <xsl:template name="Main.Language" /> -->
 	  <xsl:template name="Main.Title">
-      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform" mode="m5" select="title"/>
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m1"
+                       select="str[@name='_display_']"/>
    </xsl:template>
 	  <xsl:template name="Main.Description">
       <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-                       mode="m6"
-                       select="description"/>
-   </xsl:template>
-	  <xsl:template name="Main.Date">
-      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform" mode="m1" select="year"/>
-   </xsl:template>
-	  <xsl:template name="Main.Identifier">
-      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform" mode="m2" select="id"/>
-   </xsl:template>
-	  <xsl:template name="Main.Creator">
-      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
                        mode="m3"
-                       select="authorsString"/>
+                       select="str[@name='beschreibung']"/>
+   </xsl:template>
+	  <xsl:template name="Main.Date"/>
+	  <xsl:template name="Main.Identifier">
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m8"
+                       select="str[@name='inventarnummer']"/>
    </xsl:template>
 	  <xsl:template name="Main.isShownAt">
-      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform" mode="m0" select="link"/>
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m6"
+                       select="eexcessURI"/>
+   </xsl:template>
+	  <xsl:template name="Main.previewImage">
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m9"
+                       select="arr[@name='_thumbs_']/str[1]"/>
+   </xsl:template>
+	  <xsl:template name="Main.URI">
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m5"
+                       select="eexcessURI"/>
    </xsl:template>
 	  <xsl:template name="Main.collectionName">
       <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m0"
+                       select="str[@name='sammlung']"/>
+   </xsl:template>
+	  <xsl:template name="Main.Subject">
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
                        mode="m4"
-                       select="publicationOutlet"/>
+                       select="str[@name='klassifikation_sachgruppe']/str"/>
    </xsl:template>
-	  <xsl:template name="Main.URI">
-      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform" mode="m7" select="link"/>
+	  <xsl:template name="Main.Country">
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m7"
+                       select="ort_s_herstellung_EEXCESS"/>
    </xsl:template>
-
-   <template xmlns="http://www.w3.org/1999/XSL/Transform" match="link" mode="m0">
-      <element name="uri">
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="str[@name='sammlung']"
+             mode="m0">
+      <element name="edm:collectionName">
          <call-template name="StringToString"/>
       </element>
    </template>
    <xsl:template name="StringToString">
       <xsl:value-of select="."/>
    </xsl:template>
-   <template xmlns="http://www.w3.org/1999/XSL/Transform" match="year" mode="m1">
-      <element name="dcterms:date">
-         <call-template name="StringToString"/>
-      </element>
-   </template>
-   <template xmlns="http://www.w3.org/1999/XSL/Transform" match="id" mode="m2">
-      <element name="dc:identifier">
-         <call-template name="StringToString"/>
-      </element>
-   </template>
    <template xmlns="http://www.w3.org/1999/XSL/Transform"
-             match="authorsString"
-             mode="m3">
-      <element name="dc:creator">
-         <call-template name="StringToString"/>
-      </element>
-   </template>
-   <template xmlns="http://www.w3.org/1999/XSL/Transform"
-             match="publicationOutlet"
-             mode="m4">
-      <element name="edm:collectionName">
-         <call-template name="StringToString"/>
-      </element>
-   </template>
-   <template xmlns="http://www.w3.org/1999/XSL/Transform" match="title" mode="m5">
+             match="str[@name='_display_']"
+             mode="m1">
       <element name="dc:title">
          <call-template name="StringToString"/>
       </element>
    </template>
    <template xmlns="http://www.w3.org/1999/XSL/Transform"
-             match="description"
-             mode="m6">
+             match="str[@name='sammlung']"
+             mode="m2">
+      <element name="edm:language">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="str[@name='beschreibung']"
+             mode="m3">
       <element name="dc:description">
          <call-template name="StringToString"/>
       </element>
    </template>
-   <template xmlns="http://www.w3.org/1999/XSL/Transform" match="link" mode="m7">
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="str[@name='klassifikation_sachgruppe']/str"
+             mode="m4">
+      <element name="dc:subject">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="eexcessURI"
+             mode="m5">
       <element name="uri">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="eexcessURI"
+             mode="m6">
+      <element name="uri">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="ort_s_herstellung_EEXCESS"
+             mode="m7">
+      <element name="edm:Country">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="str[@name='inventarnummer']"
+             mode="m8">
+      <element name="dc:identifier">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+   <template xmlns="http://www.w3.org/1999/XSL/Transform"
+             match="arr[@name='_thumbs_']/str[1]"
+             mode="m9">
+      <element name="previewImage">
          <call-template name="StringToString"/>
       </element>
    </template>

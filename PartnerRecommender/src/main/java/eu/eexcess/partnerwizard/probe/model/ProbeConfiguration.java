@@ -1,5 +1,9 @@
 package eu.eexcess.partnerwizard.probe.model;
 
+import eu.eexcess.dataformats.userprofile.ContextKeyword;
+import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -10,34 +14,47 @@ import java.util.Objects;
  * @date 2015-08-27
  */
 public class ProbeConfiguration {
-	public final String keyword;
+	public final ProberKeyword[] keywords;
 	public final String queryGeneratorClass;
 	public final Boolean queryExpansionEnabled;
 	public final Boolean querySplittingEnabled;
 
 
-	public ProbeConfiguration( String keyword, String queryGeneratorClass, Boolean queryExpansionEnabled, Boolean querySplittingEnabled ){
-		this.keyword = keyword;
+	public ProbeConfiguration( ProberKeyword[] keywords, String queryGeneratorClass, Boolean queryExpansionEnabled, Boolean querySplittingEnabled ){
+		this.keywords = keywords;
 		this.queryGeneratorClass = queryGeneratorClass;
 		this.queryExpansionEnabled = queryExpansionEnabled;
 		this.querySplittingEnabled = querySplittingEnabled;
 	}
 
-	public ProbeConfiguration( String keyword, String queryGeneratorClass, QueryOptions queryOptions ){
-		this.keyword = keyword;
+	public ProbeConfiguration( ProberKeyword[] keywords, String queryGeneratorClass, QueryOptions queryOptions ){
+		this.keywords = keywords;
 		this.queryGeneratorClass = queryGeneratorClass;
 		this.queryExpansionEnabled = queryOptions.expansion;
 		this.querySplittingEnabled = queryOptions.splitting;
 	}
 
 
+	public List<ContextKeyword> getKeywords(){
+		List<ContextKeyword> contextKeywords = new ArrayList<>( keywords.length );
+
+		for( ProberKeyword keyword : keywords ){
+			ContextKeyword contextKeyword = new ContextKeyword( keyword.keyword );
+			contextKeyword.setIsMainTopic( keyword.isMainTopic );
+
+			contextKeywords.add( contextKeyword );
+		}
+
+		return contextKeywords;
+	}
+
 	@Override
 	public int hashCode(){
-		int hash = 7;
-		hash = 89*hash+Objects.hashCode( this.keyword );
-		hash = 89*hash+Objects.hashCode( this.queryGeneratorClass );
-		hash = 89*hash+Objects.hashCode( this.queryExpansionEnabled );
-		hash = 89*hash+Objects.hashCode( this.querySplittingEnabled );
+		int hash = 3;
+		hash = 19*hash+Objects.hashCode( this.keywords );
+		hash = 19*hash+Objects.hashCode( this.queryGeneratorClass );
+		hash = 19*hash+Objects.hashCode( this.queryExpansionEnabled );
+		hash = 19*hash+Objects.hashCode( this.querySplittingEnabled );
 		return hash;
 	}
 
@@ -50,7 +67,7 @@ public class ProbeConfiguration {
 			return false;
 		}
 		final ProbeConfiguration other = (ProbeConfiguration) obj;
-		if( !Objects.equals( this.keyword, other.keyword ) ){
+		if( !Objects.equals( this.keywords, other.keywords ) ){
 			return false;
 		}
 		if( !Objects.equals( this.queryGeneratorClass, other.queryGeneratorClass ) ){
@@ -63,11 +80,6 @@ public class ProbeConfiguration {
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public String toString(){
-		return "ProbeConfiguration{"+"keyword="+keyword+", queryGeneratorClass="+queryGeneratorClass+", queryExpansionEnabled="+queryExpansionEnabled+", querySplittingEnabled="+querySplittingEnabled+'}';
 	}
 
 }

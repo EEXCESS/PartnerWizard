@@ -12,10 +12,12 @@ import eu.eexcess.partnerwizard.probe.controller.ProbeConfigurationIterator;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponseIteration;
 import eu.eexcess.partnerwizard.probe.model.Pair;
 import eu.eexcess.partnerwizard.probe.model.ProberResult;
+import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse.State;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,26 +37,36 @@ import java.util.logging.Logger;
  */
 public class PartnerProber{
 	private static final Logger LOGGER = Logger.getLogger( PartnerProber.class.getName() );
-	private static final String[] DEFAULT_GENERATORS = {"eu.eexcess.partnerrecommender.reference.LuceneQueryGenerator",
-														"eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunction",
-														"eu.eexcess.partnerrecommender.reference.OrQueryGenerator",
-														"eu.eexcess.partnerrecommender.reference.OrQueryGeneratorFieldTermConjunction"};
 	private static final String ID_Prefix = "id-";
+	private static final Map<String, Integer> DEFAULT_GENERATORS = Collections.unmodifiableMap(
+		new HashMap<String, Integer>() {{
+			put("eu.eexcess.partnerrecommender.reference.OrQueryGenerator", 1);
+			put("eu.eexcess.partnerrecommender.reference.OrQueryGeneratorFieldTermConjunction", 2);
+			put("eu.eexcess.partnerrecommender.reference.LuceneQueryGenerator", 3);
+			put("eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunction", 4);
+		}}
+	);
 
-	private int idCounter = 0;
-	private final ExecutorService executorService = Executors.newFixedThreadPool( 10 );
-	private final Map<String, ProbeConfigurationIterator> configs = new HashMap<>();
-
-	public PartnerRecommender recommender = new PartnerRecommender();
+	private final ExecutorService executorService;
+	private final Map<String, ProbeConfigurationIterator> configs;
+	private int idCounter;
 
 
-	public ProberResponse init( List<String> keywords ){
-		List<String> generators = testWorkingGeneratorClasses( keywords );
+	public PartnerProber(){
+		idCounter = 0;
+
+		executorService = Executors.newFixedThreadPool( 10 );
+		configs = new HashMap<>();
+	}
+
+
+	public ProberResponse init( List<ProberKeyword[]> queries ){
+		List<String> generators = testWorkingGeneratorClasses( queries );
 
 		if( !generators.isEmpty() ){
 			String id = getId();
 
-			ProbeConfigurationIterator iterator = new ProbeConfigurationIterator( keywords, generators, true, true );
+			ProbeConfigurationIterator iterator = new ProbeConfigurationIterator( queries, generators, true, true );
 			configs.put( id, iterator );
 
 			State nextState;
@@ -72,51 +84,49 @@ public class PartnerProber{
 		}
 	}
 
-
 	public ProberResponse storeAndNext( String id, boolean hasWinner, int result ){
 		ProbeConfigurationIterator iterator = configs.get( id );
 		if( iterator==null ){
 			throw new IllegalArgumentException( "Unknown Id" );
 		}
-		else{
-			try{
-				Pair<ProbeConfiguration> probeConfigs;
-				List<ProberResult> firstList;
-				List<ProberResult> secondList;
-				do{
-					if( iterator.isWaitingForStore() ){
-						iterator.storeResponse( hasWinner, result );
 
-						hasWinner = false;
-						result = -1;
-					}
+		Pair<ProbeConfiguration> probeConfigs;
+		List<ProberResult> firstList;
+		List<ProberResult> secondList;
+		do{
+			if( iterator.isWaitingForStore() ){
+				iterator.storeResponse( hasWinner, result );
 
-					if( iterator.isNextPairAvailable()) {
-						probeConfigs = iterator.nextPair();
-						Pair<FutureTask<List<ProberResult>>> resultListPair = retriveNextResultListPair( probeConfigs );
-						firstList = resultListPair.first.get();
-						secondList = resultListPair.second.get();
-					}
-					else{
-						return new ProberResponse( id, State.Done );
-					}
-				}
-				while( areResultListsEqual(firstList, secondList) );
-
-				ProberResponseIteration response = new ProberResponseIteration( id, State.Iteration );
-				response.keywords = probeConfigs.first.keyword;
-				response.firstList = firstList;
-				response.secondList = secondList;
-
-				return response;
+				hasWinner = false;
+				result = -1;
 			}
-			catch( InterruptedException|ExecutionException ex ){
-				LOGGER.log( Level.SEVERE, "Query was interrupted ", ex );
-				return new ProberResponse( id, State.Error );
+
+			if( iterator.isNextPairAvailable() ){
+				probeConfigs = iterator.nextPair();
+				Pair<FutureTask<List<ProberResult>>> resultListPair = retriveNextResultListPair( probeConfigs );
+
+				try{
+					firstList = resultListPair.first.get();
+					secondList = resultListPair.second.get();
+				}
+				catch( InterruptedException|ExecutionException ex ){
+					LOGGER.log( Level.SEVERE, "Query was interrupted ", ex );
+					return new ProberResponse( id, State.Error );
+				}
+			}
+			else{
+				return new ProberResponse( id, State.Done );
 			}
 		}
-	}
+		while( areResultListsEqual( firstList, secondList ) );
 
+		ProberResponseIteration response = new ProberResponseIteration( id, State.Iteration );
+		response.keywords = probeConfigs.first.keywords;
+		response.firstList = firstList;
+		response.secondList = secondList;
+
+		return response;
+	}
 
 	public ProbeConfiguration getConfiguration( String id ){
 		ProbeConfigurationIterator iterator = configs.get( id );
@@ -134,13 +144,13 @@ public class PartnerProber{
 		return ID_Prefix+idCounter;
 	}
 
-	private List<String> testWorkingGeneratorClasses( List<String> keywords ){
-		Map<String, Integer> generatorResults = Collections.synchronizedMap( new HashMap<String, Integer>( DEFAULT_GENERATORS.length ) );
-		List<FutureTask<Void>> tasks = new ArrayList<>( DEFAULT_GENERATORS.length*keywords.size() );
-		for( String keyword: keywords ){
-			for( String generatorClass: DEFAULT_GENERATORS ){
+	private List<String> testWorkingGeneratorClasses( List<ProberKeyword[]> queries ){
+		Map<String, Integer> generatorResults = Collections.synchronizedMap( new HashMap<String, Integer>( DEFAULT_GENERATORS.size() ) );
+		List<FutureTask<Void>> tasks = new ArrayList<>( DEFAULT_GENERATORS.size()*queries.size() );
+		for( ProberKeyword[] keywords : queries ){
+			for( String generatorClass: DEFAULT_GENERATORS.keySet() ){
 				FutureTask<Void> recommenderTask = new FutureTask<>( () -> {
-					ProbeConfiguration config = new ProbeConfiguration( keyword, generatorClass, Boolean.FALSE, Boolean.FALSE );
+					ProbeConfiguration config = new ProbeConfiguration( keywords, generatorClass, Boolean.FALSE, Boolean.FALSE );
 					SecureUserProfile userProfile = toUserProfile( config );
 
 					ResultList results;
@@ -173,21 +183,13 @@ public class PartnerProber{
 			}
 		} );
 
-		ArrayList<String> generators = new ArrayList<>();
-		generatorResults.forEach( ( String generator, Integer count ) -> {
-			if( count>0 ){
-				generators.add( generator );
-			}
-		} );
-		generators.trimToSize();
-
-		return generators;
+		return toSortedGeneratorList( generatorResults );
 	}
 
 	private Pair<FutureTask<List<ProberResult>>> retriveNextResultListPair( Pair<ProbeConfiguration> probeConfigs ){
 		FutureTask<List<ProberResult>> firstResponse = new FutureTask<>( () -> {
 			SecureUserProfile profile = toUserProfile( probeConfigs.first );
-			List<Result> recommenderResults = recommender.recommend( profile ).results;
+			List<Result> recommenderResults = new PartnerRecommender().recommend( profile ).results;
 			List<ProberResult> results = new ArrayList<>( recommenderResults.size() );
 
 			for( Result recommenderResult: recommenderResults ){
@@ -200,7 +202,7 @@ public class PartnerProber{
 
 		FutureTask<List<ProberResult>> secondResponse = new FutureTask<>( () -> {
 			SecureUserProfile profile = toUserProfile( probeConfigs.second );
-			List<Result> recommenderResults = recommender.recommend( profile ).results;
+			List<Result> recommenderResults = new PartnerRecommender().recommend( profile ).results;
 			List<ProberResult> results = new ArrayList<>( recommenderResults.size() );
 
 			for( Result recommenderResult: recommenderResults ){
@@ -211,16 +213,34 @@ public class PartnerProber{
 		} );
 		executorService.submit( secondResponse );
 
-		return new Pair<>(firstResponse, secondResponse);
+		return new Pair<>( firstResponse, secondResponse );
 	}
 
-	
-	private static boolean areResultListsEqual(List<ProberResult> first, List<ProberResult> second){
+	private List<String> toSortedGeneratorList( Map<String, Integer> generatorResults ){
+		ArrayList<String> generators = new ArrayList<>( generatorResults.size() );
+		generatorResults.forEach( ( String generator, Integer count ) -> {
+			if( count>0 ){
+				generators.add( generator );
+			}
+		} );
+		generators.trimToSize();
+
+		Collections.sort(generators, ( String generator1, String generator2 ) ->{
+			int ordinal1 = DEFAULT_GENERATORS.get( generator1 );
+			int ordinal2 = DEFAULT_GENERATORS.get( generator2 );
+
+			return Integer.compare( ordinal1, ordinal2 );
+		} );
+
+		return generators;
+	};
+
+	private static boolean areResultListsEqual( List<ProberResult> first, List<ProberResult> second ){
 		if( first.size()!=second.size() ){
 			return false;
 		}
 		else{
-			for( int i=0; i<first.size(); i++ ){
+			for( int i = 0; i<first.size(); i++ ){
 				ProberResult firstElement = first.get( i );
 				ProberResult secondElement = second.get( i );
 
@@ -240,9 +260,10 @@ public class PartnerProber{
 		partnerBadge.setIsQuerySplittingEnabled( config.querySplittingEnabled );
 
 		SecureUserProfile userProfile = new SecureUserProfile();
-		userProfile.contextKeywords.add( new ContextKeyword( config.keyword ) );
-		userProfile.partnerList.add( partnerBadge );
+		userProfile.setContextKeywords( config.getKeywords() );
+		userProfile.setPartnerList( Arrays.asList( partnerBadge ) );
 
 		return userProfile;
 	}
+
 }

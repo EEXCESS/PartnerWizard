@@ -10,8 +10,8 @@ import com.sun.jersey.spi.resource.Singleton;
 
 import eu.eexcess.partnerwizard.probe.PartnerProber;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
+import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
-import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -34,17 +34,22 @@ public class ProbeService{
 	@Path("init")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ProberResponse init( List<String> keywords ){
-		if( keywords==null || keywords.isEmpty() ){
-			throw new WebApplicationException( Response.Status.BAD_REQUEST );
-		}
-		keywords.removeAll( Collections.<String>singleton(null) );
-		keywords.removeAll( Collections.<String>singleton( "" ) );
-		if( keywords.isEmpty() ){
+	public ProberResponse init( List<ProberKeyword[]> queries ){
+		if( queries==null || queries.isEmpty() ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
 
-		return prober.init( keywords );
+		for( int i=0; i<queries.size(); i++){
+			ProberKeyword[] keywords = queries.get( i );
+			if( keywords.length < 1 ){
+				queries.remove( i );
+			}
+		}
+		if( queries.isEmpty() ){
+			throw new WebApplicationException( Response.Status.BAD_REQUEST );
+		}
+
+		return prober.init( queries );
 	}
 
 	@GET
