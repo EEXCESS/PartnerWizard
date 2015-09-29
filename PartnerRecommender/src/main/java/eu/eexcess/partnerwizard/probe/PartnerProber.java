@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  *
@@ -266,4 +267,17 @@ public class PartnerProber{
 		return userProfile;
 	}
 
+	private static SecureUserProfile cloneAndConfigureUserProfile( SecureUserProfile userProfile, ProbeConfiguration config ){
+		PartnerBadge partnerBadge = new PartnerBadge();
+		partnerBadge.setSystemId( PartnerConfigurationCache.CONFIG.getPartnerConfiguration().getSystemId() );
+		partnerBadge.setQueryGeneratorClass( config.queryGeneratorClass );
+		partnerBadge.setIsQueryExpansionEnabled( config.queryExpansionEnabled );
+		partnerBadge.setIsQuerySplittingEnabled( config.querySplittingEnabled );
+
+		SecureUserProfile newUserProfile = SerializationUtils.clone( userProfile );
+		newUserProfile.setContextKeywords( config.getKeywords() );
+		newUserProfile.setPartnerList( Arrays.asList( partnerBadge ) );
+
+		return newUserProfile;
+	}
 }
