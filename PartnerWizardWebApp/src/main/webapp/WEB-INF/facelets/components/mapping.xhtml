@@ -18,7 +18,17 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 			<div class="controls">
 				<h:inputText id="#{mappingId}EndPoint" value="#{mappingBean.searchEndpoint}"
 					styleClass="form-control" />
-				<p class="help-block">URL for API</p>
+				<p class="help-block">URL for API
+					<br/>
+					mandatory place holder:
+					<br/>
+					$ {query} - here we insert the search term
+					<br/>
+					possible place holder:
+					<br/>
+					$ {numResults} - here we insert the number of objects returned
+				</p>
+				
 			</div>
 		</div>
 
@@ -69,10 +79,13 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 					<div class="controls">
 						<h:inputText id="#{mappingId}eexcessFieldsXPathLoop" value="#{mappingBean.eexcessFieldsXPathLoop}"
 							styleClass="form-control" />
-						<p class="help-block">XPath for the loop</p>
+						<p class="help-block">XPath which points to the list of objects</p>
 					</div>
 				</div>
 				<h3>EEXCESS Fields</h3>
+				<p>
+					Here you need to define the mapping from your metadata to our EEXCESS metadata fields.
+				</p>
 				<table class="eexcessMappingFieldsTable">
 					<tr>
 						<td>name</td>
