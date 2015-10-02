@@ -123,6 +123,7 @@ public class MappingConfigBean implements Serializable{
 					values.add(nodes.item(i).getTextContent());
 //					System.out.println("found:" + nodes.item(i).getTextContent());
 				}
+				if (values.size()==0) values.add("no values found!!!");
 				this.getMappingFields().get(this.actMappingFieldId).setExampleValues(values);
 			} catch (XPathExpressionException e1) {
 				e1.printStackTrace();

@@ -52,11 +52,15 @@ public class Bean implements Serializable {
 	private String packageStr = "";
 	private String partnerName = "";
 	private String partnerURL = "";
+	private String partnerFavIconURL ="";
+	
 	private String dataLicense = "";
 	private String apiPreviewImagePrefix="";
 	private String apiURIPathPrefix="";
 	
 	private PartnerInfo partnerInfo;
+	
+	private boolean deployablePR = true;
 	
 	public PartnerInfo getPartnerInfo() {
 		if (this.partnerInfo == null )
@@ -190,6 +194,7 @@ public class Bean implements Serializable {
 		response.addCookie(createCookie(request,"PackageStr", this.getPackageStr()));
 		response.addCookie(createCookie(request,"PartnerName", this.getPartnerName()));
 		response.addCookie(createCookie(request,"PartnerURL", this.getPartnerURL()));
+		response.addCookie(createCookie(request,"PartnerFavIconURL", this.getPartnerFavIconURL()));
 		response.addCookie(createCookie(request,"Version", this.getVersion()));
 		response.addCookie(createCookie(request,"ApiPreviewImagePrefix", this.getApiPreviewImagePrefix()));
 		response.addCookie(createCookie(request,"ApiURIPathPrefix", this.getApiURIPathPrefix()));
@@ -197,6 +202,14 @@ public class Bean implements Serializable {
 		createCookie(response,request,COOKIE_NAME_DETAIL_MAPPING_CONFIG, this.getDetailMappingConfig());
 		createCookie(response, request,COOKIE_NAME_PARTNER_INFO, this.getPartnerInfo());
 		createCookie(response,request,COOKIE_NAME_SEARCH_MAPPING_CONFIG, this.getSearchMappingConfig());
+	}
+
+	public String getPartnerFavIconURL() {
+		return partnerFavIconURL;
+	}
+
+	public void setPartnerFavIconURL(String partnerFavIconURL) {
+		this.partnerFavIconURL = partnerFavIconURL;
 	}
 
 	private void createCookie(HttpServletResponse response,
@@ -253,6 +266,8 @@ public class Bean implements Serializable {
 					this.setPartnerName(myActCookie.getValue());
 				if (myActCookie.getName().equals(COOKIENAME+"PartnerURL"))
 					this.setPartnerURL(myActCookie.getValue());
+				if (myActCookie.getName().equals(COOKIENAME+"PartnerFavIconURL"))
+					this.setPartnerFavIconURL(myActCookie.getValue());
 				if (myActCookie.getName().equals(COOKIENAME+"Version"))
 					this.setVersion(myActCookie.getValue());
 				if (myActCookie.getName().equals(COOKIENAME+"ApiPreviewImagePrefix"))
@@ -343,13 +358,14 @@ public class Bean implements Serializable {
 
 	public void generatePR()
 	{
-		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DarchetypeVersion=1.0-SNAPSHOT -DinteractiveMode=false " 
+		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -Dmaven.repo.remote=https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/ -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DarchetypeVersion=1.0-SNAPSHOT -DinteractiveMode=false " 
 				+ "-DgroupId=" + this.groupId 
 				+ " -DartifactId="+ this.artifactId 
 				+ " -Dversion="+this.version 
 				+ " -Dpackage="+ this.packageStr 
 				+ " -DpartnerName=\""+ this.partnerName+"\""
 				+ " -DpartnerURL=\""+ this.partnerURL+"\""
+				+ " -DpartnerFavIconURL=\""+this.partnerFavIconURL+"\""
 				+ " -DdataLicense=\""+ this.dataLicense+"\""
 				+ " -DpartnerAPIpreviewImagePathPrefix=\""+ this.apiPreviewImagePrefix+"\""
 				+ " -DpartnerAPIURIPathPrefix=\""+ this.apiURIPathPrefix+"\""
@@ -374,11 +390,53 @@ public class Bean implements Serializable {
 		commands.add("rd " + this.artifactId + " /s /Q");
 		commands.add(this.buildCMD);
 		commands.add("cd " + this.artifactId);
-		commands.add("mvn clean install -DskipTests");
+		commands.add("mvn install -DskipTests");
 		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
 		this.buildOutput = this.cmdExecute(commands);
+		if (this.buildOutput.contains("s")){// TODO search for successful
+			this.setDeployablePR(true);
+		} else {
+			this.setDeployablePR(true);
+		}
 	}
 
+	
+	public void deployPR()
+	{
+		System.out.println("we deploy now to our server");
+		String warName= "eexcess-partner-"+this.artifactId+"-"+this.version;
+
+		ArrayList<String> commands = new ArrayList<String>();
+		commands = buildENVsetup(commands);
+		commands.add(buildENVgotoSandbox());
+		commands.add(this.buildCMD);
+		commands.add("cd " + this.artifactId);
+		commands.add("cd target");
+		commands.add("del %TOMCAT%webapps\\"+warName+".war");
+		commands.add("rd /S /Q %TOMCAT%webapps\\"+warName);
+		commands.add("xcopy "+warName+".war %TOMCAT%webapps\\ /Y");
+
+		
+		
+		
+//		del %TOMCAT%webapps\PartnerWizard-1.0-SNAPSHOT.war
+//		rd /S /Q %TOMCAT%webapps\PartnerWizard-1.0-SNAPSHOT
+//
+//		copy .\target\*.war %TOMCAT%webapps\
+		
+		
+		System.out.println("\n\n");
+		
+		for (int i = 0; i < commands.size(); i++) {
+			System.out.println(	commands.get(i));
+		}
+		System.out.println("\n\n");
+		
+		System.out.println(this.cmdExecute(commands));
+
+		
+	}
+		
 	public void compilePR()
 	{
 		ArrayList<String> commands = new ArrayList<String>();
@@ -600,6 +658,14 @@ public class Bean implements Serializable {
 
 	public void setApiURIPathPrefix(String apiURIPathPrefix) {
 		this.apiURIPathPrefix = apiURIPathPrefix;
+	}
+
+	public boolean isDeployablePR() {
+		return deployablePR;
+	}
+
+	public void setDeployablePR(boolean deployablePR) {
+		this.deployablePR = deployablePR;
 	}
 
 }

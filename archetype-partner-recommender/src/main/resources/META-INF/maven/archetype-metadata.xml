@@ -7,7 +7,8 @@
     <requiredProperty key="partnerName"/>
     <requiredProperty key="partnerURL"/>
     <requiredProperty key="dataLicense"/>
-
+	<requiredProperty key="partnerFavIconURL"/>
+	
     <requiredProperty key="partnerAPIsearchEndpoint"/>
     <requiredProperty key="partnerAPIsearchTerm"/>
     <requiredProperty key="partnerAPIsearchMappingFieldsLoopXPath"/>

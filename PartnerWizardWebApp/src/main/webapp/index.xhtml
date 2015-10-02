@@ -115,6 +115,14 @@
 					</div>
 					
 					<div class="control-group">
+						<label class="control-label" for="textinput">partnerFavIconURL:</label>
+						<div class="controls">
+							<h:inputText id="partnerFavIconURL" value="#{bean.partnerFavIconURL}" styleClass="form-control" />
+							<p class="help-block">URL of the FavIcon of the Partner - used in EEXCESS</p>
+						</div>
+					</div>
+
+					<div class="control-group">
 						<label class="control-label" for="textinput">prefix for the URI to the objects:</label>
 						<div class="controls">
 							<h:inputText id="apiURIPathPrefix" value="#{bean.apiURIPathPrefix}"
@@ -166,11 +174,12 @@
 				<div class="row">
 					<div>
 						<h2>Create PartnerRecommender/project</h2>
+						<!-- disabled="true"  -->
 						<a4j:commandButton id="generatePR" value="Build the PartnerRecommender" render="out" execute="@form"
-							action="#{bean.generatePR}" styleClass="btn btn-primary" disabled="true"/>
+							action="#{bean.generatePR}" styleClass="btn btn-primary" />
 
 						<h:panelGroup id="out">
-							<h3>mvn command use to generate the PartnerRecommender:</h3>
+							<h3>mvn command used to generate the PartnerRecommender:</h3>
 							<p>
 								<h:outputText value="#{bean.buildCMD}" styleClass="outhello" />
 							</p>
@@ -187,6 +196,20 @@
 							<h:commandLink id="downloadSourceZIP" action="#{bean.downloadSourceZIP}"
 								value="Download the generated sources of the PartnerRecommender" />
 						</p>
+						
+						<h:panelGroup id="deploymentPanelId">
+							<f:subview rendered="#{bean.deployablePR}">
+								<h3>Deployment to our Development-Server</h3>
+								<p>
+										With this button we deploy the generated PartnerRecommender to our Development-Server.
+										With our <a href="https://chrome.google.com/webstore/detail/eexcessdev/oibioeefnhaadmajhagebgfdmgjjdgbe">Chrome-Extension</a> you should become recommendations also from your new PartnerRecommender.
+								</p>
+								<a4j:commandButton id="deployPR" value="Deploy the PartnerRecommender to our DEV-Server" render="wholePage" execute="@form"
+									action="#{bean.deployPR}" styleClass="btn btn-primary" rendered="#{bean.deployablePR}"/>
+							</f:subview>
+								
+						</h:panelGroup>
+						
 					</div>
 				</div>
 

@@ -1,5 +1,6 @@
 {
   "systemId": "${partnerName}",
+  "favIconURI":"${partnerFavIconURL}",
   "partnerConnectorClass": "${groupId}.recommender.${artifactId}PartnerConnector",
   "queryGeneratorClass": "${groupId}.recommender.${artifactId}QueryGenerator",
   "searchEndpoint": "${partnerAPIsearchEndpoint}",
@@ -8,7 +9,7 @@
   "isTransformedNative": "false",
   "mappingListTransformationFile":"mapperResultList.xsl",
   "mappingObjectTransformationFile":"mapperObject.xsl",
-  "partnerDataRequestsTrace":"true",
+  "partnerDataRequestsTrace":"false",
   "enableEnriching":"true",
   "makeCleanupBeforeTransformation":"false",
   "partnerConnectorEndpoint": "http://127.0.0.1/eexcess-partner-${artifactId}-1.0-SNAPSHOT/partner/",
