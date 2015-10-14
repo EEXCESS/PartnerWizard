@@ -375,7 +375,7 @@ public class Bean implements Serializable {
 
 	public void generatePR()
 	{
-		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=local -Dmaven.repo.remote=https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/ -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DarchetypeVersion=1.0-SNAPSHOT -DinteractiveMode=false " 
+		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/ -Dmaven.repo.remote=https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/ -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DarchetypeVersion=1.0-SNAPSHOT -DinteractiveMode=false " 
 				+ "-DgroupId=" + this.groupId 
 				+ " -DartifactId="+ this.artifactId 
 				+ " -Dversion="+this.version 
