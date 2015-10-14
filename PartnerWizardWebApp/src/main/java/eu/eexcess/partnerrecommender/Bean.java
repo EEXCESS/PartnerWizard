@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +39,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -48,6 +51,8 @@ import javax.servlet.http.HttpServletResponse;
 @ManagedBean
 @SessionScoped
 public class Bean implements Serializable {
+
+	private static final String ARCHETYPE_REMOVE_TAG = "###remove###";
 
 	private static final String COOKIE_NAME_SEARCH_MAPPING_CONFIG = "SearchMappingConfig";
 
@@ -375,6 +380,7 @@ public class Bean implements Serializable {
 
 	public void generatePR()
 	{
+		this.validateInput();
 		this.buildCMD = "mvn archetype:generate -DarchetypeCatalog=https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/ -Dmaven.repo.remote=https://nexus.know-center.tugraz.at/service/local/repositories/eexcess/content/ -DarchetypeGroupId=eu.eexcess -DarchetypeArtifactId=eexcess-partner-recommender-archetype -DarchetypeVersion=1.0-SNAPSHOT -DinteractiveMode=false " 
 				+ "-DgroupId=" + this.groupId 
 				+ " -DartifactId="+ this.artifactId 
@@ -415,6 +421,8 @@ public class Bean implements Serializable {
 		} else {
 			this.setDeployablePR(true);
 		}
+		cleanupGeneratedSources();
+		this.compilePR();
 	}
 
 	
@@ -668,6 +676,40 @@ public class Bean implements Serializable {
         ArrayList<Cookie> cookies = new ArrayList<Cookie>(cookieMap.values()); 
         return cookies;
     }
+	
+	public void validateInput()
+	{
+		
+		if (this.apiPreviewImagePrefix == null || this.apiPreviewImagePrefix.trim().isEmpty())
+			this.apiPreviewImagePrefix = ARCHETYPE_REMOVE_TAG;
+		if (this.apiURIPathPrefix == null || this.apiURIPathPrefix.trim().isEmpty())
+			this.apiURIPathPrefix = ARCHETYPE_REMOVE_TAG;
+		
+		/*
+		FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Successfully changed!", "Successfully changed!"));
+          */      
+	}
+	
+	public void cleanupGeneratedSources()
+	{
+		replaceInFile(PATH_BUILD_SANDBOX+this.artifactId+"\\src\\main\\resources\\mapperObject.xsl", ARCHETYPE_REMOVE_TAG, "");
+		replaceInFile(PATH_BUILD_SANDBOX+this.artifactId+"\\src\\main\\resources\\mapperResultList.xsl", ARCHETYPE_REMOVE_TAG, "");
+	}
+
+	public void replaceInFile(String pathString, String oldString, String newString)
+	{
+		Path path = Paths.get(pathString);
+		Charset charset = StandardCharsets.UTF_8;
+		try {
+			String content = new String(Files.readAllBytes(path), charset);
+			content = content.replaceAll(oldString, newString);
+			Files.write(path, content.getBytes(charset));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public String getApiURIPathPrefix() {
 		return apiURIPathPrefix;
