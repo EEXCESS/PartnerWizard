@@ -75,7 +75,7 @@ limitations under the License.
 						<label class="control-label" for="textinput">Data Access Agreement:</label>
 						<div class="controls">
 							<h:selectBooleanCheckbox id="dataAccessAgreement" value="#{bean.partnerInfo.licenseAgreement}" styleClass="form-control" onclick="agreededLicense()" />
-							<p class="help-block">To generate a PartnerRecommender you need to agree to the Data Access Agreement. <a href="./Data-Access-Agreement.pdf" target="_blank">EEXCESS Data Access Agreement</a></p>
+							<p class="help-block">To generate a PartnerRecommender you need to agree to the <a href="./Data-Access-Agreement.pdf" target="_blank">EEXCESS Data Access Agreement</a>.</p>
 						</div>
 					</div>
 				</fieldset>
@@ -207,7 +207,7 @@ limitations under the License.
 							</p>
 							<h3>Result:</h3>
 							<p>
-								<h:inputTextarea id="buildOutputID" rows="40" cols="120"
+								<h:inputTextarea id="buildOutputID" rows="20" cols="160"
 									value="#{bean.buildOutput}" readonly="true" />
 							</p>
 						</h:panelGroup>
