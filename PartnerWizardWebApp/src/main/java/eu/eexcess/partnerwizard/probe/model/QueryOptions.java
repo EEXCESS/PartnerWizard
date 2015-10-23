@@ -22,7 +22,7 @@ public class QueryOptions{
 
 
 	public static List<QueryOptions> getQueryOptions( boolean enableExpansion, boolean enableSplitting ){
-		List<QueryOptions> options = new ArrayList<QueryOptions>( 3 );
+		List<QueryOptions> options = new ArrayList<>( 3 );
 
 		options.add( new QueryOptions( Boolean.FALSE, Boolean.FALSE ) );
 		if( enableExpansion ){

@@ -31,7 +31,7 @@ public abstract class PairGenerator<T> {
 	public abstract void reset();
 
 	public static <T> ArrayList<T> removeDublicates( Collection<T> collection ){
-		return  new ArrayList<T>(new LinkedHashSet<T>( collection ));
+		return  new ArrayList<>(new LinkedHashSet<>( collection ));
 	}
 
 }

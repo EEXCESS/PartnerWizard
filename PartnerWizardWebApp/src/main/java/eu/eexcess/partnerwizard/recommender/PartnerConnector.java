@@ -63,7 +63,7 @@ public class PartnerConnector implements PartnerConnectorApi{
 
 	@Override
 	public Document queryPartner( PartnerConfiguration partnerConfiguration, SecureUserProfile userProfile, PartnerdataLogger logger ) throws IOException{
-		Map<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new HashMap<>();
 
 		QueryGeneratorApi queryGenerator = PartnerConfigurationCache.CONFIG.getQueryGenerator( partnerConfiguration.getQueryGeneratorClass() );
 		String query = queryGenerator.toQuery( userProfile );
@@ -102,10 +102,7 @@ public class PartnerConnector implements PartnerConnectorApi{
 		try{
 			response = builder.get( ClientResponse.class );
 		}
-		catch( ClientHandlerException ex){
-			throw new IOException( "Cannot query partner API!", ex );
-		}
-		catch( UniformInterfaceException ex ){
+		catch( ClientHandlerException|UniformInterfaceException ex){
 			throw new IOException( "Cannot query partner API!", ex );
 		}
 		try{

@@ -9,7 +9,6 @@ package eu.eexcess.partnerwizard.webservice;
 
 import com.sun.jersey.spi.resource.Singleton;
 import eu.eexcess.dataformats.result.ResultList;
-import eu.eexcess.dataformats.result.ResultStats;
 import eu.eexcess.partnerwizard.probe.PartnerProber;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;

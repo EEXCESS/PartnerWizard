@@ -36,7 +36,7 @@ public class ProbeConfiguration {
 
 
 	public List<ContextKeyword> getKeywords(){
-		List<ContextKeyword> contextKeywords = new ArrayList<ContextKeyword>( keywords.length );
+		List<ContextKeyword> contextKeywords = new ArrayList<>( keywords.length );
 
 		for( ProberKeyword keyword : keywords ){
 			ContextKeyword contextKeyword = new ContextKeyword( keyword.keyword );

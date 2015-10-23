@@ -24,6 +24,8 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 	private final Map<T, Integer> votingScores;
 	private final Map<T, Integer> positionScores;
 
+
+	@SuppressWarnings("unchecked")
 	public CombinatorialPairGenerator( Collection<T> elements ){
 
 		if( elements==null||elements.isEmpty() ){
@@ -43,8 +45,8 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 
 		this.pair = null;
 
-		this.votingScores = new HashMap<T, Integer>( this.elements.length );
-		this.positionScores = new HashMap<T, Integer>( this.elements.length );
+		this.votingScores = new HashMap<>( this.elements.length );
+		this.positionScores = new HashMap<>( this.elements.length );
 		int i = elements.size();
 		for( T element: elements ){
 			votingScores.put( element, 0 );
@@ -76,7 +78,7 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 			throw new IllegalStateException( "The result of the last pair needs to be stored before a new pair can be provided." );
 		}
 
-		pair = new Pair<T>( elements[firstIndex], elements[secondIndex] );
+		pair = new Pair<>( elements[firstIndex], elements[secondIndex] );
 
 		return pair;
 	}
@@ -173,17 +175,15 @@ public class CombinatorialPairGenerator<T> extends PairGenerator<T>{
 	private void generateSortedElements(){
 		sortedElements = Arrays.copyOf( elements, elements.length );
 
-		Arrays.sort( sortedElements, new Comparator<T>(){
-			public int compare( T element1, T element2 ){
-				int ordinal1 = votingScores.get( element1 );
-				int ordinal2 = votingScores.get( element2 );
-				if( ordinal1==ordinal2 ){
-					ordinal1 = positionScores.get( element1 );
-					ordinal2 = positionScores.get( element2 );
-				}
-
-				return Integer.compare( ordinal2, ordinal1 );
+		Arrays.sort(sortedElements, ( T element1, T element2 ) -> {
+			int ordinal1 = votingScores.get( element1 );
+			int ordinal2 = votingScores.get( element2 );
+			if( ordinal1==ordinal2 ){
+				ordinal1 = positionScores.get( element1 );
+				ordinal2 = positionScores.get( element2 );
 			}
-		} );
+
+			return Integer.compare( ordinal2, ordinal1 );
+		});
 	}
 }
