@@ -72,6 +72,7 @@ public class Pair<T>{
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public T[] toArray(){
 		T[] array = (T[])Array.newInstance( first.getClass(), 2);
 		array[0] = first;
