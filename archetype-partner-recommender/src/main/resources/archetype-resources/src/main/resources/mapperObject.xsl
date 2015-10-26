@@ -47,18 +47,14 @@
 					<xsl:element name="edm:provider">
 						<xsl:element name="edm:Agent">
 							<xsl:attribute name="rdf:about">${partnerURL}</xsl:attribute>
-							<xsl:element name="foaf:name">
-								${partnerName}
-							</xsl:element>
+							<xsl:element name="foaf:name">${partnerName}</xsl:element>
 						</xsl:element>
 					</xsl:element>
 
 					<xsl:element name="edm:dataProvider">
 						<xsl:element name="edm:Agent">
 							<xsl:attribute name="rdf:about">${partnerURL}</xsl:attribute>
-							<xsl:element name="foaf:name">
-								${partnerName}
-							</xsl:element>
+							<xsl:element name="foaf:name">${partnerName}</xsl:element>
 						</xsl:element>
 					</xsl:element>
 
@@ -122,13 +118,9 @@
 					<xsl:element name="edm:europeanaProxy">
 						false
 					</xsl:element>
-					<xsl:element name="edm:rights">
-						${dataLicense}
-					</xsl:element>
+					<xsl:element name="edm:rights">${dataLicense}</xsl:element>
 
-					<xsl:element name="edm:language">
-						de
-					</xsl:element>
+					<xsl:element name="edm:language">de</xsl:element>
 
 					<!-- <xsl:call-template name="Main.Language"/> -->
 					<xsl:call-template name="Main.Identifier" />

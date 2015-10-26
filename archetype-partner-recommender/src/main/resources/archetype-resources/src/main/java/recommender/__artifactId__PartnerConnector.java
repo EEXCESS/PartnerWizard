@@ -23,11 +23,9 @@ import eu.eexcess.partnerrecommender.api.PartnerConnectorApi;
 import eu.eexcess.partnerrecommender.reference.PartnerConnectorBase;
 
 /**
- * Query generator for KIM.Collect.
+ * Query generator for ${partnerName}.
  * 
- * @author thomas.orgel@joanneum.at
  */
-
 public class ${artifactId}PartnerConnector extends PartnerConnectorBase implements PartnerConnectorApi {
 
 }
