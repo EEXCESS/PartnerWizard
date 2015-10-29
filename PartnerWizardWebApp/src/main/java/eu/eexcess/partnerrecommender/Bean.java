@@ -415,19 +415,19 @@ public class Bean implements Serializable {
 		commands.add("mvn install -DskipTests");
 		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
 		this.buildOutput = this.cmdExecute(commands);
-		if (this.buildOutput.contains("s")){// TODO search for successful
+		if (this.buildOutput.contains("s")){// search for successful
 			this.setDeployablePR(true);
 		} else {
 			this.setDeployablePR(true);
 		}
 		cleanupGeneratedSources();
 		this.compilePR();
+		this.generateSelenium();
 	}
 
 	
 	public void deployPR()
 	{
-		System.out.println("we deploy now to our server");
 		String warName= "eexcess-partner-"+this.artifactId+"-"+this.version;
 
 		ArrayList<String> commands = new ArrayList<String>();
@@ -439,26 +439,9 @@ public class Bean implements Serializable {
 		commands.add("del %TOMCAT%webapps\\"+warName+".war");
 		commands.add("rd /S /Q %TOMCAT%webapps\\"+warName);
 		commands.add("xcopy "+warName+".war %TOMCAT%webapps\\ /Y");
-
 		
-		
-		
-//		del %TOMCAT%webapps\PartnerWizard-1.0-SNAPSHOT.war
-//		rd /S /Q %TOMCAT%webapps\PartnerWizard-1.0-SNAPSHOT
-//
-//		copy .\target\*.war %TOMCAT%webapps\
-		
-		
-		System.out.println("\n\n");
-		
-		for (int i = 0; i < commands.size(); i++) {
-			System.out.println(	commands.get(i));
-		}
-		System.out.println("\n\n");
-		
-		System.out.println(this.cmdExecute(commands));
-
-		
+		String output = this.cmdExecute(commands);
+		System.out.println(output);
 	}
 		
 	public void compilePR()
@@ -470,6 +453,83 @@ public class Bean implements Serializable {
 		commands.add("mvn clean install -DskipTests");
 		commands.add("mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true ");
 		this.buildOutput = this.cmdExecute(commands);
+	}
+
+	public void generateSelenium()
+	{
+		String selenium = "";
+		selenium += "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"> <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\"> <head profile=\"http://selenium-ide.openqa.org/profiles/test-case\"> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /> \n<link rel=\"selenium.base\" href=\"http://localhost:8090/\" />\n";
+		selenium += "<title>" + this.partnerName + "</title>";
+		selenium += "</head> <body> <table cellpadding=\"1\" cellspacing=\"1\" border=\"1\"> <thead> <tr><td rowspan=\"1\" colspan=\"3\">";
+		selenium += this.partnerName + "</td></tr> </thead><tbody> <tr> <td>deleteAllVisibleCookies</td> <td></td> <td></td> </tr> <tr> <td>open</td> <td>/PartnerWizard-1.0-SNAPSHOT/</td> <td></td> </tr> <tr> <td>type</td> <td>name=formID:username</td> <td>";
+		selenium += this.getPartnerInfo().getUsername();
+		selenium += "</td> </tr>";
+		selenium += "<tr> <td>type</td> <td>name=formID:email</td> <td>";
+		selenium += this.getPartnerInfo().getContactEmail();
+		selenium += "</td> </tr> <tr> <td>click</td> <td>id=formID:dataAccessAgreement</td> <td></td> </tr> <tr> <td>type</td> <td>name=formID:groupId</td> <td>";
+		selenium += this.groupId;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:artifactId</td> <td>";
+		selenium += this.artifactId;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:version</td> <td>1.0-SNAPSHOT</td> </tr> <tr> <td>type</td> <td>name=formID:packageStr</td> <td>";
+		selenium += this.packageStr;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:partnerName</td> <td>";
+		selenium += this.partnerName;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:partnerURL</td> <td>";
+		selenium += this.partnerURL;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>id=formID:partnerFavIconURL</td> <td>";
+		selenium += this.partnerFavIconURL;
+		selenium +="</td> </tr> <tr> <td>type</td> <td>name=formID:apiURIPathPrefix</td> <td>";
+		selenium += this.apiURIPathPrefix;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:apiURIPathPrefix</td> <td></td> </tr> <tr> <td>type</td> <td>name=formID:apiPreviewImagePrefix</td> <td>";
+		selenium += this.apiPreviewImagePrefix;
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:dataLicense</td> <td>";
+		selenium += this.dataLicense;
+		selenium += "</td> </tr>";
+		
+		selenium += " <tr> <td>type</td> <td>name=formID:searchEndPoint</td> <td>";
+		selenium += this.getSearchMappingConfig().getSearchEndpoint();
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:searchEndPointSearchTerm</td> <td>";
+		selenium += this.getSearchMappingConfig().getSearchEndpointSearchTerm();
+		selenium += "</td> </tr> <tr> <td>click</td> <td>id=formID:searchcallPartnerAPIsearch</td> <td></td> </tr> <tr> <td>pause</td> <td>4000</td> <td></td> </tr> <tr> <td>type</td> <td>id=formID:searcheexcessFieldsXPathLoop</td> <td>";
+		selenium += this.getSearchMappingConfig().getEexcessFieldsXPathLoop();
+		selenium +="</td></tr>";
+		
+		for (int i = 0; i < this.getSearchMappingConfig().getMappingFields().size(); i++) {
+			if (this.getSearchMappingConfig().getMappingFields().get(i).getxPath() != null && !this.getSearchMappingConfig().getMappingFields().get(i).getxPath().trim().isEmpty())
+			{
+				selenium += "<tr> <td>type</td> <td>id=formID:searchFieldsLoop:"+i+":searchFieldsxPath</td> <td>";
+				selenium += this.getSearchMappingConfig().getMappingFields().get(i).getxPath();
+				selenium += "</td> </tr> <tr> <td>click</td> <td>id=formID:searchFieldsLoop:"+i+":searchFieldsxPathTestButton</td> <td></td> </tr>";
+			}
+		}
+		
+		selenium += " <tr> <td>type</td> <td>name=formID:detailEndPoint</td> <td>";
+		selenium += this.getDetailMappingConfig().getSearchEndpoint();
+		selenium += "</td> </tr> <tr> <td>type</td> <td>name=formID:detailEndPointSearchTerm</td> <td>";
+		selenium += this.getDetailMappingConfig().getSearchEndpointSearchTerm();
+		selenium += "</td> </tr> <tr> <td>click</td> <td>id=formID:detailcallPartnerAPIdetail</td> <td></td> </tr> <tr> <td>pause</td> <td>4000</td> <td></td> </tr> <tr> <td>type</td> <td>id=formID:detaileexcessFieldsXPathLoop</td> <td>";
+		selenium += this.getDetailMappingConfig().getEexcessFieldsXPathLoop();
+		selenium +="</td></tr>";
+		
+		for (int i = 0; i < this.getDetailMappingConfig().getMappingFields().size(); i++) {
+			if (this.getDetailMappingConfig().getMappingFields().get(i).getxPath() != null && !this.getDetailMappingConfig().getMappingFields().get(i).getxPath().trim().isEmpty())
+			{
+				selenium += "<tr> <td>type</td> <td>id=formID:detailFieldsLoop:"+i+":detailFieldsxPath</td> <td>";
+				selenium += this.getDetailMappingConfig().getMappingFields().get(i).getxPath();
+				selenium += "</td> </tr> <tr> <td>click</td> <td>id=formID:detailFieldsLoop:"+i+":detailFieldsxPathTestButton</td> <td></td> </tr>";
+			}
+		}
+		
+		selenium += "<tr> <td>click</td> <td>id=formID:generatePR</td> <td></td> </tr> <tr> <td>pause</td> <td>50000</td> <td></td> </tr> <tr> <td>assertText</td> <td>name=formID:buildOutputID</td> <td>*BUILD*</td> </tr> </tbody></table> </body> </html>";
+		
+		String fileName = PATH_BUILD_SANDBOX + this.artifactId + "-" + System.currentTimeMillis() + ".html";
+		Path path = Paths.get(fileName);
+		Charset charset = StandardCharsets.UTF_8;
+		try {
+			Files.write(path, selenium.getBytes(charset));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String buildENVgotoSandbox() {
@@ -705,7 +765,6 @@ public class Bean implements Serializable {
 			content = content.replaceAll(oldString, newString);
 			Files.write(path, content.getBytes(charset));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
