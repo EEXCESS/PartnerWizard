@@ -29,12 +29,12 @@ public class ProbeConfigurationIterator{
 	public ProbeConfigurationIterator( List<ProberKeyword[]> queries, List<String> generators, boolean enableExpansion, boolean enableSplitting ){
 		this.queries = queries;
 		this.currentKeyword = 0;
-		this.generators = new CombinatorialPairGenerator<String>( generators );
+		this.generators = new CombinatorialPairGenerator<>( generators );
 		List<QueryOptions> queryOptions = QueryOptions.getQueryOptions( enableExpansion, enableSplitting );
-		this.queryOptions = new CombinatorialPairGenerator<QueryOptions>( queryOptions );
+		this.queryOptions = new CombinatorialPairGenerator<>( queryOptions );
 
-		this.generatorWinners = new HashMap<String, Integer>( generators.size() );
-		this.queryOptionsWinners = new HashMap<QueryOptions, Integer>( queryOptions.size() );
+		this.generatorWinners = new HashMap<>( generators.size() );
+		this.queryOptionsWinners = new HashMap<>( queryOptions.size() );
 
 		state = ProbeStatus.Init;
 		toNextState();
@@ -60,7 +60,7 @@ public class ProbeConfigurationIterator{
 			throw new IllegalStateException( "Last element must be stored before next element can be fetched!" );
 		}
 
-		Pair<ProbeConfiguration> configPair = new Pair<ProbeConfiguration>();
+		Pair<ProbeConfiguration> configPair = new Pair<>();
 		ProberKeyword[] keyword = queries.get( currentKeyword );
 
 		if( state==ProbeStatus.GeneratorsNext ){

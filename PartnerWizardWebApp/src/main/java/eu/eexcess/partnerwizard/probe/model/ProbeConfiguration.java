@@ -1,5 +1,7 @@
 package eu.eexcess.partnerwizard.probe.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import eu.eexcess.dataformats.userprofile.ContextKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.Objects;
  * @date 2015-08-27
  */
 public class ProbeConfiguration {
+	@JsonInclude(Include.NON_NULL)
 	public final ProberKeyword[] keywords;
 	public final String queryGeneratorClass;
 	public final Boolean queryExpansionEnabled;
@@ -35,7 +38,7 @@ public class ProbeConfiguration {
 	}
 
 
-	public List<ContextKeyword> getKeywords(){
+	public List<ContextKeyword> toContextKeywords(){
 		List<ContextKeyword> contextKeywords = new ArrayList<>( keywords.length );
 
 		for( ProberKeyword keyword : keywords ){

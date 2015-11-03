@@ -282,7 +282,7 @@ public class PartnerProber{
 		partnerBadge.setIsQuerySplittingEnabled( config.querySplittingEnabled );
 
 		SecureUserProfile userProfile = new SecureUserProfile();
-		userProfile.setContextKeywords( config.getKeywords() );
+		userProfile.setContextKeywords( config.toContextKeywords() );
 		userProfile.setPartnerList( Arrays.asList( partnerBadge ) );
 
 		return userProfile;
@@ -296,7 +296,7 @@ public class PartnerProber{
 		partnerBadge.setIsQuerySplittingEnabled( config.querySplittingEnabled );
 
 		SecureUserProfile newUserProfile = SerializationUtils.clone( userProfile );
-		newUserProfile.setContextKeywords( config.getKeywords() );
+		newUserProfile.setContextKeywords( config.toContextKeywords() );
 		newUserProfile.setPartnerList( Arrays.asList( partnerBadge ) );
 
 		return newUserProfile;

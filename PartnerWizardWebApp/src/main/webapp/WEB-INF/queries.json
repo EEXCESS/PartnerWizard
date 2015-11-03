@@ -1,0 +1,15 @@
+[ 
+  [ {"keyword":"Napoleon", "isMainTopic":false},
+    {"keyword":"Frankreich", "isMainTopic":false},
+    {"keyword":"Schweiz", "isMainTopic":false},
+    {"keyword":"Helena", "isMainTopic":true} ], 
+  [ {"keyword":"Roman Missal", "isMainTopic":true} ],
+  [ {"keyword":"trees of liberty", "isMainTopic":true} ],
+  [ {"keyword":"storming of the Bastille", "isMainTopic":true} ],
+  [ {"keyword":"march", "isMainTopic":false},
+    {"keyword":"to", "isMainTopic":false},
+    {"keyword":"Versailles", "isMainTopic":true} ],
+  [ {"keyword":"French Foreign Legionnaires", "isMainTopic":true} ],
+  [ {"keyword":"Red Army", "isMainTopic":true} ],
+  [ {"keyword":"Bolsheviks", "isMainTopic":true} ]
+]
