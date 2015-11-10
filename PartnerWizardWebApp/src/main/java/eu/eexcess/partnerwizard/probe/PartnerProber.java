@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.SerializationUtils;
 
 /**
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.SerializationUtils;
  * @date 2015-08-21
  */
 public class PartnerProber{
+	private static final int MAX_NUMBER_OF_RESULTS = 20;
 	private static final Logger LOGGER = Logger.getLogger( PartnerProber.class.getName() );
 	private static final String ID_Prefix = "id-";
 	private static final Map<String, Integer> DEFAULT_GENERATORS = Collections.unmodifiableMap(
@@ -205,27 +207,27 @@ public class PartnerProber{
 	private Pair<FutureTask<List<ProberResult>>> retriveNextResultListPair( final Pair<ProbeConfiguration> probeConfigs ){
 		FutureTask<List<ProberResult>> firstResponse = new FutureTask<>( () -> {
 					SecureUserProfile profile = toUserProfile( probeConfigs.first );
-					List<Result> recommenderResults = new PartnerRecommender().recommend( profile ).results;
-					List<ProberResult> results = new ArrayList<>( recommenderResults.size() );
 
-					for( Result recommenderResult: recommenderResults ){
-						results.add( new ProberResult( recommenderResult.title, recommenderResult.description, recommenderResult.description ) );
-					}
-
-					return results;
+					return new PartnerRecommender()
+						.recommend( profile )
+						.results
+						.stream()
+						.limit( MAX_NUMBER_OF_RESULTS )
+						.map( result -> new ProberResult( result.title, result.description, result.description ) )
+						.collect( Collectors.toList() );
 		});
 		executorService.submit( firstResponse );
 
 		FutureTask<List<ProberResult>> secondResponse = new FutureTask<>( () -> {
 					SecureUserProfile profile = toUserProfile( probeConfigs.second );
-					List<Result> recommenderResults = new PartnerRecommender().recommend( profile ).results;
-					List<ProberResult> results = new ArrayList<>( recommenderResults.size() );
 
-					for( Result recommenderResult: recommenderResults ){
-						results.add( new ProberResult( recommenderResult.title, recommenderResult.description, recommenderResult.description ) );
-					}
-
-					return results;
+					return new PartnerRecommender()
+						.recommend( profile )
+						.results
+						.stream()
+						.limit( MAX_NUMBER_OF_RESULTS )
+						.map( result -> new ProberResult( result.title, result.description, result.description ) )
+						.collect( Collectors.toList() );
 		});
 		executorService.submit( secondResponse );
 
@@ -252,10 +254,6 @@ public class PartnerProber{
 
 		return generators;
 	}
-
-	;
-
-
 
 	private static boolean areResultListsEqual( List<ProberResult> first, List<ProberResult> second ){
 		if( first.size()!=second.size() ){
