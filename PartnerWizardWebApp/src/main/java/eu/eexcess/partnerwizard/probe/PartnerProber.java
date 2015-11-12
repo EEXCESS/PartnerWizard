@@ -1,7 +1,6 @@
 package eu.eexcess.partnerwizard.probe;
 
 import eu.eexcess.dataformats.PartnerBadge;
-import eu.eexcess.dataformats.result.Result;
 import eu.eexcess.dataformats.result.ResultList;
 import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
