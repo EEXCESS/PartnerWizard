@@ -75,6 +75,21 @@ public class Bean implements Serializable {
 	private String partnerURL = "";
 	private String partnerFavIconURL ="";
 	
+	
+	public static final String API_FORMAT_XML = "xml";
+	public static final String API_FORMAT_JSON = "json";
+	
+	private String apiResponseFormat = API_FORMAT_XML;
+	
+	public String getApiResponseFormat() {
+		return apiResponseFormat;
+	}
+
+	public void setApiResponseFormat(String apiResponseFormat) {
+		this.apiResponseFormat = apiResponseFormat;
+	}
+
+
 	private String dataLicense = "";
 	private String apiPreviewImagePrefix="";
 	private String apiURIPathPrefix="";

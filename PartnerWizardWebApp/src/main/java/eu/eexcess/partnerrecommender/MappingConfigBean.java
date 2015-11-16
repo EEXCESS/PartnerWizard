@@ -163,6 +163,11 @@ public class MappingConfigBean implements Serializable{
 			partnerConfiguration.setSearchEndpoint(this.searchEndpoint);
 			SecureUserProfile userProfile = createUserProfile();
 			PartnerdataLogger logger = null;
+			if (this.bean.getApiResponseFormat().equals(Bean.API_FORMAT_JSON))
+				partnerConnector.setAPIResponseToJSON();
+			else 
+				partnerConnector.setAPIResponseToXML();
+			
 			Document response = partnerConnector.queryPartner(partnerConfiguration, userProfile, logger);
 			this.apiResponse = this.xmlTools.getStringFromDocument(response);
 		} catch (InstantiationException e) {
@@ -192,7 +197,13 @@ public class MappingConfigBean implements Serializable{
 			partnerConfiguration.setDetailEndpoint(this.searchEndpoint);
 			PartnerdataLogger logger = null;
 			DocumentBadge document = createDocument();
+			if (this.bean.getApiResponseFormat().equals(Bean.API_FORMAT_JSON))
+				partnerConnector.setAPIResponseToJSON();
+			else 
+				partnerConnector.setAPIResponseToXML();
 			Document response = partnerConnector.queryPartnerDetails(partnerConfiguration, document, logger);
+			
+
 			this.apiResponse = this.xmlTools.getStringFromDocument(response);
 		} catch (InstantiationException e) {
 			e.printStackTrace();

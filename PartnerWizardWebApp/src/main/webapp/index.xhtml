@@ -172,6 +172,17 @@ limitations under the License.
 							<p class="help-block">License of the meta data</p>
 						</div>
 					</div>
+					
+					<div class="control-group">
+						<label class="control-label" for="textinput">format of API resonses:</label>
+						<div class="controls">
+							<h:selectOneRadio id="apiResponseFormatID" value="#{bean.apiResponseFormat}">
+							   <f:selectItem itemValue="json" itemLabel="JSON" />
+							   <f:selectItem itemValue="xml" itemLabel="XML" />	   			
+							</h:selectOneRadio>	
+							<p class="help-block">select the format which your API returns</p>
+						</div>
+					</div>
 				</fieldset>
 				
 				<h2>configure Search API</h2>
@@ -185,6 +196,14 @@ limitations under the License.
 						<li>
 							<a href="http://www.w3schools.com/xml/xml_xpath.asp" target="_blank">http://www.w3schools.com/xml/xml_xpath.asp</a>
 						</li>
+						<li>
+							<a href="http://xmltoolbox.appspot.com/xpath_generator.html" target="_blank">http://xmltoolbox.appspot.com/xpath_generator.html</a>
+						</li>
+						<li>
+							<a href="http://www.xpathtester.com/xpath" target="_blank">http://www.xpathtester.com/xpath</a>
+						</li>
+						
+						
 					</ul>
 				</p>
 				<rich:collapsiblePanel header="configure Search API" switchType="client">

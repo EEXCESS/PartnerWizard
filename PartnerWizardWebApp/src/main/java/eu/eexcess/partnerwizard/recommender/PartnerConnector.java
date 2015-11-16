@@ -60,6 +60,9 @@ public class PartnerConnector implements PartnerConnectorApi{
 	private static final String USER_NAME_PARAMETER_NAME = "userName";
 	private static final String PASSWORD_PARAMETER_NAME = "password";
 	private static final String API_KEY_PARAMETER_NAME = "apiKey";
+    protected boolean apiResponseXml = true; 
+    protected boolean apiResponseJson = !true; 
+
 
 	@Override
 	public Document queryPartner( PartnerConfiguration partnerConfiguration, SecureUserProfile userProfile, PartnerdataLogger logger ) throws IOException{
@@ -184,4 +187,23 @@ public class PartnerConnector implements PartnerConnectorApi{
 			throw new RuntimeException( "No support for UTF-8 encoding found. URL-Parameters could not be encoded!" );
 		}
 	}
+
+    public void setAPIResponseToXML() {
+    	this.apiResponseJson = false;
+    	this.apiResponseXml = true;
+    }
+    
+    public void setAPIResponseToJSON() {
+    	this.apiResponseJson = true;
+    	this.apiResponseXml = false;
+    }
+    
+    public boolean isApiResponseXml() {
+		return apiResponseXml;
+	}
+
+	public boolean isApiResponseJson() {
+		return apiResponseJson;
+	}
+
 }
