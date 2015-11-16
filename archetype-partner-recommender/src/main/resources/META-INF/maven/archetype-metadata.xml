@@ -9,6 +9,7 @@
     <requiredProperty key="dataLicense"/>
 	<requiredProperty key="partnerFavIconURL"/>
 	
+    <requiredProperty key="partnerAPIFormatXML"/>
     <requiredProperty key="partnerAPIsearchEndpoint"/>
     <requiredProperty key="partnerAPIsearchTerm"/>
     <requiredProperty key="partnerAPIsearchMappingFieldsLoopXPath"/>

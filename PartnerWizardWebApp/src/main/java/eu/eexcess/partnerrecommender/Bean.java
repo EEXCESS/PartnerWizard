@@ -405,8 +405,13 @@ public class Bean implements Serializable {
 				+ " -DpartnerFavIconURL=\""+this.partnerFavIconURL+"\""
 				+ " -DdataLicense=\""+ this.dataLicense+"\""
 				+ " -DpartnerAPIpreviewImagePathPrefix=\""+ this.apiPreviewImagePrefix+"\""
-				+ " -DpartnerAPIURIPathPrefix=\""+ this.apiURIPathPrefix+"\""
-				+ " -DpartnerAPIsearchEndpoint=\""+ this.searchMappingConfig.getSearchEndpoint()+"\""
+				+ " -DpartnerAPIURIPathPrefix=\""+ this.apiURIPathPrefix+"\"";
+		if (this.apiResponseFormat != null && this.apiResponseFormat.equals(API_FORMAT_JSON))
+			this.buildCMD += " -DpartnerAPIFormatXML=\"false\"";
+		else 
+			this.buildCMD += " -DpartnerAPIFormatXML=\"true\"";
+		
+		this.buildCMD += " -DpartnerAPIsearchEndpoint=\""+ this.searchMappingConfig.getSearchEndpoint()+"\""
 				+ " -DpartnerAPIsearchTerm=\""+ this.searchMappingConfig.getSearchEndpointSearchTerm()+"\""
 				+ " -DpartnerAPIsearchMappingFieldsLoopXPath=\""+ this.searchMappingConfig.getEexcessFieldsXPathLoop()+"\"";
 		for (int i = 0; i < this.searchMappingConfig.getMappingFields().size(); i++) {

@@ -28,4 +28,11 @@ import eu.eexcess.partnerrecommender.reference.PartnerConnectorBase;
  */
 public class ${artifactId}PartnerConnector extends PartnerConnectorBase implements PartnerConnectorApi {
 
+	public ${artifactId}PartnerConnector() {
+		if (${partnerAPIFormatXML})
+			this.setAPIResponseToXML();
+		else 
+			this.setAPIResponseToJSON();
+	}
+
 }
