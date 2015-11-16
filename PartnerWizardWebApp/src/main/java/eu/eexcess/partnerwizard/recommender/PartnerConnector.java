@@ -106,7 +106,8 @@ public class PartnerConnector implements PartnerConnectorApi{
 			response = builder.get( ClientResponse.class );
 		}
 		catch( ClientHandlerException|UniformInterfaceException ex){
-			throw new IOException( "Cannot query partner API!", ex );
+			LOGGER.log(Level.SEVERE, "Search URL:{0}", searchUrl);
+			throw new IOException( "Cannot query partner API! URL: " +  searchUrl, ex );
 		}
 		try{
 			return parseResponse( response );
