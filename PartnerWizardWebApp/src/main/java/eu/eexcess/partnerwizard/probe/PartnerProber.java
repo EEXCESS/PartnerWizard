@@ -36,9 +36,9 @@ import org.apache.commons.lang3.SerializationUtils;
  * @date 2015-08-21
  */
 public class PartnerProber{
-	private static final int MAX_NUMBER_OF_RESULTS = 20;
+	private static final int MAX_NUMBER_OF_RESULTS = 10;
 	private static final Logger LOGGER = Logger.getLogger( PartnerProber.class.getName() );
-	private static final String ID_Prefix = "id-";
+	private static final String ID_PREFIX = "id-";
 	private static final Map<String, Integer> DEFAULT_GENERATORS = Collections.unmodifiableMap(
 			new HashMap<String, Integer>(){
 				{
@@ -156,7 +156,7 @@ public class PartnerProber{
 
 	private synchronized String getId(){
 		idCounter++;
-		return ID_Prefix+idCounter;
+		return ID_PREFIX+idCounter;
 	}
 
 	private List<String> testWorkingGeneratorClasses( List<ProberKeyword[]> queries ){
