@@ -63,7 +63,7 @@ public class Bean implements Serializable {
 
 	private static final String COOKIENAME = "EEXCESSPartnerWizard";
 
-	private final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
+	public static final String PATH_BUILD_SANDBOX = "C:\\dev\\eexcess-partnerrecommender-archetype-sandbox\\";
 
 	private static final long serialVersionUID = -2403138958014741653L;
 
