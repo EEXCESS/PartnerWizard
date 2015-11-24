@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.servlet.ServletContext;
-import javax.smartcardio.ATR;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -41,10 +40,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import net.sf.json.JSONObject;
-
-import org.apache.jena.atlas.json.io.parserjavacc.javacc.JSON_Parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.spi.resource.Singleton;
