@@ -2,10 +2,10 @@
 <partnerwizard-configuration>
     <query-generators>
         <query-generator>eu.eexcess.partnerrecommender.reference.OrQueryGenerator</query-generator>
-        <!--<query-generator>eu.eexcess.partnerrecommender.reference.OrQueryGeneratorFieldTermConjunction</query-generator>
+        <query-generator>eu.eexcess.partnerrecommender.reference.OrQueryGeneratorFieldTermConjunction</query-generator>
         <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGenerator</query-generator>
         <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunction</query-generator>
-        <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunctionMainTopic</query-generator>-->
+        <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunctionMainTopic</query-generator>
     </query-generators>
     <prober-queries>
         <prober-query>
