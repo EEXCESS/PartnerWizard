@@ -1,6 +1,11 @@
 package eu.eexcess.partnerwizard.probe.model.web;
 
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  *
@@ -8,11 +13,15 @@ import java.util.Objects;
  * @author Heimo Gursch <gursch@tugraz.at>
  * @date 2015-09-28
  */
+@XmlRootElement(name="keyword")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ProberKeyword {
+	@XmlValue
 	public String keyword;
+	@XmlAttribute(name="main-topic")
 	public boolean isMainTopic;
 
-	
+
 	public ProberKeyword(){
 	}
 

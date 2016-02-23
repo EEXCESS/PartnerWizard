@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<partnerwizard-configuration>
+    <query-generators>
+        <query-generator>eu.eexcess.partnerrecommender.reference.OrQueryGenerator</query-generator>
+        <!--<query-generator>eu.eexcess.partnerrecommender.reference.OrQueryGeneratorFieldTermConjunction</query-generator>
+        <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGenerator</query-generator>
+        <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunction</query-generator>
+        <query-generator>eu.eexcess.partnerrecommender.reference.LuceneQueryGeneratorFieldTermConjunctionMainTopic</query-generator>-->
+    </query-generators>
+    <prober-queries>
+        <prober-query>
+            <keyword main-topic="false">Napoleon</keyword>
+            <keyword main-topic="false">Frankreich</keyword>
+            <keyword main-topic="false">Schweiz</keyword>
+            <keyword main-topic="true">Helena</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="true">Roman Missal</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="true">trees of liberty</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="true">storming of the Bastille</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="false">march</keyword>
+            <keyword main-topic="false">to</keyword>
+            <keyword main-topic="true">Versailles</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="true">French Foreign Legionnaires</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="true">Red Army</keyword>
+        </prober-query>
+        <prober-query>
+            <keyword main-topic="true">Bolsheviks</keyword>
+        </prober-query>
+    </prober-queries>
+</partnerwizard-configuration>

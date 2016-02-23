@@ -56,12 +56,12 @@ import org.w3c.dom.Document;
 public class PartnerConnector implements PartnerConnectorApi{
 	private static final Logger LOGGER = Logger.getLogger( PartnerConnector.class.getName() );
 	private static final String NUMBER_OF_RESULTS_PARAMETER_NAME = "numResults";
-	private static final String NUMBER_OF_RESULTS_PARAMETER = "25";
+	private static final String NUMBER_OF_RESULTS_PARAMETER = "10";
 	private static final String USER_NAME_PARAMETER_NAME = "userName";
 	private static final String PASSWORD_PARAMETER_NAME = "password";
 	private static final String API_KEY_PARAMETER_NAME = "apiKey";
-    protected boolean apiResponseXml = true; 
-    protected boolean apiResponseJson = !true; 
+    protected boolean apiResponseXml = true;
+    protected boolean apiResponseJson = !true;
 
 
 	@Override
@@ -70,7 +70,7 @@ public class PartnerConnector implements PartnerConnectorApi{
 
 		QueryGeneratorApi queryGenerator = PartnerConfigurationCache.CONFIG.getQueryGenerator( partnerConfiguration.getQueryGeneratorClass() );
 		String query = queryGenerator.toQuery( userProfile );
-		parameters.put( "query", urlEncode( query ) );
+		parameters.put( "query", query );
 
 		Integer numberOfResults = userProfile.getNumResults();
 		if( numberOfResults!=null && numberOfResults>0 ){
@@ -193,12 +193,12 @@ public class PartnerConnector implements PartnerConnectorApi{
     	this.apiResponseJson = false;
     	this.apiResponseXml = true;
     }
-    
+
     public void setAPIResponseToJSON() {
     	this.apiResponseJson = true;
     	this.apiResponseXml = false;
     }
-    
+
     public boolean isApiResponseXml() {
 		return apiResponseXml;
 	}

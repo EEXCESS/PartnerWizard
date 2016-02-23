@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2015
-"JOANNEUM RESEARCH Forschungsgesellschaft mbH" 
+"JOANNEUM RESEARCH Forschungsgesellschaft mbH"
  Graz, Austria, digital-iis@joanneum.at.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,14 +50,14 @@ import eu.eexcess.partnerrecommender.Bean;
 @Path("/wizard")
 @Singleton
 public class WizardRESTService {
+	public static final String URL_PATTERN = "/wizard/updateConfigAndDeploy";
 
-	
 	@Context
 	private ServletContext context;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	
+
 	@GET
 	@Path("ping")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -91,7 +91,7 @@ public class WizardRESTService {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			// neues config reinkopieren
 			try {
 				String newFile = mapper.writeValueAsString(config);
@@ -99,18 +99,18 @@ public class WizardRESTService {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			
-			// new config saving 
+
+
+			// new config saving
 			try {
 				String newFile = mapper.writeValueAsString(config);
 				Files.write(Paths.get(Bean.PATH_BUILD_SANDBOX + artifactId +"-" + dateString + ".partner-config.json"), newFile.getBytes(charset));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			// build new version
-			
+
 			ArrayList<String> commands = new ArrayList<String>();
 			commands.add("cd " + Bean.PATH_BUILD_SANDBOX);
 			commands.add("cd " + artifactId);
@@ -121,12 +121,12 @@ public class WizardRESTService {
 			commands.add("rd /S /Q %TOMCAT%webapps\\"+warName);
 			commands.add("xcopy "+warName+".war %TOMCAT%webapps\\ /Y");
 			this.cmdExecute(commands);
-			
+
 		}
 		return true;
 	}
-	
-	
+
+
 	public String cmdExecute(ArrayList<String> commands) {
 		Process shell = null;
 		DataOutputStream out = null;
@@ -139,7 +139,7 @@ public class WizardRESTService {
 
 			in = new BufferedReader(new InputStreamReader(shell.getInputStream()));
 
-			// Executing commands 
+			// Executing commands
 			for (String command : commands) {
 				System.out.println("executing:\n" + command);
 				out.writeBytes(command + "\n");
