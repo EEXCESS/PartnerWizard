@@ -1,0 +1,25 @@
+{
+  "systemId": "PartnerWizard",
+
+  "queryGeneratorClass": "eu.eexcess.partnerrecommender.reference.LuceneQueryGenerator",
+  "partnerConnectorClass": "eu.eexcess.partnerwizard.recommender.PartnerConnector",
+  "isTransformedNative": "true",
+  "transformerClass": "eu.eexcess.partnerwizard.datalayer.PartnerWizardTransformer",
+  "searchEndpoint" : "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?df=_fulltext_&q=${query}&rows=${numResults}",
+  "detailEndpoint": "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}",
+  "userName": "",
+  "password": "",
+  "favIconURI":"https://www.kgportal.bl.ch/kim-portal-theme/images/favicon.ico",
+  "mappingListTransformationFile":"mapperResultList.xsl",
+  "mappingObjectTransformationFile":"mapperObject.xsl",
+  "partnerDataRequestsTrace":"false",
+  "enableEnriching":"false",
+  "makeCleanupBeforeTransformation":"false",
+  "isQueryExpansionEnabled":"false",
+  "isQuerySplitingEnabled":"false",
+  "partnerConnectorEndpoint": "http://127.0.0.1/eexcess-partner-wizard-1.0-SNAPSHOT/partner/",
+  "federatedRecommenderURI":  "http://127.0.0.1/eexcess-federated-recommender-web-service-1.0-SNAPSHOT/recommender/",
+  "ageRange": 2,
+  "languageContent" : ["de"]
+}
+

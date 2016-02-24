@@ -51,7 +51,7 @@ public class PartnerProber{
 		this.generators = generators;
 
 		this. idCounter = 0;
-		this. executorService = Executors.newFixedThreadPool( 10 );
+		this. executorService = Executors.newFixedThreadPool( 1 );
 		this. configs = new HashMap<>();
 	}
 

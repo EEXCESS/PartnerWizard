@@ -8,7 +8,6 @@ package eu.eexcess.partnerwizard.webservice;
  */
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.spi.resource.Singleton;
@@ -21,7 +20,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletContext;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -40,30 +42,19 @@ import javax.xml.bind.Unmarshaller;
 
 @Path("/probe")
 @Singleton
-public class ProbeService{
+public class ProbeService implements ServletContextListener {
+	private final static Logger LOGGER = Logger.getLogger(ProbeService.class.getName());
 	private final static String CONFIG_FILE_PATH = "/WEB-INF/query-config.xml";
-	private final PartnerProber prober;
-	private final List<ProberKeyword[]> proberQueries;
-
-
-	public ProbeService(@Context ServletContext servletContext) throws  JAXBException {
-		InputStream stream = servletContext.getResourceAsStream( CONFIG_FILE_PATH );
-
-		JAXBContext jaxbContext = JAXBContext.newInstance(ServiceConfiguration.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		ServiceConfiguration config = (ServiceConfiguration) unmarshaller.unmarshal( stream );
-
-		Map<String, Integer> queryGenerators = toPositionMap( config.queryGenerators );
-		this.prober = new PartnerProber( queryGenerators );
-
-		this.proberQueries = config.getProberKeywords();
-	}
+	private static PartnerProber prober;
+	private static List<ProberKeyword[]> proberQueries;
 
 
 	@GET
 	@Path("queries")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public List<ProberKeyword[]> queries() throws Exception{
+		LOGGER.log( Level.INFO, "GET queries execeuted");
+
 		return proberQueries;
 	}
 
@@ -72,6 +63,8 @@ public class ProbeService{
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public ProberResponse init( List<ProberKeyword[]> queries ){
+		long start = System.nanoTime();
+
 		if( queries==null||queries.isEmpty() ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
@@ -86,7 +79,12 @@ public class ProbeService{
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
 
-		return prober.init( queries );
+		ProberResponse init = prober.init( queries );
+
+		long duration = (System.nanoTime() - start) /1000;
+		LOGGER.log(Level.INFO, "POST init of ID ''{0}'' took {1}", new Object[] {init.id, duration});
+
+		return init;
 	}
 
 	@GET
@@ -95,6 +93,7 @@ public class ProbeService{
 	public ProberResponse storeAndNext( @QueryParam("id") String id,
 										@QueryParam("hasWinner") @DefaultValue("true") boolean hasWinner,
 										@QueryParam("winner") @DefaultValue("-1") int winner ){
+		long start = System.nanoTime();
 		try{
 			return prober.storeAndNext( id, hasWinner, winner );
 		}
@@ -104,16 +103,19 @@ public class ProbeService{
 		catch( IllegalArgumentException ex ){
 			throw new WebApplicationException( ex, Response.Status.BAD_REQUEST );
 		}
+		finally{
+			long duration = (System.nanoTime() - start) /1000;
+			LOGGER.log(Level.INFO, "GET next of ID ''{0}'' took {1}", new Object[] {id, duration});
+		}
 	}
 
 	@GET
 	@Path("get")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public ProbeConfiguration getConfiguration( @QueryParam("id") String id ){
+		long start = System.nanoTime();
 		try{
-			ProbeConfiguration config = prober.getConfiguration( id );
-
-			return config;
+			return prober.getConfiguration( id );
 		}
 		catch( IllegalStateException ex ){
 			throw new WebApplicationException( ex, Response.Status.FORBIDDEN );
@@ -121,28 +123,18 @@ public class ProbeService{
 		catch( IllegalArgumentException ex ){
 			throw new WebApplicationException( ex, Response.Status.BAD_REQUEST );
 		}
+		finally{
+			long duration = (System.nanoTime() - start) /1000;
+			LOGGER.log(Level.INFO, "GET configuration of ID ''{0}'' took {1}", new Object[] {id, duration});
+		}
 	}
 
-//	@GET
-//	@Path("store")
-//	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//	public PartnerConfiguration storeConfiguration( @QueryParam("id") String id ){
-//		try{
-//			PartnerConfiguration config = prober.getParnterConfiguration(id );
-//			return config;
-//		}
-//		catch( IllegalStateException ex ){
-//			throw new WebApplicationException( Response.Status.FORBIDDEN );
-//		}
-//		catch( IllegalArgumentException ex ){
-//			throw new WebApplicationException( Response.Status.BAD_REQUEST );
-//		}
-//	}
 
 	@GET
 	@Path("store")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public boolean storeConfiguration(@Context HttpServletRequest request, @QueryParam("id") String id){
+		long start = System.nanoTime();
 		ProbeConfiguration config;
 		try{
 			config = prober.getConfiguration( id );
@@ -173,6 +165,35 @@ public class ProbeService{
 		catch( ClientHandlerException|UniformInterfaceException ex){
 			throw new WebApplicationException( ex, Response.Status.INTERNAL_SERVER_ERROR);
 		}
+		finally{
+			long duration = (System.nanoTime() - start) /1000;
+			LOGGER.log(Level.INFO, "GET store of ID ''{0}'' took {1}", new Object[] {id, duration});
+		}
+	}
+
+
+	@Override
+	public void contextInitialized( ServletContextEvent servletContextEvent ) {
+		try{
+			InputStream stream = servletContextEvent.getServletContext()
+					.getResourceAsStream( CONFIG_FILE_PATH );
+
+			Unmarshaller unmarshaller = JAXBContext.newInstance(ServiceConfiguration.class)
+				.createUnmarshaller();
+			ServiceConfiguration config = (ServiceConfiguration) unmarshaller.unmarshal( stream );
+
+			Map<String, Integer> queryGenerators = toPositionMap( config.queryGenerators );
+			this.prober = new PartnerProber( queryGenerators );
+
+			this.proberQueries = config.getProberKeywords();
+		}
+		catch( JAXBException ex ){
+			throw new RuntimeException( "Unable to load XML-Konfiguration from resource file '" + CONFIG_FILE_PATH + "'. Service terminated!", ex );
+		}
+	}
+
+	@Override
+	public void contextDestroyed( ServletContextEvent sce ){
 	}
 
 
@@ -185,4 +206,5 @@ public class ProbeService{
 
 		return map;
 	}
+
 }

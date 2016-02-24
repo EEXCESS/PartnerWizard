@@ -1,25 +1,20 @@
 {
-  "systemId": "PartnerWizard",
-
-  "queryGeneratorClass": "eu.eexcess.partnerrecommender.reference.LuceneQueryGenerator",
+  "systemId": "Europeana",
   "partnerConnectorClass": "eu.eexcess.partnerwizard.recommender.PartnerConnector",
-  "isTransformedNative": "true",
+  "queryGeneratorClass": "eu.eexcess.partnerrecommender.reference.OrQueryGenerator",
   "transformerClass": "eu.eexcess.partnerwizard.datalayer.PartnerWizardTransformer",
-  "searchEndpoint" : "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?df=_fulltext_&q=${query}&rows=${numResults}",
-  "detailEndpoint": "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}",
-  "userName": "",
-  "password": "",
-  "favIconURI":"https://www.kgportal.bl.ch/kim-portal-theme/images/favicon.ico",
+  "searchEndpoint": "http://www.europeana.eu/api/v2/search.json?wskey=${apiKey}&query=${query}&rows=${numResults}",
+  "detailEndpoint": "http://europeana.eu/api/v2/record/${detailQuery}.json?wskey=${apiKey}",
+  "isTransformedNative": "false",
+  "favIconURI": "http://styleguide.europeana.eu/v/0.2.9/images/favicons/favicon-32x32.png?ver=alpha",
   "mappingListTransformationFile":"mapperResultList.xsl",
   "mappingObjectTransformationFile":"mapperObject.xsl",
   "partnerDataRequestsTrace":"false",
-  "enableEnriching":"false",
+  "enableEnriching":"true",
   "makeCleanupBeforeTransformation":"false",
-  "isQueryExpansionEnabled":"false",
-  "isQuerySplitingEnabled":"false",
   "partnerConnectorEndpoint": "http://127.0.0.1/eexcess-partner-wizard-1.0-SNAPSHOT/partner/",
-  "federatedRecommenderURI":  "http://127.0.0.1/eexcess-federated-recommender-web-service-1.0-SNAPSHOT/recommender/",
+  "federatedRecommenderURI":"http://127.0.0.1/eexcess-federated-recommender-web-service-1.0-SNAPSHOT/recommender/",
+  "apiKey": "",
   "ageRange": 2,
-  "languageContent" : ["de"]
+  "isQueryExpansionEnabled": "true"
 }
-
