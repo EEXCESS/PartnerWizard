@@ -81,8 +81,8 @@ public class ProbeService implements ServletContextListener {
 
 		ProberResponse init = prober.init( queries );
 
-		long duration = (System.nanoTime() - start) /1000;
-		LOGGER.log(Level.INFO, "POST init of ID ''{0}'' took {1}", new Object[] {init.id, duration});
+		long duration = (System.nanoTime() - start) /1000000;
+		LOGGER.log(Level.INFO, "POST init of ID ''{0}'' took {1}ms", new Object[] {init.id, duration});
 
 		return init;
 	}
@@ -104,8 +104,8 @@ public class ProbeService implements ServletContextListener {
 			throw new WebApplicationException( ex, Response.Status.BAD_REQUEST );
 		}
 		finally{
-			long duration = (System.nanoTime() - start) /1000;
-			LOGGER.log(Level.INFO, "GET next of ID ''{0}'' took {1}", new Object[] {id, duration});
+			long duration = (System.nanoTime() - start) /1000000;
+			LOGGER.log(Level.INFO, "GET next of ID ''{0}'' took {1}ms", new Object[] {id, duration});
 		}
 	}
 
@@ -124,8 +124,8 @@ public class ProbeService implements ServletContextListener {
 			throw new WebApplicationException( ex, Response.Status.BAD_REQUEST );
 		}
 		finally{
-			long duration = (System.nanoTime() - start) /1000;
-			LOGGER.log(Level.INFO, "GET configuration of ID ''{0}'' took {1}", new Object[] {id, duration});
+			long duration = (System.nanoTime() - start) /1000000;
+			LOGGER.log(Level.INFO, "GET configuration of ID ''{0}'' took {1}ms", new Object[] {id, duration});
 		}
 	}
 
@@ -166,8 +166,8 @@ public class ProbeService implements ServletContextListener {
 			throw new WebApplicationException( ex, Response.Status.INTERNAL_SERVER_ERROR);
 		}
 		finally{
-			long duration = (System.nanoTime() - start) /1000;
-			LOGGER.log(Level.INFO, "GET store of ID ''{0}'' took {1}", new Object[] {id, duration});
+			long duration = (System.nanoTime() - start) /1000000;
+			LOGGER.log(Level.INFO, "GET store of ID ''{0}'' took {1}ms", new Object[] {id, duration});
 		}
 	}
 
