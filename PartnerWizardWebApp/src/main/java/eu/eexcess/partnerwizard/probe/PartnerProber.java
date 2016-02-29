@@ -76,6 +76,7 @@ public class PartnerProber{
 			return new ProberResponse( id, nextState );
 		}
 		else{
+			LOGGER.info( "No Generator class returned at least one result. Aborting.");
 			return new ProberResponse( "Error", State.Error );
 		}
 	}
@@ -89,6 +90,7 @@ public class PartnerProber{
 		Pair<ProbeConfiguration> probeConfigs;
 		List<ProberResult> firstList;
 		List<ProberResult> secondList;
+		boolean equalResultLists;
 		do{
 			if( iterator.isWaitingForStore() ){
 				iterator.storeResponse( hasWinner, result );
@@ -113,8 +115,13 @@ public class PartnerProber{
 			else{
 				return new ProberResponse( id, State.Done );
 			}
+
+			equalResultLists = areResultListsEqual( firstList, secondList );
+			if( equalResultLists ){
+				LOGGER.log(Level.INFO, "Both result lists are equal, generation next pair. The configurations ''{0}'' and ''{1}'' where compared.", new Object[] {probeConfigs.first, probeConfigs.second});
+			}
 		}
-		while( areResultListsEqual( firstList, secondList ) );
+		while( equalResultLists );
 
 		ProberResponseIteration response = new ProberResponseIteration( id, State.Iteration );
 		response.keywords = probeConfigs.first.keywords;
@@ -153,8 +160,6 @@ public class PartnerProber{
 	}
 
 	private List<String> testWorkingGeneratorClasses( List<ProberKeyword[]> queries ){
-
-
 		final Map<String, Integer> generatorResults = Collections.synchronizedMap( new HashMap<String, Integer>( generators.size() ) );
 		List<FutureTask<Void>> tasks = new ArrayList<>( generators.size()*queries.size() );
 		for( final ProberKeyword[] keywords: queries ){
@@ -233,7 +238,9 @@ public class PartnerProber{
 			if( resultCount>0 ){
 				sortedGenerators.add( generatorClass );
 			}
-
+			else{
+				LOGGER.log(Level.INFO, "Generator class ''{0}'' will not be used as it did not produce any results.", generatorClass);
+			}
 		} );
 		sortedGenerators.trimToSize();
 

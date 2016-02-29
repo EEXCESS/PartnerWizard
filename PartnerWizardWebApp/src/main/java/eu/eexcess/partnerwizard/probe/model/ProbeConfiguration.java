@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import eu.eexcess.dataformats.userprofile.ContextKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,4 +86,8 @@ public class ProbeConfiguration {
 		return true;
 	}
 
+	@Override
+	public String toString(){
+		return "ProbeConfiguration{"+"keywords="+Arrays.toString( keywords )+", queryGeneratorClass="+queryGeneratorClass+", queryExpansionEnabled="+queryExpansionEnabled+", querySplittingEnabled="+querySplittingEnabled+'}';
+	}
 }
