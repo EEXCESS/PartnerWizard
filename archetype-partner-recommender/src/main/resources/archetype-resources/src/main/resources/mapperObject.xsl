@@ -120,7 +120,7 @@
 					</xsl:element>
 					<xsl:element name="edm:rights">${dataLicense}</xsl:element>
 
-					<xsl:element name="edm:language">de</xsl:element>
+					<xsl:element name="edm:language">unknown</xsl:element>
 
 					<!-- <xsl:call-template name="Main.Language"/> -->
 					<xsl:call-template name="Main.Identifier" />
@@ -207,7 +207,7 @@
 			<call-template name="StringToString" />
 		</element>
 	</template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="arr[@name='_thumbs_']/str[1]"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIsearchMappingFieldsXPathpreviewImage}"
 		mode="m5">
 		<element name="edm:preview">
 			<attribute name="resource">${partnerAPIpreviewImagePathPrefix}<call-template name="StringToString" /></attribute>
