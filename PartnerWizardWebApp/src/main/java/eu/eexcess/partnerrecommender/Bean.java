@@ -805,4 +805,27 @@ public class Bean implements Serializable {
 		this.deployablePR = deployablePR;
 	}
 
+	
+	public String gotoQueryGeneration()
+	{
+		ArrayList<String> commands = new ArrayList<String>();
+		commands = buildENVsetup(commands);
+		commands.add(buildENVgotoSandbox());
+		commands.add(this.buildCMD);
+		commands.add("cd " + this.artifactId);
+		commands.add("xcopy .\\src\\main\\resources\\mapperObject.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperObject.xsl /Y");
+		commands.add("xcopy .\\src\\main\\resources\\mapperResultList.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperResultList.xsl /Y");
+		commands.add("xcopy .\\src\\main\\resources\\partner-config.json %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\partner-config.json /Y");
+		
+		String output = this.cmdExecute(commands);
+		System.out.println(output);
+
+		try {
+			FacesContext.getCurrentInstance().getExternalContext().redirect("./partnerwizard/index.html");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
 }
