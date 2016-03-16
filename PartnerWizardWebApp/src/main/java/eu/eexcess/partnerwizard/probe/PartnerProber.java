@@ -153,6 +153,10 @@ public class PartnerProber{
 		return partnerConfig;
 	}
 
+	public PartnerConfiguration getConfiguration(){
+		return PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
+	}
+
 
 	private synchronized String getId(){
 		idCounter++;
@@ -173,10 +177,10 @@ public class PartnerProber{
 						results = new PartnerRecommender().recommend( userProfile );
 						Integer resultCount = generatorResults.get( generatorClass );
 						if( resultCount==null ){
-							generatorResults.put( generatorClass, results.totalResults );
+							generatorResults.put( generatorClass, results.results.size() );
 						}
 						else{
-							generatorResults.put( generatorClass, resultCount+results.totalResults );
+							generatorResults.put( generatorClass, resultCount+results.results.size() );
 						}
 					}
 					catch( IOException ex ){

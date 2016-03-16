@@ -11,6 +11,7 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.spi.resource.Singleton;
+import eu.eexcess.config.PartnerConfiguration;
 import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
 import eu.eexcess.partnerwizard.probe.PartnerProber;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
@@ -48,6 +49,13 @@ public class ProbeService implements ServletContextListener {
 	private static PartnerProber prober;
 	private static List<ProberKeyword[]> proberQueries;
 
+
+	@GET
+	@Path("show")
+	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public PartnerConfiguration config() throws Exception{
+		return prober.getConfiguration();
+	}
 
 	@GET
 	@Path("queries")
