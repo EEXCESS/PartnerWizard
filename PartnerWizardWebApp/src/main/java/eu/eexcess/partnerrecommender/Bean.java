@@ -588,7 +588,7 @@ public class Bean implements Serializable {
 		StringBuilder processOutput = new StringBuilder();
 		processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
 		try {
-			shell = Runtime.getRuntime().exec("cmd");//su if needed
+			shell = Runtime.getRuntime().exec("cmd");
 			out = new DataOutputStream(shell.getOutputStream());
 
 			in = new BufferedReader(new InputStreamReader(shell.getInputStream()));
