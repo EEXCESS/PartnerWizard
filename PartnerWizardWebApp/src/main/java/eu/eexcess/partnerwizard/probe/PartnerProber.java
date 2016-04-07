@@ -6,6 +6,7 @@ import eu.eexcess.dataformats.result.ResultList;
 import eu.eexcess.dataformats.userprofile.SecureUserProfile;
 import eu.eexcess.partnerrecommender.api.PartnerConfigurationCache;
 import eu.eexcess.partnerrecommender.reference.PartnerRecommender;
+import eu.eexcess.partnerwizard.datalayer.PartnerWizardTransformer;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.controller.ProbeConfigurationIterator;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponseIteration;
@@ -14,6 +15,7 @@ import eu.eexcess.partnerwizard.probe.model.ProberResult;
 import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse.State;
+import eu.eexcess.partnerwizard.recommender.PartnerConnector;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.xml.transform.TransformerConfigurationException;
 import org.apache.commons.lang3.SerializationUtils;
 
 
@@ -50,9 +53,9 @@ public class PartnerProber{
 	public PartnerProber(Map<String, Integer> generators){
 		this.generators = generators;
 
-		this. idCounter = 0;
-		this. executorService = Executors.newFixedThreadPool( 1 );
-		this. configs = new HashMap<>();
+		this.idCounter = 0;
+		this.executorService = Executors.newFixedThreadPool( 10 );
+		this.configs = new HashMap<>();
 	}
 
 
@@ -169,13 +172,13 @@ public class PartnerProber{
 		for( final ProberKeyword[] keywords: queries ){
 			for( final String generatorClass: generators.keySet() ){
 				FutureTask<Void> recommenderTask = new FutureTask<>( () -> {
-					ProbeConfiguration config = new ProbeConfiguration( keywords, generatorClass, Boolean.FALSE, Boolean.FALSE );
-					SecureUserProfile userProfile = toUserProfile( config );
-
-					ResultList results;
 					try{
-						results = new PartnerRecommender().recommend( userProfile );
+						ProbeConfiguration config = new ProbeConfiguration( keywords, generatorClass, Boolean.FALSE, Boolean.FALSE );
+						SecureUserProfile userProfile = toUserProfile( config );
+
+						ResultList results = getNewPartnerRecommender().recommend( userProfile );
 						Integer resultCount = generatorResults.get( generatorClass );
+
 						if( resultCount==null ){
 							generatorResults.put( generatorClass, results.results.size() );
 						}
@@ -211,7 +214,7 @@ public class PartnerProber{
 		FutureTask<List<ProberResult>> firstResponse = new FutureTask<>( () -> {
 			SecureUserProfile profile = toUserProfile( probeConfigs.first );
 
-			return new PartnerRecommender()
+			return getNewPartnerRecommender()
 				.recommend( profile ).results
 				.stream()
 				.limit( MAX_NUMBER_OF_RESULTS )
@@ -223,7 +226,7 @@ public class PartnerProber{
 		FutureTask<List<ProberResult>> secondResponse = new FutureTask<>( () -> {
 			SecureUserProfile profile = toUserProfile( probeConfigs.second );
 
-			return new PartnerRecommender()
+			return getNewPartnerRecommender()
 				.recommend( profile ).results
 				.stream()
 				.limit( MAX_NUMBER_OF_RESULTS )
@@ -275,7 +278,7 @@ public class PartnerProber{
 		}
 	}
 
-	private static SecureUserProfile toUserProfile( ProbeConfiguration config ){
+	private static SecureUserProfile toUserProfile( ProbeConfiguration config ) {
 		PartnerBadge partnerBadge = new PartnerBadge();
 		partnerBadge.setSystemId( PartnerConfigurationCache.CONFIG.getPartnerConfiguration().getSystemId() );
 		partnerBadge.setQueryGeneratorClass( config.queryGeneratorClass );
@@ -288,4 +291,14 @@ public class PartnerProber{
 
 		return userProfile;
 	}
+
+	private static PartnerRecommender getNewPartnerRecommender() throws TransformerConfigurationException{
+		PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
+		PartnerConnector partnerConnector = new PartnerConnector();
+		PartnerWizardTransformer transformer = new PartnerWizardTransformer();
+		transformer.init( partnerConfiguration );
+
+		return new PartnerRecommender( partnerConfiguration, partnerConnector, transformer);
+	}
+
 }

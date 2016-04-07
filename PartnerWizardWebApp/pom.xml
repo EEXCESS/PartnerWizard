@@ -187,38 +187,10 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>eu.eexcess</groupId>
-			<artifactId>eexcess-common</artifactId>
-			<version>${eexcess.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-lang</groupId>
-					<artifactId>commons-lang</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>at.know-center.ie</groupId>
-					<artifactId>ie-workbench</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>eu.eexcess</groupId>
-			<artifactId>eexcess-reference-partner-recommender</artifactId>
-			<version>${eexcess.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>eu.eexcess</groupId>
-			<artifactId>eexcess-reference-partner-data-layer</artifactId>
-			<version>${eexcess.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>eu.eexcess</groupId>
-			<artifactId>eexcess-reference-partner-web-service</artifactId>
-			<version>${eexcess.version}</version>
-			<scope>compile</scope>
-		</dependency>
+	 <dependency>
+	  <groupId>eu.eexcess</groupId>
+	  <artifactId>eexcess-reference-partner-recommender</artifactId>
+	  <version>1.0-SNAPSHOT</version>
+	 </dependency>
 	</dependencies>
 </project>

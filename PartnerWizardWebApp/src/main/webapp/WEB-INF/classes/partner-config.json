@@ -1,20 +1,17 @@
 {
-  "systemId": "PartnerWizard",
-  "partnerConnectorClass": "eu.eexcess.partnerwizard.recommender.PartnerConnector",
-  "queryGeneratorClass": "eu.eexcess.partnerrecommender.reference.OrQueryGenerator",
-  "transformerClass": "eu.eexcess.partnerwizard.datalayer.PartnerWizardTransformer",
-  "searchEndpoint": "http://www.europeana.eu/api/v2/search.json?wskey=${apiKey}&query=${query}&rows=${numResults}",
-  "detailEndpoint": "http://europeana.eu/api/v2/record/${detailQuery}.json?wskey=${apiKey}",
+  "systemId": "KIMportal PartnerSetupTest",
+  "favIconURI":"https://www.rijksmuseum.nl/favicon.ico?version=5",
+  "partnerConnectorClass": "at.joanneum.recommender.KIMportalRecommenderPartnerConnector",
+  "queryGeneratorClass": "at.joanneum.recommender.KIMportalRecommenderQueryGenerator",
+  "searchEndpoint": "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=${query}&rows=${numResults}",
+  "detailEndpoint": "https://kgapi.bl.ch/solr/kim-portal.objects/select/xml?q=uuid:${detailQuery}",
+  "transformerClass": "at.joanneum.datalayer.KIMportalRecommenderTransformer",
   "isTransformedNative": "false",
-  "favIconURI": "http://styleguide.europeana.eu/v/0.2.9/images/favicons/favicon-32x32.png?ver=alpha",
   "mappingListTransformationFile":"mapperResultList.xsl",
   "mappingObjectTransformationFile":"mapperObject.xsl",
   "partnerDataRequestsTrace":"false",
   "enableEnriching":"true",
   "makeCleanupBeforeTransformation":"false",
-  "partnerConnectorEndpoint": "http://127.0.0.1/eexcess-partner-wizard-1.0-SNAPSHOT/partner/",
-  "federatedRecommenderURI":"http://127.0.0.1/eexcess-federated-recommender-web-service-1.0-SNAPSHOT/recommender/",
-  
-  "ageRange": 2,
-  "isQueryExpansionEnabled": "true"
+  "partnerConnectorEndpoint": "http://127.0.0.1/eexcess-partner-KIMportalRecommender-1.0-SNAPSHOT/partner/",
+  "federatedRecommenderURI":"http://127.0.0.1/eexcess-federated-recommender-web-service-1.0-SNAPSHOT/recommender/"
 }

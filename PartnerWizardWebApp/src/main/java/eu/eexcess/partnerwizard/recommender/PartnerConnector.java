@@ -131,10 +131,10 @@ public class PartnerConnector implements PartnerConnectorApi{
 	private Document parseResponse( ClientResponse response ) throws EEXCESSDataTransformationException{
 		MediaType type = response.getType();
 
-		if( type.equals( MediaType.APPLICATION_ATOM_XML_TYPE ) ){
+		if( type!=null && type.equals( MediaType.APPLICATION_ATOM_XML_TYPE ) ){
 			return response.getEntity( Document.class );
 		}
-		else if( type.equals( MediaType.APPLICATION_JSON_TYPE ) ){
+		else if( type!=null && type.equals( MediaType.APPLICATION_JSON_TYPE ) ){
 			String jsonString = response.getEntity( String.class );
 			String xmlString = jsonToXmlString( jsonString );
 			return xmlStringToDocument( xmlString );
