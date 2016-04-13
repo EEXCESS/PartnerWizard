@@ -153,7 +153,9 @@ public class MappingConfigBean implements Serializable{
 		try {
 			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
 			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
-
+			partnerConfiguration.setPartnerConnectorClass("eu.eexcess.partnerwizard.recommender.PartnerConnector");
+			partnerConfiguration.setQueryGeneratorClass("eu.eexcess.partnerrecommender.reference.OrQueryGenerator");
+			partnerConfiguration.setTransformerClass("eu.eexcess.partnerwizard.datalayer.PartnerWizardTransformer");
 			partnerConfiguration.setEnableEnriching(false);
 			partnerConfiguration.setTransformedNative(false);
 			partnerConfiguration.setMakeCleanupBeforeTransformation(false);
@@ -187,7 +189,9 @@ public class MappingConfigBean implements Serializable{
 		try {
 			PartnerConnectorApi partnerConnector = (PartnerConnectorApi) Class.forName("eu.eexcess.partnerrecommender.reference.PartnerConnectorBase").newInstance();
 			PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
-
+			partnerConfiguration.setPartnerConnectorClass("eu.eexcess.partnerwizard.recommender.PartnerConnector");
+			partnerConfiguration.setQueryGeneratorClass("eu.eexcess.partnerrecommender.reference.OrQueryGenerator");
+			partnerConfiguration.setTransformerClass("eu.eexcess.partnerwizard.datalayer.PartnerWizardTransformer");
 			partnerConfiguration.setEnableEnriching(false);
 			partnerConfiguration.setTransformedNative(false);
 			partnerConfiguration.setMakeCleanupBeforeTransformation(false);

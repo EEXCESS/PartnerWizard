@@ -71,9 +71,11 @@ public class WizardRESTService {
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public boolean updateConfigAndDeploy( PartnerConfiguration config){
+		System.out.println("REST wizard/updateConfigAndDeploy called");
 		if( config==null ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
+		System.out.println("REST wizard/updateConfigAndDeploy config:\n"+config.toString());
 		if (config.getTransformerClass() != null && !config.getTransformerClass().isEmpty()) {
 			String artifactId = config.getTransformerClass();
 			artifactId = artifactId.substring(artifactId.lastIndexOf(".")+1);
