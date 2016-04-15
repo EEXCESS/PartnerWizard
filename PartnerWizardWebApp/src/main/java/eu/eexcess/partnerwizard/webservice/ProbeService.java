@@ -143,9 +143,14 @@ public class ProbeService implements ServletContextListener {
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public boolean storeConfiguration(@Context HttpServletRequest request, @QueryParam("id") String id){
 		long start = System.nanoTime();
-		ProbeConfiguration config;
+		PartnerConfiguration config;
 		try{
-			config = prober.getConfiguration( id );
+			ProbeConfiguration configProbe = prober.getConfiguration( id );
+
+			config = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
+			config.setQueryGeneratorClass( configProbe.queryGeneratorClass );
+			config.setIsQueryExpansionEnabled( configProbe.queryExpansionEnabled );
+			config.setIsQuerySplittingEnabled( configProbe.querySplittingEnabled );
 		}
 		catch( IllegalStateException ex ){
 			throw new WebApplicationException( ex, Response.Status.FORBIDDEN );
