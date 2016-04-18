@@ -1,101 +1,64 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j">
 
 <h:head>
-    <title><ui:define name="title">EEXCESS PartnerWizard</ui:define></title>
-    <meta http-equiv="content-type" content="text/xhtml; charset=UTF-8" />
+	<title>EEXCESS Partner Wizard</title>
+	<meta http-equiv="content-type" content="text/xhtml; charset=UTF-8" />
 </h:head>
 
-<h:body>
-    <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+<h:body >
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="partnerwizard/styles/main.c0d1c2e5.css" />
+	<link rel="stylesheet" href="pw.css" />
 
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
+	<h:form styleClass="form-horizontal" id="formID">
+		<header class="navigation">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8">
+					<img src="partnerwizard/images/eexcess-logo.png" alt="" class="logo img-responsive" />
+					<a href="http://www.joanneum.at/" target="_blank"><img src="partnerwizard/images/joanneum-research-logo.png" alt="" class="logo img-responsive" /></a>
+					<a href="http://www.know-center.tugraz.at" target="_blank"><img src="partnerwizard/images/logo.23c404d5.png" alt="" class="logo img-responsive" /></a>
+				</div>
+				<div class="col-md-offset-2 col-md-2">
+					<div class="btn-group-top">
+						<a4j:commandButton value="save" render="wholePage" execute="@form" action="#{bean.saveToCookie}" styleClass="btn btn-primary" />
+						<a4j:commandButton value="load" render="wholePage" execute="@form" action="#{bean.loadFromCookie}" styleClass="btn btn-primary" />
+					</div>
+				</div>
+			</div>
+		</div>
+		</header>
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<style type="text/css">
-.eexcessMappingFieldsTable td
-{
-padding:4px;
-border: grey 1px solid;
-}
-.syntaxhighlighter table {
- width: 100%;
-}
-.syntaxhighlighter {
-    width: 800px !important;
-    height: 600px;
-}
-</style>
-<h:form styleClass="form-horizontal" id="formID">
-
- <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">EEXCESS PartnerWizard</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-        <!--
-          <form class="navbar-form navbar-right">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control"/>
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control"/>
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-          -->
-          <div style="margin-top:8px;">
-	          <a4j:commandButton value="save" render="wholePage" execute="@form"
-								action="#{bean.saveToCookie}" styleClass="btn btn-primary" />
-	          <a4j:commandButton value="load" render="wholePage" execute="@form"
-								action="#{bean.loadFromCookie}" styleClass="btn btn-primary" />
-
-          </div>
-        </div><!--/.navbar-collapse -->
-      </div>
-    </nav>
-
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <!--
-    <div class="jumbotron">
-      <div class="container">
-        <h1>EEXCESS PartnerRecommender Setup</h1>
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-      </div>
-    </div>
--->
-    <div class="container">
-    <h:panelGroup id="wholePage">
-	    <ui:insert name="body">Default content</ui:insert>
-	</h:panelGroup>
-      <hr/>
-
-      <footer>
-        <p>&copy; EEXCESS 2015</p>
-      </footer>
-    </div> <!-- /container -->
+		<div class="container">
+			<h:panelGroup id="wholePage">
+				<ui:insert name="body">Default content</ui:insert>
+			</h:panelGroup>
+			<hr />
+		</div>
+		<!-- /container -->
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-11">
+					<div class="pull-right">@ 2015 JOANNEUM RESEARCH, Know-Center</div>
+				</div>
+			</div>
+		</div>
+	</footer>
 
 
-    <!-- Bootstrap core JavaScript
+		<!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-    			</h:form>
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+		<script
+			src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	</h:form>
 
 </h:body>
 </html>

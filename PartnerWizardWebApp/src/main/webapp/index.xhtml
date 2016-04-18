@@ -7,7 +7,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0 
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,6 @@ limitations under the License.
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:syn="http://richfaces.org/sandbox/syntaxhighlighter"
 	xmlns:eexcess="http://www.eexcess.eu/partnersetup">
-
 <body>
 	<ui:composition template="/templates/template.xhtml">
 
@@ -33,245 +32,221 @@ limitations under the License.
 		<ui:define name="body">
 			<script>
 				function agreededLicense() {
-				    document.getElementById("formID:generatePR").disabled = false;
+					document.getElementById("formID:generatePR").disabled = false;
 				}
 			</script>
-		
-				<br/>
-				<br/>
-				<br/>
-				<!-- 
-    	<a4j:outputPanel ajaxRendered="true">
-    		<h:messages errorStyle="color:red" />
-    	</a4j:outputPanel>
-    	-->
-		<!-- <rich:notifyMessages stayTime="2000" nonblocking="true" />-->		
-				<h1>PartnerWizard</h1>
-				<p style="color: red;">
-					This is a actual prototype and not the final version.
-				</p>
-				<p>
-					The PartnerWizard allows you to integrate new partner systems using this web app. A partner system is a content provider which is used by the federated recommender to generate recommendations. So without coding you can integrate most search APIs. For more general information about the EEXCESS project please visit:<a href="http://eexceee.eu/" target="_blank">http://eexcess.eu/</a> or <a href="https://github.com/EEXCESS" target="_blank">https://github.com/EEXCESS</a>.
-				</p>
-				<p>
-					For more Information about this web app please visit:<a href="https://github.com/EEXCESS/PartnerWizard" target="_blank">https://github.com/EEXCESS/PartnerWizard</a> 
-				</p>
-				<h2>General Settings</h2>
-				<fieldset>
-					<legend>Partner Information</legend>
-
-					<div class="control-group">
+			<!-- <rich:notifyMessages stayTime="2000" nonblocking="true" />-->
+			<h1>PartnerWizard</h1>
+			<p style="color: red;">This is a actual prototype and not the final version.</p>
+			<p>
+				The PartnerWizard allows you to integrate new partner systems using
+				this web app. A partner system is a content provider which is used
+				by the federated recommender to generate recommendations. So without
+				coding you can integrate most search APIs. For more general
+				information about the EEXCESS project please visit:<a
+					href="http://eexceee.eu/" target="_blank">http://eexcess.eu/</a> or
+				<a href="https://github.com/EEXCESS" target="_blank">https://github.com/EEXCESS</a>.
+			</p>
+			<p>
+				For more Information about this web app please visit:<a
+					href="https://github.com/EEXCESS/PartnerWizard" target="_blank">https://github.com/EEXCESS/PartnerWizard</a>
+			</p>
+			<h2>General Settings</h2>
+			<fieldset>
+				<legend>Partner Information</legend>
+				<div class="row">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">username:</label>
 						<div class="controls">
-							<h:inputText id="username" value="#{bean.partnerInfo.username}" styleClass="form-control" />
+							<h:inputText id="username" value="#{bean.partnerInfo.username}"
+								styleClass="form-control" />
 							<p class="help-block">your username</p>
 						</div>
 					</div>
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">e-mail:</label>
 						<div class="controls">
-							<h:inputText id="email" value="#{bean.partnerInfo.contactEmail}" styleClass="form-control" />
+							<h:inputText id="email" value="#{bean.partnerInfo.contactEmail}"
+								styleClass="form-control" />
 							<p class="help-block">e-mail</p>
 						</div>
 					</div>
-					<div class="control-group">
-						<label class="control-label" for="textinput">Data Access Agreement:</label>
+					<div class="checkbox col-sm-6">
+						<label><h:selectBooleanCheckbox id="dataAccessAgreement" value="#{bean.partnerInfo.licenseAgreement}" onclick="agreededLicense()" /> Data Access Agreement</label>
+						
 						<div class="controls">
-							<h:selectBooleanCheckbox id="dataAccessAgreement" value="#{bean.partnerInfo.licenseAgreement}" styleClass="form-control" onclick="agreededLicense()" />
-							<p class="help-block">To generate a PartnerRecommender you need to agree to the <a href="./Data-Access-Agreement.pdf" target="_blank">EEXCESS Data Access Agreement</a>.</p>
+							<p class="help-block">
+								To generate a PartnerRecommender you need to agree to the <a href="./Data-Access-Agreement.pdf" target="_blank">EEXCESS Data Access Agreement</a>.
+							</p>
 						</div>
-					</div>
-				</fieldset>
-				
-				<fieldset>
-					<legend>Parameter</legend>
+				</div>
+				</div>
+			</fieldset>
 
-					<div class="control-group">
+			<fieldset>
+				<legend>Parameter</legend>
+				<div class="row">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">groupId:</label>
 						<div class="controls">
 							<h:inputText id="groupId" value="#{bean.groupId}" styleClass="form-control" />
-							<p class="help-block">id used in the Maven-Repository (e.g
-								eu.eexcess)</p>
+							<p class="help-block">id used in the Maven-Repository (e.g eu.eexcess)</p>
 						</div>
 					</div>
-
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">artifactId:</label>
 						<div class="controls">
 							<h:inputText id="artifactId" value="#{bean.artifactId}" styleClass="form-control" />
-							<p class="help-block">id used in the Maven-Repository (e.g
-								MyPR)</p>
+							<p class="help-block">id used in the Maven-Repository (e.g MyPR)</p>
 						</div>
 					</div>
-
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">version:</label>
 						<div class="controls">
 							<h:inputText id="version" value="#{bean.version}" styleClass="form-control" />
-							<p class="help-block">version used in the Maven-Repository
-								(e.g 1.0)</p>
+							<p class="help-block">version used in the Maven-Repository (e.g 1.0)</p>
 						</div>
 					</div>
-
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">package:</label>
 						<div class="controls">
 							<h:inputText id="packageStr" value="#{bean.packageStr}" styleClass="form-control" />
-							<p class="help-block">java package, can be the same as the
-								groupId (e.g eu.eexcess)</p>
+							<p class="help-block">java package, can be the same as the groupId (e.g eu.eexcess)</p>
 						</div>
 					</div>
-
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">partnerName:</label>
 						<div class="controls">
-							<h:inputText id="partnerName" value="#{bean.partnerName}"
-								styleClass="form-control" />
+							<h:inputText id="partnerName" value="#{bean.partnerName}" styleClass="form-control" />
 							<p class="help-block">Name of the Partner - we will show this information as origin of the metadata</p>
 						</div>
 					</div>
-					
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">partnerURL:</label>
 						<div class="controls">
 							<h:inputText id="partnerURL" value="#{bean.partnerURL}" styleClass="form-control" />
 							<p class="help-block">URL of the Partner - used in EEXCESS</p>
 						</div>
 					</div>
-					
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">partnerFavIconURL:</label>
 						<div class="controls">
 							<h:inputText id="partnerFavIconURL" value="#{bean.partnerFavIconURL}" styleClass="form-control" />
 							<p class="help-block">URL of the FavIcon of the Partner - used in EEXCESS</p>
 						</div>
 					</div>
-
-					<div class="control-group">
-						<label class="control-label" for="textinput">prefix for the URI to the objects:</label>
+					<div class="control-group col-sm-6">
+						<label class="control-label" for="textinput">prefix for the
+							URI to the objects:</label>
 						<div class="controls">
-							<h:inputText id="apiURIPathPrefix" value="#{bean.apiURIPathPrefix}"
-								styleClass="form-control" />
+							<h:inputText id="apiURIPathPrefix" value="#{bean.apiURIPathPrefix}" styleClass="form-control" />
 							<p class="help-block">prefix for the URI to the objects</p>
 						</div>
 					</div>
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">prefix for access to images:</label>
 						<div class="controls">
-							<h:inputText id="apiPreviewImagePrefix" value="#{bean.apiPreviewImagePrefix}"
-								styleClass="form-control" />
+							<h:inputText id="apiPreviewImagePrefix" value="#{bean.apiPreviewImagePrefix}" styleClass="form-control" />
 							<p class="help-block">prefix for access to images</p>
 						</div>
 					</div>
-					
-					<div class="control-group">
+					<div class="control-group col-sm-6">
 						<label class="control-label" for="textinput">data license:</label>
 						<div class="controls">
-							<h:inputText id="dataLicense" value="#{bean.dataLicense}"
-								styleClass="form-control" />
+							<h:inputText id="dataLicense" value="#{bean.dataLicense}" styleClass="form-control" />
 							<p class="help-block">License of the meta data</p>
 						</div>
 					</div>
-					
-					<div class="control-group">
-						<label class="control-label" for="textinput">format of API resonses:</label>
+					<div class="control-group col-sm-6">
+						<label class="control-label" for="textinput">format of API
+							resonses:</label>
 						<div class="controls">
-							<h:selectOneRadio id="apiResponseFormatID" value="#{bean.apiResponseFormat}">
-							   <f:selectItem itemValue="json" itemLabel="JSON" />
-							   <f:selectItem itemValue="xml" itemLabel="XML" />	   			
-							</h:selectOneRadio>	
+							<h:selectOneRadio id="apiResponseFormatID" value="#{bean.apiResponseFormat}" styleClass="radioTable">
+								<f:selectItem itemValue="json" itemLabel="JSON" />
+								<f:selectItem itemValue="xml" itemLabel="XML" />
+							</h:selectOneRadio>
 							<p class="help-block">select the format which your API returns</p>
 						</div>
 					</div>
-				</fieldset>
-				
-				<h2>configure Search API</h2>
-				
-				<p>
-					The API configured in the sections below, need to return the data in XML-format. EEXCESS uses XPath to determine the metadata from the objects. If you need more info about XML and XPath we recommend to visit:
-					<ul>
-						<li> 
-							<a href="http://www.w3schools.com/xsl/xpath_intro.asp" target="_blank">http://www.w3schools.com/xsl/xpath_intro.asp</a> 
-						</li>
-						<li>
-							<a href="http://www.w3schools.com/xml/xml_xpath.asp" target="_blank">http://www.w3schools.com/xml/xml_xpath.asp</a>
-						</li>
-						<li>
-							<a href="http://xmltoolbox.appspot.com/xpath_generator.html" target="_blank">http://xmltoolbox.appspot.com/xpath_generator.html</a>
-						</li>
-						<li>
-							<a href="http://www.xpathtester.com/xpath" target="_blank">http://www.xpathtester.com/xpath</a>
-						</li>
-						
-						
-					</ul>
-				</p>
-				<rich:collapsiblePanel header="configure Search API" switchType="client">
-					<eexcess:mapping mappingFor="search" mappingId="search" mappingBean="#{bean.searchMappingConfig}"></eexcess:mapping>
-				</rich:collapsiblePanel>
-
-				<h2>configure Detail API</h2>
-				<rich:collapsiblePanel header="configure Detail API" switchType="client">
-					<eexcess:mapping mappingFor="detail" mappingId="detail"  mappingBean="#{bean.detailMappingConfig}"></eexcess:mapping>
-				</rich:collapsiblePanel>
-
-				<div class="row">
-					<div>
-						<h2>Create PartnerRecommender/project</h2>
-						<!-- disabled="true"  -->
-						<a4j:commandButton id="generatePR" value="Build the PartnerRecommender" render="out" execute="@form"
-							action="#{bean.generatePR}" styleClass="btn btn-primary" />
-
-						<h:panelGroup id="out">
-							<h3>mvn command used to generate the PartnerRecommender:</h3>
-							<p>
-								<h:outputText value="#{bean.buildCMD}" styleClass="outhello" />
-							</p>
-							<h3>Result:</h3>
-							<p>
-								<h:inputTextarea id="buildOutputID" rows="20" cols="160"
-									value="#{bean.buildOutput}" readonly="true" />
-							</p>
-						</h:panelGroup>
-						<p>
-							<h:commandLink id="downloadWAR" action="#{bean.downloadWAR}" value="Download PartnerRecommender as WAR" />
-						</p>
-						<p>
-							<h:commandLink id="downloadSourceZIP" action="#{bean.downloadSourceZIP}"
-								value="Download the generated sources of the PartnerRecommender" />
-						</p>
-						
-						<h:panelGroup id="deploymentPanelId">
-							<f:subview rendered="#{bean.deployablePR}">
-								<h3>Deployment to our Development-Server</h3>
-								<p>
-										With this button we deploy the generated PartnerRecommender to our Development-Server.
-										With our <a href="https://chrome.google.com/webstore/detail/eexcessdev/oibioeefnhaadmajhagebgfdmgjjdgbe">Chrome-Extension</a> you should become recommendations also from your new PartnerRecommender.
-								</p>
-								<a4j:commandButton id="deployPR" value="Deploy the PartnerRecommender to our DEV-Server" render="wholePage" execute="@form"
-									action="#{bean.deployPR}" styleClass="btn btn-primary" rendered="#{bean.deployablePR}"/>
-							</f:subview>
-								
-						</h:panelGroup>
-						
-					</div>
 				</div>
-			<br />
-			
-			<div class="row">
-				<div>
-					<h2> Query Generation Configuration</h2>
-				<p>
-				<h:commandLink action="#{bean.gotoQueryGeneration}">continue with the Query Generation Configuration on the next page...</h:commandLink>
-<!-- 			<a href="./partnerwizard/index.html">continue with the Query Generation Configuration on the next page...</a>
--->
+			</fieldset>
+
+			<h2>configure Search API</h2>
+
+			<p>
+				The API configured in the sections below, need to return the data in
+				XML-format. EEXCESS uses XPath to determine the metadata from the
+				objects. If you need more info about XML and XPath we recommend to
+				visit:
+				<ul>
+					<li><a href="http://www.w3schools.com/xsl/xpath_intro.asp" target="_blank">http://www.w3schools.com/xsl/xpath_intro.asp</a></li>
+					<li><a href="http://www.w3schools.com/xml/xml_xpath.asp" target="_blank">http://www.w3schools.com/xml/xml_xpath.asp</a></li>
+					<li><a href="http://xmltoolbox.appspot.com/xpath_generator.html" target="_blank">http://xmltoolbox.appspot.com/xpath_generator.html</a></li>
+					<li><a href="http://www.xpathtester.com/xpath" target="_blank">http://www.xpathtester.com/xpath</a></li>
+				</ul>
 			</p>
-			</div>
-			</div>
+			<rich:collapsiblePanel header="configure Search API"
+				switchType="client">
+				<eexcess:mapping mappingFor="search" mappingId="search" mappingBean="#{bean.searchMappingConfig}"></eexcess:mapping>
+			</rich:collapsiblePanel>
 
+			<h2>configure Detail API</h2>
+			<rich:collapsiblePanel header="configure Detail API" switchType="client">
+				<eexcess:mapping mappingFor="detail" mappingId="detail" mappingBean="#{bean.detailMappingConfig}"></eexcess:mapping>
+			</rich:collapsiblePanel>
+
+			<div class="row">
+				<div class="col-sm-12">
+					<h2>Create PartnerRecommender/project</h2>
+					<!-- disabled="true"  -->
+					<a4j:commandButton id="generatePR" value="Build the PartnerRecommender" render="out" execute="@form" action="#{bean.generatePR}" styleClass="btn btn-primary" />
+
+					<h:panelGroup id="out">
+						<h3>mvn command used to generate the PartnerRecommender:</h3>
+						<p>
+							<h:outputText value="#{bean.buildCMD}" styleClass="outhello" />
+						</p>
+						<h3>Result:</h3>
+						<p>
+							<h:inputTextarea id="buildOutputID" rows="20" cols="160" value="#{bean.buildOutput}" readonly="true" />
+						</p>
+					</h:panelGroup>
+					<p>
+						<h:commandLink id="downloadWAR" action="#{bean.downloadWAR}" value="Download PartnerRecommender as WAR" />
+					</p>
+					<p>
+						<h:commandLink id="downloadSourceZIP" action="#{bean.downloadSourceZIP}" value="Download the generated sources of the PartnerRecommender" />
+					</p>
+					<h:panelGroup id="deploymentPanelId">
+						<f:subview rendered="#{bean.deployablePR}">
+							<h3>Deployment to our Development-Server</h3>
+							<p>
+								With this button we deploy the generated PartnerRecommender to
+								our Development-Server. With our <a
+									href="https://chrome.google.com/webstore/detail/eexcessdev/oibioeefnhaadmajhagebgfdmgjjdgbe">Chrome-Extension</a>
+								you should become recommendations also from your new
+								PartnerRecommender.
+							</p>
+							<a4j:commandButton id="deployPR"
+								value="Deploy the PartnerRecommender to our DEV-Server"
+								render="wholePage" execute="@form" action="#{bean.deployPR}"
+								styleClass="btn btn-primary" rendered="#{bean.deployablePR}" />
+						</f:subview>
+
+					</h:panelGroup>
+
+				</div>
+			</div>
 			<br />
-
-
+			<div class="row">
+				<div class="col-sm-12">
+					<h2>Query Generation Configuration</h2>
+					<p>
+						<h:commandLink action="#{bean.gotoQueryGeneration}">continue with the Query Generation Configuration on the next page...</h:commandLink>
+					</p>
+				</div>
+			</div>
+			<br />
 		</ui:define>
 	</ui:composition>
 </body>
