@@ -117,16 +117,16 @@ public class MappingConfigBean implements Serializable{
 	{
 		if (this.actMappingFieldId != -1)
 		{
-//			System.out.println("probeXPath called");
-//			System.out.println("actMappingFieldId:" + this.actMappingFieldId);
-//			System.out.println("actMappingField:xpath:" + this.getMappingFields().get(this.actMappingFieldId).getxPath());
+//			LOGGER.info("probeXPath called");
+//			LOGGER.info("actMappingFieldId:" + this.actMappingFieldId);
+//			LOGGER.info("actMappingField:xpath:" + this.getMappingFields().get(this.actMappingFieldId).getxPath());
 			String fieldXPath = this.getMappingFields().get(this.actMappingFieldId).getxPath();
 			if (fieldXPath == null || fieldXPath.trim().isEmpty()) return;
 			if (eexcessFieldsXPathLoop == null || eexcessFieldsXPathLoop.trim().isEmpty()) return;
 			
 			String xpath = this.eexcessFieldsXPathLoop + fieldXPath;
 
-//			System.out.println("xpath:" + xpath);
+//			LOGGER.info("xpath:" + xpath);
 
 			Document apiResponseDoc = this.xmlTools.convertStringToDocument(this.apiResponse);
 			XPath xPath = XPathFactory.newInstance().newXPath();
@@ -134,11 +134,11 @@ public class MappingConfigBean implements Serializable{
 			try {
 				nodes = (NodeList)xPath.evaluate(xpath,
 						apiResponseDoc.getDocumentElement(), XPathConstants.NODESET);
-//				System.out.println("found:" + nodes.toString());
+//				LOGGER.info("found:" + nodes.toString());
 				ArrayList<String> values= new ArrayList<String>();
 				for (int i = 0; i < nodes.getLength();i++) {
 					values.add(nodes.item(i).getTextContent());
-//					System.out.println("found:" + nodes.item(i).getTextContent());
+//					LOGGER.info("found:" + nodes.item(i).getTextContent());
 				}
 				if (values.size()==0) values.add("no values found!!!");
 				this.getMappingFields().get(this.actMappingFieldId).setExampleValues(values);

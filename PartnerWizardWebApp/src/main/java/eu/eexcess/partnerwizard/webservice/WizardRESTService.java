@@ -29,6 +29,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -51,6 +52,7 @@ import eu.eexcess.partnerrecommender.Bean;
 @Singleton
 public class WizardRESTService {
 	public static final String URL_PATTERN = "/wizard/updateConfigAndDeploy";
+	private final static Logger LOGGER = Logger.getLogger(ProbeService.class.getName());
 
 	@Context
 	private ServletContext context;
@@ -62,7 +64,7 @@ public class WizardRESTService {
 	@Path("ping")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public String queries() {
-		System.out.println("Service wizard: ping called....");
+		LOGGER.info("Service wizard: ping called....");
 		return "";
 	}
 
@@ -71,11 +73,11 @@ public class WizardRESTService {
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public boolean updateConfigAndDeploy( PartnerConfiguration config){
-		System.out.println("REST wizard/updateConfigAndDeploy called");
+		LOGGER.info("REST wizard/updateConfigAndDeploy called");
 		if( config==null ){
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
-		System.out.println("REST wizard/updateConfigAndDeploy config:\n"+config.toString());
+		LOGGER.info("REST wizard/updateConfigAndDeploy config:\n"+config.toString());
 		if (config.getTransformerClass() != null && !config.getTransformerClass().isEmpty()) {
 			String artifactId = config.getTransformerClass();
 			artifactId = artifactId.substring(artifactId.lastIndexOf(".")+1);
@@ -83,8 +85,8 @@ public class WizardRESTService {
 			String copyTargetPath = Bean.PATH_BUILD_SANDBOX + artifactId + "\\src\\main\\resources\\";
 			String dateString = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 
-			System.out.println("artifactId:"+artifactId);
-			System.out.println("copyTargetPath:"+copyTargetPath);
+			LOGGER.info("artifactId:"+artifactId);
+			LOGGER.info("copyTargetPath:"+copyTargetPath);
 
 			// backup old config
 			Charset charset = StandardCharsets.UTF_8;
@@ -143,7 +145,7 @@ public class WizardRESTService {
 
 			// Executing commands
 			for (String command : commands) {
-				System.out.println("executing:\n" + command);
+				LOGGER.info("executing:\n" + command);
 				out.writeBytes(command + "\n");
 				out.flush();
 			}
@@ -155,12 +157,12 @@ public class WizardRESTService {
 				processOutput.append(line).append("\n");
 			}
 
-			//System.out.println("result:\n" + processOutput);
+			//LOGGER.info("result:\n" + processOutput);
 			processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
 			String output = processOutput.toString();
 			shell.waitFor();
-			System.out.println(processOutput);
-			System.out.println("finished!");
+			LOGGER.info(processOutput.toString());
+			LOGGER.info("finished!");
 			return output;
 		} catch (Exception e) {
 		} finally {

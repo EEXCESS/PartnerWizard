@@ -35,7 +35,7 @@ public class ${artifactId}Transformer extends Transformer{
 //			if (!"${partnerAPIpreviewImagePathPrefix}".isEmpty())
 //			{
 //				result.previewImage = result.previewImage.replace("${partnerURL}edm/", "${partnerAPIpreviewImagePathPrefix}");
-				result.mediaType ="IMAGE";
+				result.mediaType =EEXCESS_MEDIATYPE_IMAGE;
 //			}
 		}
 		if (result.mediaType == null || result.mediaType.trim().isEmpty() || result.mediaType.equalsIgnoreCase(EEXCESS_FACETS_VALUE_UNKNOWN))

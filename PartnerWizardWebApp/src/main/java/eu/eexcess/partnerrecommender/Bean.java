@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -50,6 +51,8 @@ import javax.servlet.http.HttpServletResponse;
 @ManagedBean
 @SessionScoped
 public class Bean implements Serializable {
+
+	private static final Logger LOGGER = Logger.getLogger( Bean.class.getName() );
 
 	private static final String ARCHETYPE_REMOVE_TAG = "###remove###";
 
@@ -287,7 +290,7 @@ public class Bean implements Serializable {
 	public void loadFromCookie(){
 		ArrayList<Cookie> myCookies = this.getCookies();
 		for (Cookie myActCookie : myCookies) {
-			System.out.println("cookie:"+ myActCookie.getName() + " " + myActCookie.getValue());
+			LOGGER.info("cookie:"+ myActCookie.getName() + " " + myActCookie.getValue());
 			if (myActCookie.getName().startsWith(COOKIENAME))
 			{
 				if (myActCookie.getName().equals(COOKIENAME+"ArtifactId"))
@@ -461,7 +464,7 @@ public class Bean implements Serializable {
 		commands.add("xcopy "+warName+".war %TOMCAT%webapps\\ /Y");
 		
 		String output = this.cmdExecute(commands);
-		System.out.println(output);
+		LOGGER.info(output);
 	}
 		
 	public void compilePR()
@@ -595,7 +598,7 @@ public class Bean implements Serializable {
 
 			// Executing commands 
 			for (String command : commands) {
-				System.out.println("executing:\n" + command);
+				LOGGER.info("executing:\n" + command);
 				out.writeBytes(command + "\n");
 				out.flush();
 			}
@@ -607,11 +610,11 @@ public class Bean implements Serializable {
 				processOutput.append(line).append("\n");
 			}
 
-			//System.out.println("result:\n" + processOutput);
+			//LOGGER.info("result:\n" + processOutput);
 			processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
 			String output = processOutput.toString();
 			shell.waitFor();
-			System.out.println("finished!");
+			LOGGER.info("finished!");
 			return output;
 		} catch (Exception e) {
 		} finally {
@@ -637,7 +640,7 @@ public class Bean implements Serializable {
 		try {
 			String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
 
-			String fileNameWithPath = this.PATH_BUILD_SANDBOX + this.artifactId + "\\" + "target\\"+fileName;
+			String fileNameWithPath = Bean.PATH_BUILD_SANDBOX + this.artifactId + "\\" + "target\\"+fileName;
 			input = new FileInputStream(fileNameWithPath);
 			byte[] buf = new byte[1024];
 			int bytesRead;
@@ -668,11 +671,11 @@ public class Bean implements Serializable {
 	}
 
 	public void createSourceZIP() throws IOException {
-		System.out.println(this.cleanupPR());
+		LOGGER.info(this.cleanupPR());
 		String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
 
 		try {
-			zipDir(this.PATH_BUILD_SANDBOX+fileName+".zip", this.PATH_BUILD_SANDBOX+ this.artifactId );
+			zipDir(Bean.PATH_BUILD_SANDBOX+fileName+".zip", Bean.PATH_BUILD_SANDBOX+ this.artifactId );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -685,7 +688,7 @@ public class Bean implements Serializable {
 		try {
 			String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war"+".zip";
 
-			String fileNameWithPath = this.PATH_BUILD_SANDBOX+fileName;
+			String fileNameWithPath = Bean.PATH_BUILD_SANDBOX+fileName;
 			input = new FileInputStream(fileNameWithPath);
 			byte[] buf = new byte[1024];
 			int bytesRead;
@@ -722,7 +725,7 @@ public class Bean implements Serializable {
 		Files.delete(fileToDeletePath);
 
 		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
-		//System.out.println("Creating : " + zipFileName);
+		//LOGGER.info("Creating : " + zipFileName);
 		addDir(dirObj, out, dir.substring(0, dir.lastIndexOf('\\')+1));
 		out.close();
 	}
@@ -738,7 +741,7 @@ public class Bean implements Serializable {
 			}
 			FileInputStream in = new FileInputStream(files[i].getAbsolutePath());
 			String entryName = files[i].getAbsolutePath().substring(basePath.length());
-			//System.out.println(" Adding: " + files[i].getAbsolutePath() + "\n  with entryName:"+ entryName);
+			//LOGGER.info(" Adding: " + files[i].getAbsolutePath() + "\n  with entryName:"+ entryName);
 			out.putNextEntry(new ZipEntry(entryName));
 			int len;
 			while ((len = in.read(tmpBuf)) > 0) {
@@ -751,8 +754,10 @@ public class Bean implements Serializable {
 	
 	public ArrayList<Cookie> getCookies() {
         FacesContext context = FacesContext.getCurrentInstance();
-        Map cookieMap = context.getExternalContext().getRequestCookieMap();
-        ArrayList<Cookie> cookies = new ArrayList<Cookie>(cookieMap.values()); 
+        @SuppressWarnings("rawtypes")
+		Map cookieMap = context.getExternalContext().getRequestCookieMap();
+        @SuppressWarnings("unchecked")
+		ArrayList<Cookie> cookies = new ArrayList<Cookie>(cookieMap.values()); 
         return cookies;
     }
 	
@@ -813,17 +818,18 @@ public class Bean implements Serializable {
 		commands.add(buildENVgotoSandbox());
 		commands.add(this.buildCMD);
 		commands.add("cd " + this.artifactId);
-		commands.add("xcopy .\\src\\main\\resources\\mapperObject.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperObject.xsl /Y");
-		commands.add("xcopy .\\src\\main\\resources\\mapperResultList.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperResultList.xsl /Y");
-		commands.add("xcopy .\\src\\main\\resources\\partner-config.json %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\partner-config.json /Y");
+		commands.add("xcopy .\\src\\main\\resources\\mapperObject.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperObject.xsl /Y /I");
+		commands.add("xcopy .\\src\\main\\resources\\mapperResultList.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperResultList.xsl /Y /I");
+		commands.add("xcopy .\\src\\main\\resources\\partner-config.json %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\partner-config.json /Y /I");
+		commands.add("copy .\\src\\main\\resources\\partner-config.json .\\..\\"+this.artifactId+"-configbackup-before-queryconfiguration-"+System.currentTimeMillis()+"-partner-config.json /Y ");
 		
 		String output = this.cmdExecute(commands);
-		System.out.println(output);
+		LOGGER.info(output);
 
 		try {
+			LOGGER.info("redirecting to query generation...");
 			FacesContext.getCurrentInstance().getExternalContext().redirect("./partnerwizard/index.html");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "";
