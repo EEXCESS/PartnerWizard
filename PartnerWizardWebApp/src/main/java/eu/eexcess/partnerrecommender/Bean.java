@@ -544,7 +544,7 @@ public class Bean implements Serializable {
 		
 		selenium += "<tr> <td>click</td> <td>id=formID:generatePR</td> <td></td> </tr> <tr> <td>pause</td> <td>50000</td> <td></td> </tr> <tr> <td>assertText</td> <td>name=formID:buildOutputID</td> <td>*BUILD*</td> </tr> </tbody></table> </body> </html>";
 		
-		String fileName = PATH_BUILD_SANDBOX + this.artifactId + "-" + System.currentTimeMillis() + ".html";
+		String fileName = PATH_BUILD_SANDBOX + this.artifactId + "-" + this.getTimestampForFiles() + ".html";
 		Path path = Paths.get(fileName);
 		Charset charset = StandardCharsets.UTF_8;
 		try {
@@ -824,7 +824,7 @@ public class Bean implements Serializable {
 		commands.add("xcopy .\\src\\main\\resources\\mapperResultList.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperResultList.xsl /Y /I");
 		commands.add("xcopy .\\src\\main\\resources\\partner-config.json %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\partner-config.json /Y /I");
 		
-		commands.add("copy .\\src\\main\\resources\\partner-config.json .\\..\\"+this.artifactId+"-configbackup-before-queryconfiguration-"+System.currentTimeMillis()+"-partner-config.json /Y ");
+		commands.add("copy .\\src\\main\\resources\\partner-config.json .\\..\\"+this.artifactId+"-"+this.getTimestampForFiles()+"-configbackup-before-queryconfiguration-partner-config.json /Y ");
 		
 		String output = this.cmdExecute(commands);
 		LOGGER.info(output);
