@@ -583,12 +583,16 @@ public class Bean implements Serializable {
 		return this.cmdExecute(commands);
 	}
 
+	private String getTimestampForFiles(){
+		return new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+	}
+	
 	public String cmdExecute(ArrayList<String> commands) {
 		Process shell = null;
 		DataOutputStream out = null;
 		BufferedReader in = null;
 		StringBuilder processOutput = new StringBuilder();
-		processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
+		processOutput.append(getTimestampForFiles()).append("\n");
 		try {
 			shell = Runtime.getRuntime().exec("cmd");
 			out = new DataOutputStream(shell.getOutputStream());
@@ -610,7 +614,7 @@ public class Bean implements Serializable {
 			}
 
 			//LOGGER.info("result:\n" + processOutput);
-			processOutput.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())).append("\n");
+			processOutput.append(this.getTimestampForFiles()).append("\n");
 			String output = processOutput.toString();
 			shell.waitFor();
 			LOGGER.info("finished!");
@@ -769,8 +773,7 @@ public class Bean implements Serializable {
 			this.apiURIPathPrefix = ARCHETYPE_REMOVE_TAG;
 		
 		/*
-		FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Successfully changed!", "Successfully changed!"));
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Successfully changed!", "Successfully changed!"));
           */      
 	}
 	
@@ -820,6 +823,7 @@ public class Bean implements Serializable {
 		commands.add("xcopy .\\src\\main\\resources\\mapperObject.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperObject.xsl /Y /I");
 		commands.add("xcopy .\\src\\main\\resources\\mapperResultList.xsl %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\mapperResultList.xsl /Y /I");
 		commands.add("xcopy .\\src\\main\\resources\\partner-config.json %TOMCAT%webapps\\PartnerWizard-1.0-SNAPSHOT\\WEB-INF\\classes\\partner-config.json /Y /I");
+		
 		commands.add("copy .\\src\\main\\resources\\partner-config.json .\\..\\"+this.artifactId+"-configbackup-before-queryconfiguration-"+System.currentTimeMillis()+"-partner-config.json /Y ");
 		
 		String output = this.cmdExecute(commands);
