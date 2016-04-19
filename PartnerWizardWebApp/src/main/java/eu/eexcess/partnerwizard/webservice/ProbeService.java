@@ -6,6 +6,8 @@ package eu.eexcess.partnerwizard.webservice;
  * @author Heimo Gursch <gursch@tugraz.at>
  * @date 2015-08-18
  */
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -17,12 +19,18 @@ import eu.eexcess.partnerwizard.probe.PartnerProber;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
@@ -41,11 +49,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+
 @Path("/probe")
 @Singleton
-public class ProbeService implements ServletContextListener {
-	private final static Logger LOGGER = Logger.getLogger(ProbeService.class.getName());
-	private final static String CONFIG_FILE_PATH = "/WEB-INF/query-config.xml";
+public class ProbeService implements ServletContextListener{
+	private static final Logger LOGGER = Logger.getLogger( ProbeService.class.getName() );
+	private static final String QUERY_CONFIG_FILE_PATH = "/WEB-INF/query-config.xml";
+	private static final String CONFIG_FILE_PATH = "/WEB-INF/classes/partner-config.json";
+	private static PartnerConfiguration partnerConfigurationMaster;
 	private static PartnerProber prober;
 	private static List<ProberKeyword[]> proberQueries;
 
@@ -54,14 +65,14 @@ public class ProbeService implements ServletContextListener {
 	@Path("show")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public PartnerConfiguration config() throws Exception{
-		return prober.getConfiguration();
+		return partnerConfigurationMaster;
 	}
 
 	@GET
 	@Path("queries")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public List<ProberKeyword[]> queries() throws Exception{
-		LOGGER.log( Level.INFO, "GET queries execeuted");
+		LOGGER.log( Level.INFO, "GET queries execeuted" );
 
 		return proberQueries;
 	}
@@ -89,8 +100,8 @@ public class ProbeService implements ServletContextListener {
 
 		ProberResponse init = prober.init( queries );
 
-		long duration = (System.nanoTime() - start) /1000000;
-		LOGGER.log(Level.INFO, "POST init of ID ''{0}'' took {1}ms", new Object[] {init.id, duration});
+		long duration = (System.nanoTime()-start)/1000000;
+		LOGGER.log( Level.INFO, "POST init of ID ''{0}'' took {1}ms", new Object[] {init.id, duration} );
 
 		return init;
 	}
@@ -112,8 +123,8 @@ public class ProbeService implements ServletContextListener {
 			throw new WebApplicationException( ex, Response.Status.BAD_REQUEST );
 		}
 		finally{
-			long duration = (System.nanoTime() - start) /1000000;
-			LOGGER.log(Level.INFO, "GET next of ID ''{0}'' took {1}ms", new Object[] {id, duration});
+			long duration = (System.nanoTime()-start)/1000000;
+			LOGGER.log( Level.INFO, "GET next of ID ''{0}'' took {1}ms", new Object[] {id, duration} );
 		}
 	}
 
@@ -132,8 +143,8 @@ public class ProbeService implements ServletContextListener {
 			throw new WebApplicationException( ex, Response.Status.BAD_REQUEST );
 		}
 		finally{
-			long duration = (System.nanoTime() - start) /1000000;
-			LOGGER.log(Level.INFO, "GET configuration of ID ''{0}'' took {1}ms", new Object[] {id, duration});
+			long duration = (System.nanoTime()-start)/1000000;
+			LOGGER.log( Level.INFO, "GET configuration of ID ''{0}'' took {1}ms", new Object[] {id, duration} );
 		}
 	}
 
@@ -141,16 +152,12 @@ public class ProbeService implements ServletContextListener {
 	@GET
 	@Path("store")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public boolean storeConfiguration(@Context HttpServletRequest request, @QueryParam("id") String id){
+	public boolean storeConfiguration( @Context HttpServletRequest request, @QueryParam("id") String id ){
 		long start = System.nanoTime();
 		PartnerConfiguration config;
-		try{
-			ProbeConfiguration configProbe = prober.getConfiguration( id );
 
-			config = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
-			config.setQueryGeneratorClass( configProbe.queryGeneratorClass );
-			config.setIsQueryExpansionEnabled( configProbe.queryExpansionEnabled );
-			config.setIsQuerySplittingEnabled( configProbe.querySplittingEnabled );
+		try{
+			config = prober.getParnterConfiguration( id );
 		}
 		catch( IllegalStateException ex ){
 			throw new WebApplicationException( ex, Response.Status.FORBIDDEN );
@@ -160,7 +167,7 @@ public class ProbeService implements ServletContextListener {
 		}
 
 		StringBuilder url = new StringBuilder();
-		url.append( "http://localhost:")
+		url.append( "http://localhost:" )
 			.append( request.getLocalPort() )
 			.append( request.getContextPath() )
 			.append( request.getServletPath() )
@@ -168,40 +175,40 @@ public class ProbeService implements ServletContextListener {
 
 		Client client = new Client( PartnerConfigurationCache.CONFIG.getClientJacksonJson() );
 		WebResource.Builder builder = client.resource( url.toString() )
-				.type( MediaType.APPLICATION_JSON_TYPE )
-				.accept( MediaType.APPLICATION_JSON_TYPE )
-				.accept( MediaType.APPLICATION_XML_TYPE );
+			.type( MediaType.APPLICATION_JSON_TYPE )
+			.accept( MediaType.APPLICATION_JSON_TYPE );
 
 		try{
 			return builder.post( Boolean.class, config );
 		}
-		catch( ClientHandlerException|UniformInterfaceException ex){
-			throw new WebApplicationException( ex, Response.Status.INTERNAL_SERVER_ERROR);
+		catch( ClientHandlerException|UniformInterfaceException ex ){
+			throw new WebApplicationException( ex, Response.Status.INTERNAL_SERVER_ERROR );
 		}
 		finally{
-			long duration = (System.nanoTime() - start) /1000000;
-			LOGGER.log(Level.INFO, "GET store of ID ''{0}'' took {1}ms", new Object[] {id, duration});
+			long duration = (System.nanoTime()-start)/1000000;
+			LOGGER.log( Level.INFO, "GET store of ID ''{0}'' took {1}ms", new Object[] {id, duration} );
 		}
 	}
 
 
 	@Override
-	public void contextInitialized( ServletContextEvent servletContextEvent ) {
-		try{
-			InputStream stream = servletContextEvent.getServletContext()
-					.getResourceAsStream( CONFIG_FILE_PATH );
+	public void contextInitialized( ServletContextEvent contextEvent ){
+		this.partnerConfigurationMaster = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
 
-			Unmarshaller unmarshaller = JAXBContext.newInstance(ServiceConfiguration.class)
+		try{
+			InputStream stream = contextEvent.getServletContext().getResourceAsStream( QUERY_CONFIG_FILE_PATH );
+
+			Unmarshaller unmarshaller = JAXBContext.newInstance( ServiceConfiguration.class )
 				.createUnmarshaller();
 			ServiceConfiguration config = (ServiceConfiguration) unmarshaller.unmarshal( stream );
 
 			Map<String, Integer> queryGenerators = toPositionMap( config.queryGenerators );
-			this.prober = new PartnerProber( queryGenerators );
+			this.prober = new PartnerProber( queryGenerators, PartnerConfigurationCache.CONFIG.getPartnerConfiguration() );
 
 			this.proberQueries = config.getProberKeywords();
 		}
 		catch( JAXBException ex ){
-			throw new RuntimeException( "Unable to load XML-Konfiguration from resource file '" + CONFIG_FILE_PATH + "'. Service terminated!", ex );
+			throw new RuntimeException( "Unable to load XML-Konfiguration from resource file '"+QUERY_CONFIG_FILE_PATH+"'. Service terminated!", ex );
 		}
 	}
 
@@ -210,11 +217,11 @@ public class ProbeService implements ServletContextListener {
 	}
 
 
-	private static <T> Map<T, Integer> toPositionMap(List<T> list){
+	private static <T> Map<T, Integer> toPositionMap( List<T> list ){
 		Map<T, Integer> map = new HashMap<>( list.size() );
 		int positionCounter = 0;
-		for(T entry : list ){
-			map.put( entry, positionCounter++);
+		for( T entry: list ){
+			map.put( entry, positionCounter++ );
 		}
 
 		return map;

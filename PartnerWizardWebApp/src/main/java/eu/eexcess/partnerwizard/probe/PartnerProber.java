@@ -45,13 +45,17 @@ public class PartnerProber{
 	private static final Logger LOGGER = Logger.getLogger( PartnerProber.class.getName() );
 	private static final String ID_PREFIX = "id-";
 	private final Map<String, Integer> generators;
+	private final PartnerConfiguration partnerConfigurationMaster;
+	private final String systemId;
 
 	private final ExecutorService executorService;
 	private final Map<String, ProbeConfigurationIterator> configs;
 	private int idCounter;
 
-	public PartnerProber(Map<String, Integer> generators){
+	public PartnerProber(Map<String, Integer> generators, PartnerConfiguration partnerConfiguration){
 		this.generators = generators;
+		this.partnerConfigurationMaster = partnerConfiguration;
+		this.systemId = PartnerConfigurationCache.CONFIG.getPartnerConfiguration().getSystemId();
 
 		this.idCounter = 0;
 		this.executorService = Executors.newFixedThreadPool( 10 );
@@ -147,7 +151,7 @@ public class PartnerProber{
 	public PartnerConfiguration getParnterConfiguration( String id ){
 		ProbeConfiguration probeConfig = getConfiguration( id );
 
-		PartnerConfiguration partnerConfig = SerializationUtils.clone( PartnerConfigurationCache.CONFIG.getPartnerConfiguration() );
+		PartnerConfiguration partnerConfig = SerializationUtils.clone( partnerConfigurationMaster );
 
 		partnerConfig.setIsQueryExpansionEnabled( probeConfig.queryExpansionEnabled );
 		partnerConfig.setIsQuerySplittingEnabled( probeConfig.querySplittingEnabled );
@@ -155,11 +159,6 @@ public class PartnerProber{
 
 		return partnerConfig;
 	}
-
-	public PartnerConfiguration getConfiguration(){
-		return PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
-	}
-
 
 	private synchronized String getId(){
 		idCounter++;
@@ -278,9 +277,9 @@ public class PartnerProber{
 		}
 	}
 
-	private static SecureUserProfile toUserProfile( ProbeConfiguration config ) {
+	private SecureUserProfile toUserProfile( ProbeConfiguration config ) {
 		PartnerBadge partnerBadge = new PartnerBadge();
-		partnerBadge.setSystemId( PartnerConfigurationCache.CONFIG.getPartnerConfiguration().getSystemId() );
+		partnerBadge.setSystemId( systemId );
 		partnerBadge.setQueryGeneratorClass( config.queryGeneratorClass );
 		partnerBadge.setIsQueryExpansionEnabled( config.queryExpansionEnabled );
 		partnerBadge.setIsQuerySplittingEnabled( config.querySplittingEnabled );
@@ -292,8 +291,8 @@ public class PartnerProber{
 		return userProfile;
 	}
 
-	private static PartnerRecommender getNewPartnerRecommender() throws TransformerConfigurationException{
-		PartnerConfiguration partnerConfiguration = PartnerConfigurationCache.CONFIG.getPartnerConfiguration();
+	private PartnerRecommender getNewPartnerRecommender() throws TransformerConfigurationException{
+		PartnerConfiguration partnerConfiguration = SerializationUtils.clone( partnerConfigurationMaster );
 		PartnerConnector partnerConnector = new PartnerConnector();
 		PartnerWizardTransformer transformer = new PartnerWizardTransformer();
 		transformer.init( partnerConfiguration );
