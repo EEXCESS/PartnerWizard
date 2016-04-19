@@ -6,8 +6,6 @@ package eu.eexcess.partnerwizard.webservice;
  * @author Heimo Gursch <gursch@tugraz.at>
  * @date 2015-08-18
  */
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -19,18 +17,12 @@ import eu.eexcess.partnerwizard.probe.PartnerProber;
 import eu.eexcess.partnerwizard.probe.model.ProbeConfiguration;
 import eu.eexcess.partnerwizard.probe.model.web.ProberKeyword;
 import eu.eexcess.partnerwizard.probe.model.web.ProberResponse;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
