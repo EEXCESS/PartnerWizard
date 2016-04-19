@@ -47,7 +47,6 @@ import javax.xml.bind.Unmarshaller;
 public class ProbeService implements ServletContextListener{
 	private static final Logger LOGGER = Logger.getLogger( ProbeService.class.getName() );
 	private static final String QUERY_CONFIG_FILE_PATH = "/WEB-INF/query-config.xml";
-	private static final String CONFIG_FILE_PATH = "/WEB-INF/classes/partner-config.json";
 	private static PartnerConfiguration partnerConfigurationMaster;
 	private static PartnerProber prober;
 	private static List<ProberKeyword[]> proberQueries;
