@@ -40,6 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import org.apache.commons.lang3.SerializationUtils;
 
 
 @Path("/probe")
@@ -194,7 +195,8 @@ public class ProbeService implements ServletContextListener{
 			ServiceConfiguration config = (ServiceConfiguration) unmarshaller.unmarshal( stream );
 
 			Map<String, Integer> queryGenerators = toPositionMap( config.queryGenerators );
-			this.prober = new PartnerProber( queryGenerators, PartnerConfigurationCache.CONFIG.getPartnerConfiguration() );
+			PartnerConfiguration partnerConfigClone = SerializationUtils.clone( this.partnerConfigurationMaster );
+			this.prober = new PartnerProber( queryGenerators, partnerConfigClone );
 
 			this.proberQueries = config.getProberKeywords();
 		}
