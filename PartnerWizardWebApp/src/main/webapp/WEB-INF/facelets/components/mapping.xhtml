@@ -39,11 +39,18 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 					<br/>
 					mandatory place holder:
 					<br/>
-					$ {query} - here we insert the search term
-					<br/>
-					possible place holder:
-					<br/>
-					$ {numResults} - here we insert the number of objects returned
+					<c:if test="#{mappingFor == 'search'}">
+						$ {query} - here we insert the search term
+					</c:if>
+					<c:if test="#{mappingFor == 'detail'}">
+						$ {detailQuery} - here we insert the identifier
+					</c:if>
+					<c:if test="#{mappingFor == 'search'}">
+						<br/>
+						possible place holder:
+						<br/>
+						$ {numResults} - here we insert the number of objects returned
+					</c:if>
 				</p>
 				
 			</div>
