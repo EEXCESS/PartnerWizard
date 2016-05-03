@@ -77,16 +77,6 @@ xmlns:ui="http://java.sun.com/jsf/facelets"
 		<div>
 			<h3>API Response</h3>
 			<a4j:outputPanel id="apiResponseId#{mappingId}">
-				<!-- 
-								<p>TODO: Show here XML Reponse from the API Call</p>
-								<h:outputText value="#{mappingBean.apiResponse}" escape="false"></h:outputText>
-			-->
-
-				<!-- 
-								<h:inputTextarea rows="50" cols="80" value="#{mappingBean.apiResponseFormated}" readonly="true"/>
-			-->
-				<!-- 								<div style="max-height: 550px;overflow-y:hidden;display: inline-block;max-width: 900px;"> -->
-				<!-- style="max-height: 450px;overflow-y:auto;display: inline-block;max-width: 800px;" -->
 				<syn:syntaxhighlighter id="syn#{mappingId}" theme="Eclipse" language="xml"
 					highlight="2" tabsize="4" gutter="false" rendered="true">
 					<h:outputText value="#{mappingBean.apiResponseFormated}" />
