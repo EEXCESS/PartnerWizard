@@ -47,6 +47,18 @@
     <requiredProperty key="partnerAPIdetailMappingFieldsXPathpreviewImage">
        <defaultValue>pleaseDefineTheXPath</defaultValue>
     </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathcollectionName">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathdate">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathsubject">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="partnerAPIdetailMappingFieldsXPathlanguage">
+       <defaultValue>pleaseDefineTheXPath</defaultValue>
+    </requiredProperty>
     
     
     <requiredProperty key="partnerAPIpreviewImagePathPrefix">

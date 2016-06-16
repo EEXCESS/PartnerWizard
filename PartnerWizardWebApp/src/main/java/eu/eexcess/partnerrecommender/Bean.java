@@ -213,10 +213,10 @@ public class Bean implements Serializable {
 	public Bean() {
 		this.searchMappingConfig = new MappingConfigBean();
 		this.searchMappingConfig.setBean(this);
-		this.searchMappingConfig.setMappingFields(initMappingFields());
+		this.searchMappingConfig.setMappingFields(initMappingFields(false));
 		this.detailMappingConfig = new MappingConfigBean();
 		this.detailMappingConfig.setBean(this);
-		this.detailMappingConfig.setMappingFields(initMappingFields());
+		this.detailMappingConfig.setMappingFields(initMappingFields(true));
 		//wenn cookie vorhanden dann werte aus cookie auslesen
 		loadFromCookie();
 	}
@@ -366,7 +366,7 @@ public class Bean implements Serializable {
 
 	}
 
-	private ArrayList<MappingField> initMappingFields() {
+	private ArrayList<MappingField> initMappingFields(boolean detailCall) {
 		ArrayList<MappingField> mappingFields = new ArrayList<MappingField>();
 		MappingField mappingField = new MappingField();
 		mappingField.setName("ID");
@@ -388,6 +388,24 @@ public class Bean implements Serializable {
 		mappingField.setName("previewImage");
 		mappingField.setDescription("URL of the preview image");
 		mappingFields.add(mappingField);
+		if (detailCall) {
+			mappingField = new MappingField();
+			mappingField.setName("collectionName");
+			mappingField.setDescription("name of the collection");
+			mappingFields.add(mappingField);
+			mappingField = new MappingField();
+			mappingField.setName("date");
+			mappingField.setDescription("date of the object");
+			mappingFields.add(mappingField);
+			mappingField = new MappingField();
+			mappingField.setName("subject");
+			mappingField.setDescription("subject of the object");
+			mappingFields.add(mappingField);
+			mappingField = new MappingField();
+			mappingField.setName("language");
+			mappingField.setDescription("language of the object");
+			mappingFields.add(mappingField);
+		}
 		for (int i = 0; i < mappingFields.size(); i++) {
 			mappingFields.get(i).setId(i);
 		}

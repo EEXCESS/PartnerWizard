@@ -120,9 +120,8 @@
 					</xsl:element>
 					<xsl:element name="edm:rights">${dataLicense}</xsl:element>
 
-					<xsl:element name="edm:language">unknown</xsl:element>
 
-					<!-- <xsl:call-template name="Main.Language"/> -->
+					<xsl:call-template name="Main.Language"/>
 					<xsl:call-template name="Main.Identifier" />
 					<xsl:call-template name="Main.Title" />
 					<xsl:call-template name="Main.Description" />
@@ -141,7 +140,11 @@
 	</xsl:template>
 
 
-	<!-- <xsl:template name="Main.Language" /> -->
+	  <xsl:template name="Main.Language">
+      <apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
+                       mode="m9"
+                       select="${partnerAPIdetailMappingFieldsXPathlanguage}"/>
+   </xsl:template>
 	<xsl:template name="Main.Title">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
 			mode="m4" select="${partnerAPIdetailMappingFieldsXPathTitle}" />
@@ -169,11 +172,11 @@
 	</xsl:template>
 	<xsl:template name="Main.collectionName">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m1" select="str[@name='sammlung']" />
+			mode="m1" select="${partnerAPIdetailMappingFieldsXPathcollectionName}" />
 	</xsl:template>
 	<xsl:template name="Main.Subject">
 		<apply-templates xmlns="http://www.w3.org/1999/XSL/Transform"
-			mode="m2" select="str[@name='klassifikation_sachgruppe']/str" />
+			mode="m2" select="${partnerAPIdetailMappingFieldsXPathsubject}" />
 	</xsl:template>
 
 	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathURI}"
@@ -183,13 +186,18 @@
 	<xsl:template name="StringToString">
 		<xsl:value-of select="." />
 	</xsl:template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="str[@name='sammlung']"
+   <template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathlanguage}" mode="m9">
+      <element name="edm:language">
+         <call-template name="StringToString"/>
+      </element>
+   </template>
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathcollectionName}"
 		mode="m1">
 		<element name="edm:collectionName">
 			<call-template name="StringToString" />
 		</element>
 	</template>
-	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="str[@name='klassifikation_sachgruppe']/str"
+	<template xmlns="http://www.w3.org/1999/XSL/Transform" match="${partnerAPIdetailMappingFieldsXPathsubject}"
 		mode="m2">
 		<element name="dc:subject">
 			<call-template name="StringToString" />
