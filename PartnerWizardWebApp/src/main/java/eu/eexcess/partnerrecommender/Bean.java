@@ -654,8 +654,8 @@ public class Bean implements Serializable {
 		return "";
 	}
 
-	public void downloadWAR() throws IOException {
-		compilePR();
+	public void downloadWAR() {
+//		compilePR();
 		InputStream input = null;
 		OutputStream output = null;
 		try {
@@ -683,16 +683,25 @@ public class Bean implements Serializable {
 			}
 
 			fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
-		} 
+		} catch ( IOException e) {
+			System.out.println("Error during downloadWAR:\nIOException:\n" + e.toString());
+		} catch ( RuntimeException e) {
+			System.out.println("Error during downloadWAR:\n" + e.toString());
+		}
 		finally {
-			input.close();
-			output.close();
+			try {
+				input.close();
+				output.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
 
 	public void createSourceZIP() throws IOException {
-		LOGGER.info(this.cleanupPR());
+//		LOGGER.info(this.cleanupPR());
 		String fileName = "eexcess-partner-"+ this.artifactId +"-"+ this.version+".war";
 
 		try {
@@ -731,7 +740,9 @@ public class Bean implements Serializable {
 			}
 
 			fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
-		} 
+		} catch ( RuntimeException e) {
+			System.out.println("Error during downloadSourceZIP:\n" + e.toString());
+		}
 		finally {
 			input.close();
 			output.close();
